@@ -37,7 +37,7 @@ vendor/lib64/libQSEEComAPI.so	vendor 分区：/lib64/libQSEEComAPI.so	7df6de3cda
 vendor/lib64/libdiag.so	vendor 分区：/lib64/libdiag.so	a3f21e64bc459073
 vendor/lib64/libdisplayconfig.qti.so	vendor 分区：/lib64/libdisplayconfig.qti.so	71a3fc75fa07b1dd
 vendor/lib64/libdmabufheap.so	system_ext 分区：/apex/com.android.vndk.v31.apex → /lib64/libdmabufheap.so	7dd8c7f03d244d02
-vendor/lib64/libdrm.so	vendor 分区：/lib64/libdrm.so	3c45841c1dc9516d
+vendor/lib64/libdrm.so	vendor 分区（306.3）：/lib64/libdrm.so	28cb1c84cb0b59bc
 vendor/lib64/libdrmfs.so	vendor 分区：/lib64/libdrmfs.so	76a691968e342032
 vendor/lib64/libdrmtime.so	vendor 分区：/lib64/libdrmtime.so	50f509c15984a751
 vendor/lib64/libhidlmemory.so	system_ext 分区：/apex/com.android.vndk.v31.apex → /lib64/libhidlmemory.so	05beea3d604c0df8
