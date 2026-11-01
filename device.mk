@@ -12,6 +12,9 @@ PRODUCT_USE_DYNAMIC_PARTITIONS := true
 
 # A/B 槽位控制：高通平台用分区表属性位记录槽位状态，必须用高通的实现，
 # AOSP 默认实现不适用。需要 hardware/qcom-caf/bootctrl（见 README 的本地 manifest）。
+# bootctrl 模块在 hardware/qcom-caf/bootctrl 的 Soong 命名空间里
+PRODUCT_SOONG_NAMESPACES += hardware/qcom-caf/bootctrl
+
 PRODUCT_PACKAGES += \
     android.hardware.boot-service.qti.recovery
 

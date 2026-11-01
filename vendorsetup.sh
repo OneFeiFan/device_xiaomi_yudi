@@ -28,6 +28,9 @@ if [ "$1" = "$FDEVICE" -o "$FOX_BUILD_DEVICE" = "$FDEVICE" ]; then
 	export FOX_AB_DEVICE=1
 	export OF_AB_DEVICE_WITH_RECOVERY_PARTITION=1
 
+	# keymaster：强制 4.1，并与 TW_FORCE_KEYMASTER_VER 配套
+	export OF_DEFAULT_KEYMASTER_VERSION="4.1"
+
 	# 预编译内核只用于构建，不放进镜像
 	export OF_FORCE_PREBUILT_KERNEL=1
 
