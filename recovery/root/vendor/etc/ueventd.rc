@@ -1,0 +1,11 @@
+# 从原厂 vendor/etc/ueventd.rc 摘出的必要规则
+# dma_heap：keymaster 以 system 身份打开 qcom,qseecom heap
+firmware_directories /vendor/firmware_mnt/image/
+
+subsystem dma_heap
+    devname uevent_devpath
+    dirname /dev/dma_heap
+
+/dev/dma_heap/qcom,*      0444   system     system
+/dev/qseecom              0660   system     drmrpc
+/dev/ion                  0664   system     system

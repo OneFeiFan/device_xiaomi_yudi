@@ -156,6 +156,9 @@ TW_INCLUDE_RESETPROP := true
 TW_INCLUDE_LIBRESETPROP := true
 TW_INCLUDE_LPTOOLS := true
 TW_INCLUDE_LPDUMP := true
+# recovery 主程序和 libtar 链接 libsysutils；打开 logcat/logd 才会把它打进 ramdisk
+TWRP_INCLUDE_LOGCAT := true
+TARGET_USES_LOGD := true
 TW_INCLUDE_NTFS_3G := true
 TW_USE_TOOLBOX := true
 TW_EXCLUDE_APEX := true
