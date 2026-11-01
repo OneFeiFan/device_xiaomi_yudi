@@ -7,7 +7,8 @@ lib/firmware/novatek_nt36532_m80_mp_csot.bin	vendor 分区：/firmware/novatek_n
 lib/firmware/novatek_spi_fw.bin	vendor 分区：/firmware/novatek_spi_fw.bin	b32283d2427451f6
 vendor/etc/charger_fstab.qti	recovery 分区 ramdisk：/vendor/etc/charger_fstab.qti	ea20ec5865dbfc2d
 vendor/etc/gpfspath_oem_config.xml	vendor 分区：/etc/gpfspath_oem_config.xml	f33b193963bbbee2
-vendor/etc/vintf/manifest.xml	vendor 分区：/etc/vintf/manifest_cape.xml（复制为默认清单）	e0c247fc5cc5758b
+vendor/etc/vintf/manifest.xml	vendor 分区：/etc/vintf/manifest_cape.xml + 各 HAL fragments（合并为设备清单）	d0a5413182cc1400
+vendor/etc/vintf/manifest/android.hardware.health@2.1.xml	vendor 分区：/etc/vintf/manifest/android.hardware.health@2.1.xml	d79a8058bf0dd9d4
 vendor/etc/vintf/manifest_cape.xml	vendor 分区：/etc/vintf/manifest_cape.xml	e0c247fc5cc5758b
 vendor/etc/vintf/manifest/android.hardware.security.keymint-service-qti-rkp.xml	vendor 分区：/etc/vintf/manifest/android.hardware.security.keymint-service-qti-rkp.xml	d71ec30051dffe6e
 vendor/etc/init/android.hardware.gatekeeper@1.0-service-qti.rc	vendor 分区：/etc/init/android.hardware.gatekeeper@1.0-service-qti.rc	7ce6d8a9f91c4493

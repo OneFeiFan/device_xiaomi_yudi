@@ -4,7 +4,7 @@
 
 这棵树从零写成：设置取自小米官方 OS3.0.6.0.VMHCNXM 完整包、TWRP/橙狐/AOSP 文档，boot 控制相关的专有文件取自 OS3.0.306.3.WMHCNXM 完整包，来源写在各文件的注释里。专有文件清单见 `proprietary-files.txt`。
 
-**状态：尚未在设备上验证。**下面的测试清单逐项通过后，才能确认可用。
+**状态：部分验证。**已在设备上确认：OrangeFox UI 启动、boot HAL、keymaster、gatekeeper、keymint、qseecomd、logd 正常运行，电池和触控驱动已加载。解密和槽位切换仍需按下面的清单继续验证。
 
 ## 构建
 
@@ -49,7 +49,7 @@ fastboot reboot recovery
 | 触控 | 点击位置准确；如果左右或上下反了，见下文"触控方向" |
 | ADB | 电脑上 `adb shell` 能连上 |
 | 分区挂载 | 挂载菜单里能勾选 system、vendor 等逻辑分区 |
-| 槽位 | `lshal` 能看到 `android.hardware.boot@1.2::IBootControl/default`；`bootctl get-number-slots` 返回 2，当前槽位与 `fastboot getvar current-slot` 一致；切换一次后重启到 bootloader 再确认 |
+| 槽位 | `bootctl get-current-slot` 与 `fastboot getvar current-slot` 一致（当前为 0/a）。注意：QTI 的 boot HAL 报 `get-number-slots=3`，但设备实际只有 a/b 两个槽，测试时只切 0/1，切完重启到 bootloader 再确认 |
 | fastbootd | 在 recovery 里执行 `adb reboot fastboot`，电脑上 `fastboot getvar is-userspace` 返回 yes |
 | 解密 | 进入 recovery 后输入锁屏密码，能看到 `/sdcard` 里的文件 |
 | 电池 | 状态栏显示电量 |
@@ -87,7 +87,7 @@ fastboot reboot recovery
 
 ## 已知风险
 
-- **解密尚未验证**：这是最可能出问题的一项。现在的系统是移植的 HyperOS 3（Android 16），密钥由 KeyMint 创建。同平台的小米平板 6 Pro 在 TWRP 16 上用同样的服务组合解密成功，但 yudi 需要实测。
+- **解密待验证**：这是最可能出问题的一项。现在的系统是移植的 HyperOS 3（Android 16），密钥由 KeyMint 创建。目前 UI、keymaster/keymint 服务都正常，但无密码自动尝试时 KeyMint 返回 `-62 INVALID_KEY_BLOB`；需要在界面输入锁屏密码后复测，并取 `/tmp/recovery.log` 和 logcat 分析。
 - **构建后检查依赖**：第一次构建完成后，在 `out/target/product/yudi/recovery/root` 下用 ldcheck 检查 `vendor/bin` 里的每个服务，确认没有缺失的库。
 - **USB 存储的设备节点**：`twrp.flags` 里 OTG 设备写的是 `/dev/block/sdg1`，UFS 占用了 sda 到 sdf。如果实际不是 sdg，按 `/tmp/recovery.log` 修改。
 
