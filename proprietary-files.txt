@@ -1,0 +1,67 @@
+# 专有文件清单
+# 全部取自小米官方完整包 yudi-ota_full-OS3.0.6.0.VMHCNXM-user-15.0-7b73783799.zip。
+# 列：ramdisk 内的路径、在官方包中的来源、sha256 前 16 位。
+lib/firmware/novatek_nt36532_m80_fw_csot.bin	vendor 分区：/firmware/novatek_nt36532_m80_fw_csot.bin	3a1e294219570984
+lib/firmware/novatek_nt36532_m80_mp_csot.bin	vendor 分区：/firmware/novatek_nt36532_m80_mp_csot.bin	84058de8f61b824e
+lib/firmware/novatek_spi_fw.bin	vendor 分区：/firmware/novatek_spi_fw.bin	b32283d2427451f6
+vendor/etc/charger_fstab.qti	recovery 分区 ramdisk：/vendor/etc/charger_fstab.qti	ea20ec5865dbfc2d
+vendor/etc/gpfspath_oem_config.xml	vendor 分区：/etc/gpfspath_oem_config.xml	f33b193963bbbee2
+vendor/etc/vintf/manifest.xml	vendor 分区：/etc/vintf/manifest_cape.xml（复制为默认清单）	e0c247fc5cc5758b
+vendor/etc/vintf/manifest_cape.xml	vendor 分区：/etc/vintf/manifest_cape.xml	e0c247fc5cc5758b
+vendor/etc/vintf/manifest/android.hardware.security.keymint-service-qti-rkp.xml	vendor 分区：/etc/vintf/manifest/android.hardware.security.keymint-service-qti-rkp.xml	d71ec30051dffe6e
+vendor/etc/init/android.hardware.gatekeeper@1.0-service-qti.rc	vendor 分区：/etc/init/android.hardware.gatekeeper@1.0-service-qti.rc	7ce6d8a9f91c4493
+vendor/etc/init/android.hardware.keymaster@4.1-service-qti.rc	vendor 分区：/etc/init/android.hardware.keymaster@4.1-service-qti.rc	3da2bc55b1929b6b
+vendor/etc/init/android.hardware.security.keymint-service-qti.rc	vendor 分区：/etc/init/android.hardware.security.keymint-service-qti.rc	b9e599d625b4fe65
+vendor/etc/init/qseecomd.rc	vendor 分区：/etc/init/qseecomd.rc	09a1eaa5077f1ab8
+vendor/etc/init/vendor.qti.hardware.qseecom@1.0-service.rc	vendor 分区：/etc/init/vendor.qti.hardware.qseecom@1.0-service.rc	fe3a6b4c1fbd70e6
+vendor/lib/modules/adsp_loader_dlkm.ko	recovery 分区 ramdisk：/vendor/lib/modules/adsp_loader_dlkm.ko	f89bcc0785b3305f
+vendor/lib/modules/gpr_dlkm.ko	recovery 分区 ramdisk：/vendor/lib/modules/gpr_dlkm.ko	f49785e6cedb72dc
+vendor/lib/modules/q6_notifier_dlkm.ko	recovery 分区 ramdisk：/vendor/lib/modules/q6_notifier_dlkm.ko	32e77add9df10922
+vendor/lib/modules/q6_pdr_dlkm.ko	recovery 分区 ramdisk：/vendor/lib/modules/q6_pdr_dlkm.ko	20591e349216017c
+vendor/lib/modules/snd_event_dlkm.ko	recovery 分区 ramdisk：/vendor/lib/modules/snd_event_dlkm.ko	ecf0de5fd86167f7
+vendor/lib/modules/spf_core_dlkm.ko	recovery 分区 ramdisk：/vendor/lib/modules/spf_core_dlkm.ko	f4d0b686d06cc748
+vendor/lib64/android.hardware.gatekeeper@1.0.so	vendor 分区：/lib64/android.hardware.gatekeeper@1.0.so	8e99e2dd437179a9
+vendor/lib64/android.hardware.keymaster@3.0.so	vendor 分区：/lib64/android.hardware.keymaster@3.0.so	6fa204933735858f
+vendor/lib64/android.hardware.keymaster@4.0.so	vendor 分区：/lib64/android.hardware.keymaster@4.0.so	139456827cd98f17
+vendor/lib64/android.hardware.keymaster@4.1.so	vendor 分区：/lib64/android.hardware.keymaster@4.1.so	c85a46015030bb00
+vendor/lib64/android.hardware.security.keymint-V1-ndk_platform.so	system_ext 分区：/apex/com.android.vndk.v31.apex → /lib64/android.hardware.security.keymint-V1-ndk_platform.so	683cbfc1512f16e8
+vendor/lib64/android.hardware.security.secureclock-V1-ndk_platform.so	system_ext 分区：/apex/com.android.vndk.v31.apex → /lib64/android.hardware.security.secureclock-V1-ndk_platform.so	2b5b1c44eb71ee35
+vendor/lib64/android.hardware.security.sharedsecret-V1-ndk_platform.so	system_ext 分区：/apex/com.android.vndk.v31.apex → /lib64/android.hardware.security.sharedsecret-V1-ndk_platform.so	ef38d7300519550a
+vendor/lib64/android.hidl.allocator@1.0.so	vendor 分区：/lib64/android.hidl.allocator@1.0.so	66ad33eecb874725
+vendor/lib64/android.hidl.memory.token@1.0.so	system_ext 分区：/apex/com.android.vndk.v31.apex → /lib64/android.hidl.memory.token@1.0.so	d9c76db27909c5e1
+vendor/lib64/android.hidl.memory@1.0.so	system_ext 分区：/apex/com.android.vndk.v31.apex → /lib64/android.hidl.memory@1.0.so	b54aaa99b251103e
+vendor/lib64/libGPreqcancel.so	vendor 分区：/lib64/libGPreqcancel.so	e8d4672d607af7dd
+vendor/lib64/libGPreqcancel_svc.so	vendor 分区：/lib64/libGPreqcancel_svc.so	a0064d6f2acde18d
+vendor/lib64/libQSEEComAPI.so	vendor 分区：/lib64/libQSEEComAPI.so	7df6de3cda9b2c2c
+vendor/lib64/libdiag.so	vendor 分区：/lib64/libdiag.so	a3f21e64bc459073
+vendor/lib64/libdisplayconfig.qti.so	vendor 分区：/lib64/libdisplayconfig.qti.so	71a3fc75fa07b1dd
+vendor/lib64/libdmabufheap.so	system_ext 分区：/apex/com.android.vndk.v31.apex → /lib64/libdmabufheap.so	7dd8c7f03d244d02
+vendor/lib64/libdrm.so	vendor 分区：/lib64/libdrm.so	3c45841c1dc9516d
+vendor/lib64/libdrmfs.so	vendor 分区：/lib64/libdrmfs.so	76a691968e342032
+vendor/lib64/libdrmtime.so	vendor 分区：/lib64/libdrmtime.so	50f509c15984a751
+vendor/lib64/libhidlmemory.so	system_ext 分区：/apex/com.android.vndk.v31.apex → /lib64/libhidlmemory.so	05beea3d604c0df8
+vendor/lib64/libion.so	system_ext 分区：/apex/com.android.vndk.v31.apex → /lib64/libion.so	abdcdaa78553907e
+vendor/lib64/libkeymaster_messages.so	vendor 分区：/lib64/libkeymaster_messages.so	13c137249ab8d2d0
+vendor/lib64/libkeymasterdeviceutils.so	vendor 分区：/lib64/libkeymasterdeviceutils.so	1aecc86929ec95e6
+vendor/lib64/libkeymasterutils.so	vendor 分区：/lib64/libkeymasterutils.so	699c54704f0b361d
+vendor/lib64/libops.so	vendor 分区：/lib64/libops.so	0b65e8686c13ece3
+vendor/lib64/libqcbor.so	vendor 分区：/lib64/libqcbor.so	880f55ba65846a28
+vendor/lib64/libqisl.so	vendor 分区：/lib64/libqisl.so	74acadc4be885d7d
+vendor/lib64/libqtikeymaster4.so	vendor 分区：/lib64/libqtikeymaster4.so	694bfcf4d4cfdbb1
+vendor/lib64/libqtikeymint.so	vendor 分区：/lib64/libqtikeymint.so	b04d1b58a3c8aa15
+vendor/lib64/librpmb.so	vendor 分区：/lib64/librpmb.so	c8e12a4abb92cb01
+vendor/lib64/libspcom.so	vendor 分区：/lib64/libspcom.so	3ae2444f8da2e776
+vendor/lib64/libspl.so	vendor 分区：/lib64/libspl.so	b657ab09f2f12e0f
+vendor/lib64/libssd.so	vendor 分区：/lib64/libssd.so	64b060fef67880e6
+vendor/lib64/libtime_genoff.so	vendor 分区：/lib64/libtime_genoff.so	150cf6f527a68b77
+vendor/lib64/libvmmem.so	vendor 分区：/lib64/libvmmem.so	0d95b87347448850
+vendor/lib64/libxml2.so	system_ext 分区：/apex/com.android.vndk.v31.apex → /lib64/libxml2.so	3eef7622fdd63ee0
+vendor/lib64/vendor.display.config@2.0.so	vendor 分区：/lib64/vendor.display.config@2.0.so	f6742f1bb0d880e0
+vendor/lib64/vendor.qti.hardware.qseecom@1.0.so	vendor 分区：/lib64/vendor.qti.hardware.qseecom@1.0.so	1b0139ffc61325b9
+vendor/lib64/hw/android.hardware.gatekeeper@1.0-impl-qti.so	vendor 分区：/lib64/hw/android.hardware.gatekeeper@1.0-impl-qti.so	4e0d3b867a1d9a8d
+vendor/lib64/hw/vendor.qti.hardware.qseecom@1.0-impl.so	vendor 分区：/lib64/hw/vendor.qti.hardware.qseecom@1.0-impl.so	e5729696e246fa3b
+vendor/bin/qseecomd	vendor 分区：/bin/qseecomd	be82385357dd80d9
+vendor/bin/hw/android.hardware.gatekeeper@1.0-service-qti	vendor 分区：/bin/hw/android.hardware.gatekeeper@1.0-service-qti	2f0538bf02cf62a0
+vendor/bin/hw/android.hardware.keymaster@4.1-service-qti	vendor 分区：/bin/hw/android.hardware.keymaster@4.1-service-qti	718d9eaf65b29667
+vendor/bin/hw/android.hardware.security.keymint-service-qti	vendor 分区：/bin/hw/android.hardware.security.keymint-service-qti	6f759625e8f1463d
+vendor/bin/hw/vendor.qti.hardware.qseecom@1.0-service	vendor 分区：/bin/hw/vendor.qti.hardware.qseecom@1.0-service	aae2686eb9b692e2
