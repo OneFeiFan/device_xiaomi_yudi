@@ -43,6 +43,9 @@ on fs
     # 解密服务的库在 /vendor/lib64；Gatekeeper 的实现库在 /vendor/lib64/hw
     export LD_LIBRARY_PATH /system/lib64:/vendor/lib64:/vendor/lib64/hw
 
+    # A/B 槽位控制：原厂 vendor 的 boot HAL（HIDL 1.2）
+    start vendor.boot-hal-1-2
+
     # 解密：qseecomd 需要的设备节点权限和工作目录
     chmod 0660 /dev/qseecom
     chown system drmrpc /dev/qseecom

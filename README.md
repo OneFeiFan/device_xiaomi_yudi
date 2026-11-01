@@ -2,7 +2,7 @@
 
 小米平板 6 Max 14（yudi，骁龙 8+ Gen 1）的 OrangeFox Recovery 设备树，基于橙狐 fox_16.0（Android 16）。
 
-这棵树从零写成：每一项设置都取自小米官方 OS3.0.6.0.VMHCNXM 完整包，或 TWRP、橙狐和 AOSP 的文档，来源写在各文件的注释里。专有文件全部取自同一个官方包，清单见 `proprietary-files.txt`。
+这棵树从零写成：设置取自小米官方 OS3.0.6.0.VMHCNXM 完整包、TWRP/橙狐/AOSP 文档，boot 控制相关的专有文件取自 OS3.0.306.3.WMHCNXM 完整包，来源写在各文件的注释里。专有文件清单见 `proprietary-files.txt`。
 
 **状态：尚未在设备上验证。**下面的测试清单逐项通过后，才能确认可用。
 
@@ -14,8 +14,6 @@
 # 1. 同步橙狐源码
 mkdir orangefox_16 && cd orangefox_16
 repo init -u https://gitlab.com/OrangeFox/Manifest.git -b fox_16.0
-mkdir -p .repo/local_manifests
-cp <本仓库>/local_manifest.xml .repo/local_manifests/yudi.xml   # 高通 boot 控制 HAL
 repo sync -c --no-tags -j8
 
 # 2. 放入设备树
@@ -51,6 +49,7 @@ fastboot reboot recovery
 | 触控 | 点击位置准确；如果左右或上下反了，见下文"触控方向" |
 | ADB | 电脑上 `adb shell` 能连上 |
 | 分区挂载 | 挂载菜单里能勾选 system、vendor 等逻辑分区 |
+| 槽位 | `lshal` 能看到 `android.hardware.boot@1.2::IBootControl/default`；`bootctl get-number-slots` 返回 2，当前槽位与 `fastboot getvar current-slot` 一致；切换一次后重启到 bootloader 再确认 |
 | fastbootd | 在 recovery 里执行 `adb reboot fastboot`，电脑上 `fastboot getvar is-userspace` 返回 yes |
 | 解密 | 进入 recovery 后输入锁屏密码，能看到 `/sdcard` 里的文件 |
 | 电池 | 状态栏显示电量 |
@@ -61,6 +60,8 @@ fastboot reboot recovery
 ## 设计说明
 
 **内核**：原厂 recovery 不带内核，由引导程序用 boot 分区的内核启动，这里保持一致。`prebuilt/kernel` 是原厂 boot 里的 5.10.236，只用来满足构建系统，不会打进镜像。实际运行时用的是 boot 分区里的内核，包括自编内核；只要它和原厂内核的模块接口兼容就能工作。
+
+**boot 控制**：A/B 槽位直接用原厂 vendor 里的 HIDL 1.2 boot HAL（`android.hardware.boot@1.2-service`），不再编译 LineageOS 的 bootctrl 和 gpt-utils，也不需要内核头文件。服务名是 `vendor.boot-hal-1-2`，由 `init.recovery.qcom.rc` 在 `on fs` 里显式启动；实现库 `android.hardware.boot@1.0-impl-1.2-qti.so` 和依赖库都放在 ramdisk 的 `/vendor/lib64`。
 
 **屏幕方向**：面板原生是 2880x1800 横屏。原厂系统把它旋转 270 度作为自然方向，橙狐也一样，界面是 1800x2880 的竖屏。触摸坐标按 270 度换算：交换 x 和 y，再翻转 x。
 
@@ -78,10 +79,10 @@ fastboot reboot recovery
 
 ## 从官方固件取文件
 
-所有专有文件都来自 `yudi-ota_full-OS3.0.6.0.VMHCNXM-user-15.0-7b73783799.zip`：
+主要来自 `yudi-ota_full-OS3.0.6.0.VMHCNXM-user-15.0-7b73783799.zip`；boot HAL 的 9 个文件来自 `yudi-ota_full-OS3.0.306.3.WMHCNXM-user-16.0-b255c0d484-2in1-Root.zip`：
 
-- 用 payload 解包工具取出 `recovery`、`vendor_boot`、`vendor`、`system_ext`、`dtbo` 分区；
-- erofs 分区用 erofs-utils 1.8 以上的 `dump.erofs --path=<路径> --cat` 读出单个文件，不需要整个解开；
+- 306.3 包没有 payload，`super.zst` 解压得到 `super.img`，用 `lpunpack -p vendor_a -p system_ext_a super.img <目录>` 取出逻辑分区；
+- erofs 分区可以用 `dump.erofs --path=<路径> --ls` 查看目录，用 `fsck.erofs --extract=<目录>` 整体解开；
 - vendor 服务的依赖用 `readelf -d` 逐层查找；`qseecomd` 运行时用 dlopen 加载的监听器库，在二进制里搜索 `.so` 字符串找出。
 
 ## 已知风险
@@ -93,5 +94,4 @@ fastboot reboot recovery
 ## 参考
 
 - [TWRP](https://github.com/TeamWin/android_bootable_recovery)、[OrangeFox](https://gitlab.com/OrangeFox)：构建系统和变量文档
-- [LineageOS 的高通 boot 控制 HAL](https://github.com/LineageOS/android_hardware_qcom_bootctrl)
 - 小米平板 6 Pro（liuqin）的 [TWRP 12.1 树](https://github.com/ymdzq/device_xiaomi_liuqin-TWRP) 和 [TWRP 16 树](https://github.com/lanweikayu/device_xiaomi_liuqin-TWRP-16)：同平台设备，用于对照核实，没有直接复制

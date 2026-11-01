@@ -1,5 +1,6 @@
 # 专有文件清单
-# 全部取自小米官方完整包 yudi-ota_full-OS3.0.6.0.VMHCNXM-user-15.0-7b73783799.zip。
+# 默认取自小米官方完整包 yudi-ota_full-OS3.0.6.0.VMHCNXM-user-15.0-7b73783799.zip。
+# boot HAL 文件取自 yudi-ota_full-OS3.0.306.3.WMHCNXM-user-16.0-b255c0d484-2in1-Root.zip（下面标注 306.3）。
 # 列：ramdisk 内的路径、在官方包中的来源、sha256 前 16 位。
 lib/firmware/novatek_nt36532_m80_fw_csot.bin	vendor 分区：/firmware/novatek_nt36532_m80_fw_csot.bin	3a1e294219570984
 lib/firmware/novatek_nt36532_m80_mp_csot.bin	vendor 分区：/firmware/novatek_nt36532_m80_mp_csot.bin	84058de8f61b824e
@@ -65,3 +66,12 @@ vendor/bin/hw/android.hardware.gatekeeper@1.0-service-qti	vendor 分区：/bin/h
 vendor/bin/hw/android.hardware.keymaster@4.1-service-qti	vendor 分区：/bin/hw/android.hardware.keymaster@4.1-service-qti	718d9eaf65b29667
 vendor/bin/hw/android.hardware.security.keymint-service-qti	vendor 分区：/bin/hw/android.hardware.security.keymint-service-qti	6f759625e8f1463d
 vendor/bin/hw/vendor.qti.hardware.qseecom@1.0-service	vendor 分区：/bin/hw/vendor.qti.hardware.qseecom@1.0-service	aae2686eb9b692e2
+vendor/bin/hw/android.hardware.boot@1.2-service	vendor 分区（306.3）：/bin/hw/android.hardware.boot@1.2-service	c5317622b35231f0
+vendor/lib64/hw/android.hardware.boot@1.0-impl-1.2-qti.so	vendor 分区（306.3）：/lib64/hw/android.hardware.boot@1.0-impl-1.2-qti.so	ad5b7d5b36fe8cd4
+vendor/lib64/android.hardware.boot@1.0.so	vendor 分区（306.3）：/lib64/android.hardware.boot@1.0.so	51c084d0e5476798
+vendor/lib64/android.hardware.boot@1.1.so	vendor 分区（306.3）：/lib64/android.hardware.boot@1.1.so	71887b990a1a229a
+vendor/lib64/android.hardware.boot@1.2.so	vendor 分区（306.3）：/lib64/android.hardware.boot@1.2.so	ee73ea2bddf887a9
+vendor/lib64/libboot_control_qti.so	vendor 分区（306.3）：/lib64/libboot_control_qti.so	1084c57017c20f12
+vendor/lib64/librecovery_updater.so	vendor 分区（306.3）：/lib64/librecovery_updater.so	f15bd6dd1ad19172
+vendor/etc/init/android.hardware.boot@1.2-service.rc	vendor 分区（306.3）：/etc/init/android.hardware.boot@1.2-service.rc	5ea90531b8c88cb2
+vendor/etc/vintf/manifest/android.hardware.boot@1.2.xml	vendor 分区（306.3）：/etc/vintf/manifest/android.hardware.boot@1.2.xml	0c4d9c601e8ec42d
