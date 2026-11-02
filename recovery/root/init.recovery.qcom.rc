@@ -37,11 +37,12 @@ on fs
     symlink /dev/block/platform/soc/${ro.boot.bootdevice} /dev/block/bootdevice
     write /proc/sys/kernel/firmware_config/force_sysfs_fallback 1
 
-    # ADSP 固件在 modem 分区，挂载后绑定到 /vendor/firmware，再启动 ADSP
+    # ADSP 固件放在 ramdisk 的 /lib/firmware（内核 firmware_class 路径），
+    # 震动效果文件放在 /vendor/firmware。不能把整个 modem 镜像 bind 到
+    # /vendor/firmware：vendor 分区自带的震动效果文件会被盖住。
     mkdir /vendor/firmware_mnt
     mkdir /vendor/firmware
     mount_all /vendor/etc/charger_fstab.qti --early
-    mount none /vendor/firmware_mnt/image /vendor/firmware bind rec
     wait /sys/kernel/boot_adsp/boot
     write /sys/kernel/boot_adsp/boot 1
     wait /sys/class/power_supply/battery
@@ -66,8 +67,16 @@ on fs
     start vendor.qseecomd
     start qseecom-service
 
+    # 震动：ROM 自带的 AIDL vibrator HAL（实例名 IVibrator/vibratorfeature）
+    chmod 0666 /sys/class/qcom-haptics/lra_calibration
+    chmod 0666 /sys/class/qcom-haptics/lra_impedance
+    # 震动 HAL 链接的 libmisight 需要厂商的 misight 服务
+    start vendor.mi_misight
+    start vibratorfeature-hal-service
+
 # qseecomd 注册完监听器后，启动依赖它的密钥服务
 on property:vendor.sys.listeners.registered=true
     start vendor.keymaster-4-1
     start gatekeeper-1-0
     start vendor.keymint-qti
+

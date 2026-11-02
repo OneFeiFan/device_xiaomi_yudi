@@ -23,4 +23,7 @@ mi_ext                                   /mnt/vendor/mi_ext   ext4    ro,barrier
 /dev/block/bootdevice/by-name/persist    /mnt/vendor/persist  ext4    noatime,nosuid,nodev,barrier=1         wait,check
 /dev/block/bootdevice/by-name/misc       /misc                emmc    defaults                               defaults
 /dev/block/bootdevice/by-name/rescue     /cache               ext4    nosuid,noatime,nodev,barrier=1         wait
-/devices/platform/soc/*.ssusb/*.dwc3/xhci-hcd.*.auto*  /storage/usbotg  vfat  nosuid,nodev               wait,voldmanaged=usbotg:auto
+# USB OTG 交给 twrp.flags 里的 /usb_otg 条目处理。不要保留原厂的这行 voldmanaged：
+# TWRP 会把它的通配符设备展开成 /dev/block/*，把 UFS 的 sde/sdf 分区（包括
+# vm-bootsys_b 等固件分区）错误地做成 usbotg-N 存储卷，界面上有误擦除的风险。
+#/devices/platform/soc/*.ssusb/*.dwc3/xhci-hcd.*.auto*  /storage/usbotg  vfat  nosuid,nodev               wait,voldmanaged=usbotg:auto

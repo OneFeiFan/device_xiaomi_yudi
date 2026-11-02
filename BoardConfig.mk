@@ -106,14 +106,20 @@ BOARD_AVB_RECOVERY_ALGORITHM := SHA256_RSA4096
 BOARD_AVB_RECOVERY_ROLLBACK_INDEX := 1
 BOARD_AVB_RECOVERY_ROLLBACK_INDEX_LOCATION := 1
 
-# 版本号和安全补丁级别
-# Keymaster 只允许不低于创建密钥时的系统版本和补丁级别使用密钥，
-# 所以 recovery 头部写一个足够大的值，避免解密时因版本过低被拒绝。
+# 版本号和安全补丁级别必须和 ROM 当前运行的系统一致。
+# 厂商的 libqtikeymint/libqtikeymaster4 会读 ro.build.version.release、
+# ro.build.version.security_patch 和 ro.vendor.build.security_patch，用它们判断
+# metadata key 是否需要升级（-62 KEY_REQUIRES_UPGRADE）。实测系统是
+# release 16 / security_patch 2026-08-01 / vendor patch 2026-02-01，而 recovery
+# 写成 2025-09-01 时 KeyMint 一直要求升级，升级又失败（-8）。
+# 注意：不能把 PLATFORM_VERSION_LAST_STABLE 改成 12，CTS 校验会中止。
+# boot 头部保持和原厂 boot 一致（12.0.0 / 2025-09），用 BOARD_MKBOOTIMG_ARGS
+# 显式覆盖，mkbootimg 对重复参数取最后一个值。
 PLATFORM_VERSION := 16
-PLATFORM_VERSION_LAST_STABLE := $(PLATFORM_VERSION)
-PLATFORM_SECURITY_PATCH := 2099-12-31
-VENDOR_SECURITY_PATCH := $(PLATFORM_SECURITY_PATCH)
-BOOT_SECURITY_PATCH := $(PLATFORM_SECURITY_PATCH)
+PLATFORM_SECURITY_PATCH := 2026-08-01
+VENDOR_SECURITY_PATCH := 2026-02-01
+BOOT_SECURITY_PATCH := 2026-08-01
+BOARD_MKBOOTIMG_ARGS += --os_version 12.0.0 --os_patch_level 2025-09
 
 # 解密：VBOOT 的 fstab 为 FBE v2（inlinecrypt_optimized + wrappedkey_v0）加 metadata 加密
 TW_INCLUDE_CRYPTO := true
@@ -126,13 +132,10 @@ TW_FORCE_KEYMASTER_VER := true
 # 面板原生是 2880x1800 横屏（DTBO），系统把它旋转 270 度作为自然方向
 # （VENDOR 的 ro.surface_flinger.primary_display_orientation=ORIENTATION_270）。
 # 橙狐只有竖屏界面，同样旋转 270 度。
-# 触摸驱动上报的原始坐标是：x 沿画面横向、y 沿画面纵向但方向相反，
-# 因此只需要翻转 Y，不做 SWAP。
-# 注意：线刷救砖后内核和触摸驱动已换成 ROM 自带版本（5.10.237-moon），
-# 旧内核下的实测结论不能直接套用。
+# 四角实测：右上与左下分别只改变 rawX/rawY 且同向，驱动坐标系与竖屏画面一致，
+# 不需要任何 SWAP/FLIP 参数。
 TW_THEME := portrait_hdpi
 TW_ROTATION := 270
-RECOVERY_TOUCHSCREEN_FLIP_Y := true
 TW_FRAMERATE := 60
 TW_NO_SCREEN_BLANK := true
 # 电池：recovery 里没有 health HAL 服务，直接读 /sys/class/power_supply/battery
@@ -140,6 +143,9 @@ OF_USE_LEGACY_BATTERY_SERVICES := 1
 # CPU 温度：taro 的 CPU 传感器是 cpuss-2（thermal_zone27）；
 # TWRP 默认读 thermal_zone0，这个平台上 zone0 是 pa，读不到值
 TW_CUSTOM_CPU_TEMP_PATH := "/sys/class/thermal/thermal_zone27/temp"
+# 震动：使用 ROM 自带的 AIDL vibrator HAL，实例名是 IVibrator/vibratorfeature
+TW_SUPPORT_INPUT_AIDL_HAPTICS := true
+TW_SUPPORT_INPUT_AIDL_HAPTICS_FQNAME := IVibrator/vibratorfeature
 
 # TWRP：背光（REC 的 init 写的就是这个节点；DTBO 的背光范围 0–4095）
 TW_BRIGHTNESS_PATH := "/sys/class/backlight/panel0-backlight/brightness"
