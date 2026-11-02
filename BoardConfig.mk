@@ -126,9 +126,10 @@ TW_FORCE_KEYMASTER_VER := true
 # 面板原生是 2880x1800 横屏（DTBO），系统把它旋转 270 度作为自然方向
 # （VENDOR 的 ro.surface_flinger.primary_display_orientation=ORIENTATION_270）。
 # 橙狐只有竖屏界面，同样旋转 270 度。
-# 触摸驱动（NVTCapacitiveTouchScreen）上报的坐标已经是竖屏方向
-# （x 横向、y 纵向），不需要 SWAP_XY/FLIP_X；但 y 轴方向相反，
-# 实测点击下边会落到上边，所以只加 FLIP_Y。
+# 触摸驱动上报的原始坐标是：x 沿画面横向、y 沿画面纵向但方向相反，
+# 因此只需要翻转 Y，不做 SWAP。
+# 注意：线刷救砖后内核和触摸驱动已换成 ROM 自带版本（5.10.237-moon），
+# 旧内核下的实测结论不能直接套用。
 TW_THEME := portrait_hdpi
 TW_ROTATION := 270
 RECOVERY_TOUCHSCREEN_FLIP_Y := true
@@ -136,6 +137,9 @@ TW_FRAMERATE := 60
 TW_NO_SCREEN_BLANK := true
 # 电池：recovery 里没有 health HAL 服务，直接读 /sys/class/power_supply/battery
 OF_USE_LEGACY_BATTERY_SERVICES := 1
+# CPU 温度：taro 的 CPU 传感器是 cpuss-2（thermal_zone27）；
+# TWRP 默认读 thermal_zone0，这个平台上 zone0 是 pa，读不到值
+TW_CUSTOM_CPU_TEMP_PATH := "/sys/class/thermal/thermal_zone27/temp"
 
 # TWRP：背光（REC 的 init 写的就是这个节点；DTBO 的背光范围 0–4095）
 TW_BRIGHTNESS_PATH := "/sys/class/backlight/panel0-backlight/brightness"
