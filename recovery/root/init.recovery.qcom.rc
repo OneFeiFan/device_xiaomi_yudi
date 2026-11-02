@@ -21,17 +21,16 @@ on init
 on property:ro.boot.usbcontroller=*
     setprop sys.usb.controller ${ro.boot.usbcontroller}
     wait /sys/bus/platform/devices/${ro.boot.usb.dwc3_msm:-a600000.ssusb}/mode
+    # 先保持 idle：configfs 会在 gadget 配置好后再绑定 UDC，
+    # 这时才写 peripheral，保证主机第一次 attach 看到的就是完整设备。
     write /sys/bus/platform/devices/${ro.boot.usb.dwc3_msm:-a600000.ssusb}/mode idle
-    wait /sys/class/udc/${ro.boot.usbcontroller} 0
-    write /sys/bus/platform/devices/${ro.boot.usb.dwc3_msm:-a600000.ssusb}/mode peripheral
-    wait /sys/class/udc/${ro.boot.usbcontroller} 1
 
-# 上面 idle→peripheral 时 gadget 还没配置，Windows 会错过最终枚举，
-# 表现为进 recovery 后必须拔插 USB。gadget 配置完成（sys.usb.state=adb）后
-# 重新绑定一次 UDC，让主机以已配置的状态重新枚举。
 on property:sys.usb.state=adb
-    write /config/usb_gadget/g1/UDC none
-    write /config/usb_gadget/g1/UDC ${sys.usb.controller}
+    write /sys/bus/platform/devices/${ro.boot.usb.dwc3_msm:-a600000.ssusb}/mode peripheral
+on property:sys.usb.state=fastboot
+    write /sys/bus/platform/devices/${ro.boot.usb.dwc3_msm:-a600000.ssusb}/mode peripheral
+on property:sys.usb.state=sideload
+    write /sys/bus/platform/devices/${ro.boot.usb.dwc3_msm:-a600000.ssusb}/mode peripheral
 
 on fs
     wait /dev/block/platform/soc/${ro.boot.bootdevice}

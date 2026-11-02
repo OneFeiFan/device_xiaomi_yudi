@@ -127,9 +127,11 @@ TW_FORCE_KEYMASTER_VER := true
 # （VENDOR 的 ro.surface_flinger.primary_display_orientation=ORIENTATION_270）。
 # 橙狐只有竖屏界面，同样旋转 270 度。
 # 触摸驱动（NVTCapacitiveTouchScreen）上报的坐标已经是竖屏方向
-# （x 横向、y 纵向），实测不需要 SWAP_XY/FLIP_X；加了反而整体转 90 度。
+# （x 横向、y 纵向），不需要 SWAP_XY/FLIP_X；但 y 轴方向相反，
+# 实测点击下边会落到上边，所以只加 FLIP_Y。
 TW_THEME := portrait_hdpi
 TW_ROTATION := 270
+RECOVERY_TOUCHSCREEN_FLIP_Y := true
 TW_FRAMERATE := 60
 TW_NO_SCREEN_BLANK := true
 # 电池：recovery 里没有 health HAL 服务，直接读 /sys/class/power_supply/battery
