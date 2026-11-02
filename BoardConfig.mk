@@ -125,13 +125,15 @@ TW_FORCE_KEYMASTER_VER := true
 # TWRP：界面
 # 面板原生是 2880x1800 横屏（DTBO），系统把它旋转 270 度作为自然方向
 # （VENDOR 的 ro.surface_flinger.primary_display_orientation=ORIENTATION_270）。
-# 橙狐只有竖屏界面，同样旋转 270 度，触摸坐标相应交换并翻转 x。
+# 橙狐只有竖屏界面，同样旋转 270 度。
+# 触摸驱动（NVTCapacitiveTouchScreen）上报的坐标已经是竖屏方向
+# （x 横向、y 纵向），实测不需要 SWAP_XY/FLIP_X；加了反而整体转 90 度。
 TW_THEME := portrait_hdpi
 TW_ROTATION := 270
-RECOVERY_TOUCHSCREEN_SWAP_XY := true
-RECOVERY_TOUCHSCREEN_FLIP_X := true
 TW_FRAMERATE := 60
 TW_NO_SCREEN_BLANK := true
+# 电池：recovery 里没有 health HAL 服务，直接读 /sys/class/power_supply/battery
+OF_USE_LEGACY_BATTERY_SERVICES := 1
 
 # TWRP：背光（REC 的 init 写的就是这个节点；DTBO 的背光范围 0–4095）
 TW_BRIGHTNESS_PATH := "/sys/class/backlight/panel0-backlight/brightness"
