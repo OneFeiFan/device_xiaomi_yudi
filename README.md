@@ -4,12 +4,13 @@
 
 这棵树从零写成：设置取自小米官方 OS3.0.6.0.VMHCNXM 完整包、TWRP/橙狐/AOSP 文档，boot 控制相关的专有文件取自 OS3.0.306.3.WMHCNXM 完整包，来源写在各文件的注释里。专有文件清单见 `proprietary-files.txt`。
 
-**状态：部分验证。**已确认：OrangeFox UI、触摸、USB（免拔插）、电池、CPU 温度、system/vendor 等逻辑分区挂载、boot HAL、keymaster、gatekeeper、keymint、qseecomd、logd。原厂 `voldmanaged` 行造成的 132 个假 OTG 存储卷也已修掉，不会再误把 UFS 的 sde/sdf 分区（包括 `vm-bootsys_b`）挂成 `/storage/usbotg-N`。
+**状态：部分验证。**已确认：OrangeFox UI、触摸、USB（免拔插）、电池、CPU 温度、data 解密（metadata + userdata）、system/vendor 等逻辑分区挂载、boot HAL、keymaster、gatekeeper、keymint、qseecomd、logd。原厂 `voldmanaged` 行造成的 132 个假 OTG 存储卷也已修掉，不会再误把 UFS 的 sde/sdf 分区（包括 `vm-bootsys_b`）挂成 `/storage/usbotg-N`。
+
+**data 解密已修复**：根因是恢复环境里 UFS RPMB 设备节点 `/dev/0:0:0:49476` 默认是 `0600 root:root`，而 qseecomd 实际以 system 运行，打不开 RPMB；KeyMint 对带抗回滚属性的 key 返回 `-8`。`init.recovery.qcom.rc` 在启动 qseecomd 前提前 `chown system system` 并 `chmod 0660`，metadata 和 userdata 解密均通过。
 
 未解决：
 
-- **data 解密**：KeyMint 的 `begin` 返回 `-8`（`INCOMPATIBLE_BLOCK_MODE`）。已排除 boot 头部版本和 GCM 参数；详见下文。
-- **震动**：厂商 AIDL HAL 在 recovery 的 AOSP 16 libutils 下触发 `RefBase::incStrongRequireStrong` 并 abort；系统正常启动时同一个 HAL 可以运行。现在 rc 改成 `oneshot`，只尝试一次，不再反复重启。
+- **震动**：厂商 AIDL HAL 在 recovery 的 AOSP 16 libutils 下触发 `RefBase::incStrongRequireStrong` 并 abort；系统正常启动时同一个 HAL 可以运行。v32 libutils 也带同样的严格检查，换库不能解决。现在 rc 改成 `oneshot`，只尝试一次，不再反复重启。
 
 ## 构建
 
@@ -58,7 +59,7 @@ fastboot reboot recovery
 | 分区挂载 | 挂载菜单里能勾选 system、vendor 等逻辑分区 |
 | 槽位 | `bootctl get-current-slot` 与 `fastboot getvar current-slot` 一致（当前为 0/a）。注意 QTI boot HAL 报 `get-number-slots=3`，实际只有 a/b，只切 0/1，切完重启到 bootloader 确认 |
 | fastbootd | 在 recovery 里执行 `adb reboot fastboot`，电脑上 `fastboot getvar is-userspace` 返回 yes |
-| 解密 | 进入 recovery 后输入锁屏密码，能看到 `/sdcard` 里的文件（当前失败，见“已知问题”） |
+| 解密 | 进入 recovery 后能看到 `/sdcard` 里的文件（已验证，metadata + userdata 都通过） |
 | 电池/温度 | 状态栏显示电量，CPU 温度来自 `thermal_zone27`（cpuss-2） |
 | 震动 | 当前失败（厂商 HAL abort），rc 已改为 oneshot，不会重启循环 |
 | 刷入卡刷包、备份和恢复 | 各做一次 |
@@ -81,11 +82,15 @@ fastboot reboot recovery
 
 **解密**：userdata 使用 FBE v2（`inlinecrypt_optimized` 加 `wrappedkey_v0` 硬件包装密钥），并开启 metadata 加密。解密依赖 vendor 的安全服务：`qseecomd` 注册完监听器后，再启动 Keymaster 4.1、Gatekeeper 和 KeyMint。服务定义沿用原厂 vendor 的 rc 文件，启动顺序写在 `init.recovery.qcom.rc`。
 
+**RPMB**：KeyMint 对带抗回滚属性的 key 需要访问 UFS RPMB（`/dev/0:0:0:49476`，well-known LUN 0xC144）。这个节点默认是 `0600 root:root`，而 qseecomd 启动后会降到 system 用户，所以必须在启动 qseecomd 前 `chown system system` + `chmod 0660`。漏掉这一步时 `rpmb_ufs` 会打印 `Unable to open ... error no: 13`，KeyMint 的 `begin` 返回 `-8 INCOMPATIBLE_BLOCK_MODE`，metadata 解密失败。
+
+**VNDK**：qseecomd、Keymaster、KeyMint 等 HIDL 服务通过各自 rc 里的 `setenv LD_LIBRARY_PATH` 优先使用 `/vendor/lib64/vndk-v32` 下的 Android 12 VNDK 基础库（libcrypto、libbase、libcutils、libhidlbase 等）；AIDL 服务（misight、震动）保持系统库，避免系统 `libbinder_ndk` 需要的 `libutils`/`libc++` 新符号与 v32 版本冲突。
+
 **震动**：ROM 自带的 AIDL vibrator HAL（实例 `IVibrator/vibratorfeature`），依赖库、manifest、misight 服务都已放进 ramdisk；效果文件见上。HAL 能解析到 49 个效果，但在 `libaachaptics` 初始化后触发 `RefBase` abort。系统正常启动时同一个 HAL 可以运行，怀疑是 recovery 的 AOSP 16 libutils 严格引用计数检查或更底层的 Android 12/16 混搭问题。
 
 ## 已知问题
 
-- **data 解密仍失败**：错误从 `-62 KEY_REQUIRES_UPGRADE` 变成 `-8 INCOMPATIBLE_BLOCK_MODE`，说明安全补丁/版本属性已经对上，但 KeyMint 仍拒绝 `begin`。已排除：boot 头部版本、GCM 参数（去掉 `GcmModeMacLen` 仍 -8）、storage binding seed（cmdline/init 里没有）、KeyMint manifest 缺失。下一步需要拿到 key 的 characteristics（`getKeyCharacteristics`）或对比 OEM vold 的 begin 参数；也可能要回到 Android 12 基线（老 fox_12.1 树）才能和 Android 12 的 vendor KeyMint 完全匹配。这些改动会涉及 AOSP/vendor 层，不在设备树范围内，需要单独确认。
+- ~~data 解密~~：已修复，见“设计说明”的 RPMB 一段。根因不是版本属性或 GCM 参数，而是 UFS RPMB 节点权限；修复后在 `recovery.log` 里可以看到 `Successfully decrypted metadata encrypted data partition` 和 `Data successfully decrypted`。
 - **震动 HAL abort**：厂商 HAL 在 recovery 的 AOSP 16 libutils 下 `RefBase` 崩溃；系统正常启动时正常。可能要用 Android 12 的 libutils/基线，或者修 HAL。当前 rc 是 `oneshot`，不会重启循环。
 - **时区名无效**：`persist.sys.timezone=TAIST-8TAIDT`，ramdisk 没有 `/system/usr/share/zoneinfo`，每条命令会打 `__bionic_open_tzdata` 警告；时钟偏移本身正确，不影响功能。
 - **屏幕空闲会息屏**：TWRP 会把亮度降到 0，触碰会亮；不是故障。

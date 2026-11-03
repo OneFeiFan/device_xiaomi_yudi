@@ -1,4 +1,5 @@
 service gatekeeper-1-0 /vendor/bin/hw/android.hardware.gatekeeper@1.0-service-qti
+    setenv LD_LIBRARY_PATH /vendor/lib64/vndk-v32:/vendor/lib64:/vendor/lib64/hw:/system/lib64
     class early_hal
     user system
     group system

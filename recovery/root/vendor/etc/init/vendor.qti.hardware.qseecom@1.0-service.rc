@@ -7,6 +7,7 @@
 
 
 service qseecom-service /vendor/bin/hw/vendor.qti.hardware.qseecom@1.0-service
+    setenv LD_LIBRARY_PATH /vendor/lib64/vndk-v32:/vendor/lib64:/vendor/lib64/hw:/system/lib64
     class hal
     user system
     group system drmrpc
