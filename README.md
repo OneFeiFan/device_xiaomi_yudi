@@ -12,7 +12,7 @@
 
 ## 构建
 
-需要约 150 GB 磁盘和 16 GB 以上内存。内存紧张时用 `GOGC=50 GOMAXPROCS=8 JOBS=8`，否则 soong 容易把机器换页拖死。
+需要约 150 GB 磁盘和 16 GB 以上内存。构建固定用 `-j12`；内存紧张时加 `GOGC=50 GOMAXPROCS=8`，否则 soong 容易把机器换页拖死。
 
 ```sh
 # 1. 同步橙狐源码
@@ -27,12 +27,27 @@ git clone <本仓库> device/xiaomi/yudi
 export FOX_BUILD_DEVICE=yudi
 source build/envsetup.sh
 lunch twrp_yudi-bp2a-eng
-mka -j8 adbd recoveryimage
+GOGC=50 GOMAXPROCS=8 mka -j12 adbd recoveryimage
 ```
 
 产物是 `out/target/product/yudi/OrangeFox-*.img` 和 `recovery.img`。
 
 **注意**：`recovery/root` 的 staging 有时会残留旧的 `libminuitwrp.so`，改了触摸代码却看不到效果时，先删掉 `out/target/product/yudi/recovery/root` 和 `ramdisk-recovery.img` 再编。
+
+### 增量构建
+
+完整构建一次后，只改 C/C++ 或 `recovery/root/` 里已有的文件，可以跳过 Soong/Kati，直接调用 ninja：
+
+```sh
+source build/envsetup.sh
+lunch twrp_yudi-bp2a-eng
+prebuilts/build-tools/linux-x86/bin/ninja -f out/combined-twrp_yudi.ninja -j12 adbd recoveryimage
+```
+
+- 改 `BoardConfig.mk`、`device.mk`、`Android.bp`、`vendorsetup.sh`，或新增模块/新增会被 glob 的源文件时，必须回到 `mka` 重新生成 ninja。
+- 改 ramdisk/主题文件后如果 ninja 认为无事可做，先删 `out/target/product/yudi/recovery.img`；必要时再删 `out/target/product/yudi/recovery/root` 和 `ramdisk-recovery.img`。
+- 直接 ninja 前先 `source build/envsetup.sh` 和 `lunch`，否则 OrangeFox 的打包文件名可能缺设备名。
+- `m --skip-soong-tests recoveryimage` 可以省掉 Soong 自检。
 
 ## 刷入与回退
 
@@ -55,7 +70,7 @@ fastboot reboot recovery
 | 触控 | 点击位置准确（面板原生横屏，界面旋转 270°，不需要 SWAP/FLIP） |
 | ADB | 电脑上 `adb shell` 能连上，第一次 attach 不需要拔插 |
 | 分区挂载 | 挂载菜单里能勾选 system、vendor 等逻辑分区 |
-| 槽位 | `bootctl get-current-slot` 与 `fastboot getvar current-slot` 一致（当前为 0/a）。注意 QTI boot HAL 报 `get-number-slots=3`，实际只有 a/b，只切 0/1，切完重启到 bootloader 确认 |
+| 槽位 | 只做只读核对：`bootctl get-current-slot` 与 `fastboot getvar current-slot` 一致（当前为 0/a）。b 槽是空的，不要切；原因见“已知问题” |
 | fastbootd | 在 recovery 里执行 `adb reboot fastboot`，电脑上 `fastboot getvar is-userspace` 返回 yes |
 | 解密 | 进入 recovery 后能看到 `/sdcard` 里的文件（已验证，metadata + userdata 都通过） |
 | 电池/温度 | 状态栏显示电量，CPU 温度来自 `thermal_zone27`（cpuss-2） |
@@ -92,7 +107,7 @@ fastboot reboot recovery
 - ~~震动 HAL abort~~：已修复，见“设计说明”的震动一段（libu32）。
 - **时区名无效**：`persist.sys.timezone=TAIST-8TAIDT`，ramdisk 没有 `/system/usr/share/zoneinfo`，每条命令会打 `__bionic_open_tzdata` 警告；时钟偏移本身正确，不影响功能。
 - **屏幕空闲会息屏**：TWRP 会把亮度降到 0，触碰会亮；不是故障。
-- **b 槽没有系统**：只切到有系统的槽位；recovery 已把触摸模块打进 ramdisk，但空槽仍然没有 system/vendor，无法开机。QTI boot HAL 报 3 个槽位，实际只有 0/a、1/b，不要切到 2。
+- **槽位切换 UI 只认 A/B，当前 b 槽是空的**：UI（Reboot 页）只显示当前槽和“切换到另一个槽”，点击后走 vendor boot HAL 的 `SetActiveBootSlot(0/1)`，不会写 super 元数据，也不会提供第三个槽。super 的 `metadata_slot_count` 和 QTI boot HAL 都报 3，但 `get-suffix 2` 直接报错；这个“3”是元数据副本/QTI HAL 的计数，和 recovery UI 无关。实测当前设备 super 里的 `*_b` 逻辑分区（system/vendor/product/system_ext/odm/vendor_dlkm/mi_ext）全部是 0 扇区，`recovery_b` 也不是当前这份 recovery。切到 b 后系统分区消失、落到 fastboot，根因是 b 槽没有系统，不是 UI 误选第三个槽。不要切 b；以后要切必须先用完整 OTA/线刷包填好 b 的 super，并把当前 recovery 刷到 `recovery_b`，再用 fastboot `--set-active=b` 并确认。
 
 ## 从官方固件取文件
 

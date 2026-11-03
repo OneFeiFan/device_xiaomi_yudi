@@ -33,6 +33,8 @@ on property:sys.usb.state=sideload
     write /sys/bus/platform/devices/${ro.boot.usb.dwc3_msm:-a600000.ssusb}/mode peripheral
 
 on fs
+    # 居中后手势热区要覆盖物理屏幕边缘：用设备树里的 override 覆盖主题文件
+    copy /vendor/etc/navbar-gestures.xml /twres/pages/templates/navbar.xml
     wait /dev/block/platform/soc/${ro.boot.bootdevice}
     symlink /dev/block/platform/soc/${ro.boot.bootdevice} /dev/block/bootdevice
     write /proc/sys/kernel/firmware_config/force_sysfs_fallback 1

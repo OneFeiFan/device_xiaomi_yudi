@@ -136,6 +136,11 @@ TW_FORCE_KEYMASTER_VER := true
 # 不需要任何 SWAP/FLIP 参数。
 TW_THEME := portrait_hdpi
 TW_ROTATION := 270
+# 主题按 1080x1920（16:9）设计，屏幕是 1800x2880（16:10）。
+# 宽高统一按 1.5 倍缩放：scale_w=(1800-180)/1080=1.5，scale_h=2880/1920=1.5；
+# 内容宽 1620px，TW_X_OFFSET=90 让左右各留 90px 黑边并居中。
+TW_W_OFFSET := -180
+TW_X_OFFSET := 90
 TW_FRAMERATE := 60
 TW_NO_SCREEN_BLANK := true
 # 电池：recovery 里没有 health HAL 服务，直接读 /sys/class/power_supply/battery
