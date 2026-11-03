@@ -37,8 +37,11 @@ if [ "$1" = "$FDEVICE" -o "$FOX_BUILD_DEVICE" = "$FDEVICE" ]; then
 	# ramdisk 用 LZ4，与原厂 recovery 一致（BoardConfig 已设 BOARD_RAMDISK_USE_LZ4）
 	export OF_USE_LZ4_COMPRESSION=1
 
-	# 屏幕：旋转后的界面是 1800x2880（16:10）。按橙狐的公式，宽度折算到 1080 后高度为 1080*2880/1800 = 1728
-	export OF_SCREEN_H=1728
+	# 屏幕：橙狐 portrait_hdpi 主题按 1080x1920 设计。OF_SCREEN_H 是主题缩放用的
+	# 基准高度，不是设备的实际像素高度；旧设备树没有设置（默认 1920）。
+	# 设成 1728 会把 1920 高的布局放大到约 3200px，比 2880px 的屏幕还高，
+	# 底部内容会被推出屏幕。
+	export OF_SCREEN_H=1920
 
 	# 语言和时区：中国
 	export TW_DEFAULT_LANGUAGE="zh_CN"
