@@ -7,5 +7,7 @@ subsystem dma_heap
     dirname /dev/dma_heap
 
 /dev/dma_heap/qcom,*      0444   system     system
+# UFS RPMB BSG：qseecomd 以 system 运行，KeyMint 抗回滚状态需要
+/dev/0:0:0:49476          0600   system     system
 /dev/qseecom              0660   system     drmrpc
 /dev/ion                  0664   system     system

@@ -42,11 +42,13 @@ on fs
     chown system system /sys/bus/i2c/drivers/awinic_haptic/6-005a/custom_wave
 
 service vibratorfeature-hal-service /vendor/bin/hw/vendor.xiaomi.hardware.vibratorfeature.service
+    # 厂商 HAL 的 Thread::run 依赖 Android 12 libutils 的 incStrong 行为；
+    # 给它单独用改名后的 v32 libutils（libu32.so），系统 libbinder_ndk 仍用系统 libutils
+    setenv LD_LIBRARY_PATH /vendor/lib64/vndk-v32:/vendor/lib64:/vendor/lib64/hw:/system/lib64
     class hal
     user system
     group system input
     disabled
     seclabel u:r:recovery:s0
-    # 厂商 HAL 在 recovery 的 AOSP 16 libutils 下会 abort；先只尝试启动一次，
-    # 不让 init 每 5 秒重启它（否则一直刷日志/耗电）。
+    # 保留 oneshot：只尝试启动一次，避免异常时每 5 秒重启刷日志。
     oneshot

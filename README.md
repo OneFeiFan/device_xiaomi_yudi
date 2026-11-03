@@ -4,13 +4,11 @@
 
 这棵树从零写成：设置取自小米官方 OS3.0.6.0.VMHCNXM 完整包、TWRP/橙狐/AOSP 文档，boot 控制相关的专有文件取自 OS3.0.306.3.WMHCNXM 完整包，来源写在各文件的注释里。专有文件清单见 `proprietary-files.txt`。
 
-**状态：部分验证。**已确认：OrangeFox UI、触摸、USB（免拔插）、电池、CPU 温度、data 解密（metadata + userdata）、system/vendor 等逻辑分区挂载、boot HAL、keymaster、gatekeeper、keymint、qseecomd、logd。原厂 `voldmanaged` 行造成的 132 个假 OTG 存储卷也已修掉，不会再误把 UFS 的 sde/sdf 分区（包括 `vm-bootsys_b`）挂成 `/storage/usbotg-N`。
+**状态：部分验证。**已确认：OrangeFox UI、触摸、USB（免拔插）、电池、CPU 温度、data 解密（metadata + userdata）、震动、system/vendor 等逻辑分区挂载、boot HAL、keymaster、gatekeeper、keymint、qseecomd、logd。原厂 `voldmanaged` 行造成的 132 个假 OTG 存储卷也已修掉，不会再误把 UFS 的 sde/sdf 分区（包括 `vm-bootsys_b`）挂成 `/storage/usbotg-N`。
 
 **data 解密已修复**：根因是恢复环境里 UFS RPMB 设备节点 `/dev/0:0:0:49476` 默认是 `0600 root:root`，而 qseecomd 实际以 system 运行，打不开 RPMB；KeyMint 对带抗回滚属性的 key 返回 `-8`。`init.recovery.qcom.rc` 在启动 qseecomd 前提前 `chown system system` 并 `chmod 0660`，metadata 和 userdata 解密均通过。
 
-未解决：
-
-- **震动**：厂商 AIDL HAL 在 recovery 的 AOSP 16 libutils 下触发 `RefBase::incStrongRequireStrong` 并 abort；系统正常启动时同一个 HAL 可以运行。v32 libutils 也带同样的严格检查，换库不能解决。现在 rc 改成 `oneshot`，只尝试一次，不再反复重启。
+**震动已修复**：厂商 AIDL HAL 在 `Vibrator` 构造函数里对没有强引用的 `Thread` 对象调用 `android::Thread::run()`。Android 12 的 libutils 里 `Thread::run` 用 `incStrong`（容错），Android 16 改成 `incStrongRequireStrong`（直接 abort）。给这个 HAL 单独提供改名后的 v32 libutils（`libu32.so`），系统 `libbinder_ndk` 继续用系统 libutils，两份库以不同 SONAME 共存。
 
 ## 构建
 
@@ -61,7 +59,7 @@ fastboot reboot recovery
 | fastbootd | 在 recovery 里执行 `adb reboot fastboot`，电脑上 `fastboot getvar is-userspace` 返回 yes |
 | 解密 | 进入 recovery 后能看到 `/sdcard` 里的文件（已验证，metadata + userdata 都通过） |
 | 电池/温度 | 状态栏显示电量，CPU 温度来自 `thermal_zone27`（cpuss-2） |
-| 震动 | 当前失败（厂商 HAL abort），rc 已改为 oneshot，不会重启循环 |
+| 震动 | 点击按钮有震感；`vibratorfeature-hal-service` 常驻，实例 `IVibrator/vibratorfeature` 已注册（libu32 修复） |
 | 刷入卡刷包、备份和恢复 | 各做一次 |
 
 出问题时，取 `/tmp/recovery.log`、`logcat -d` 和 `dmesg`。
@@ -72,7 +70,7 @@ fastboot reboot recovery
 
 **boot 控制**：A/B 槽位直接用原厂 vendor 里的 HIDL 1.2 boot HAL（`android.hardware.boot@1.2-service`），不再编译 LineageOS 的 bootctrl 和 gpt-utils，也不需要内核头文件。服务名是 `vendor.boot-hal-1-2`，由 `init.recovery.qcom.rc` 在 `on fs` 里显式启动；实现库 `android.hardware.boot@1.0-impl-1.2-qti.so` 和依赖库都放在 ramdisk 的 `/vendor/lib64`。
 
-**屏幕方向**：面板原生是 2880x1800 横屏。原厂系统把它旋转 270 度作为自然方向，橙狐也一样，界面是 1800x2880 的竖屏。四角实测驱动坐标系和竖屏画面一致，不需要任何 `RECOVERY_TOUCHSCREEN_*` 参数。触控驱动由 TWRP 从 vendor_dlkm 加载 `xiaomi_touch.ko` 和 `nt36532_touch.ko`；触控固件放在 ramdisk 的 `/lib/firmware`。
+**屏幕方向**：面板原生是 2880x1800 横屏。原厂系统把它旋转 270 度作为自然方向，橙狐也一样，界面是 1800x2880 的竖屏。四角实测驱动坐标系和竖屏画面一致，不需要任何 `RECOVERY_TOUCHSCREEN_*` 参数。触控驱动由 TWRP 从 vendor_dlkm 加载 `xiaomi_touch.ko` 和 `nt36532_touch.ko`；这两个模块同时放进了 ramdisk 的 `/vendor/lib/modules` 和 `/lib/modules`，vendor_dlkm 缺失时仍可触摸。触控固件放在 ramdisk 的 `/lib/firmware`。
 
 **版本号和安全补丁**：厂商的 `libqtikeymint`/`libqtikeymaster4` 会读 `ro.build.version.release`、`ro.build.version.security_patch` 和 `ro.vendor.build.security_patch` 来判断 metadata key 是否需要升级。必须和当前系统一致：release 16、security_patch 2026-08-01、vendor patch 2026-02-01。boot 头部保持原厂值 12.0.0/2025-09，用 `BOARD_MKBOOTIMG_ARGS` 显式覆盖。不要把 `PLATFORM_VERSION_LAST_STABLE` 改成 12，CTS 校验会中止。
 
@@ -82,19 +80,19 @@ fastboot reboot recovery
 
 **解密**：userdata 使用 FBE v2（`inlinecrypt_optimized` 加 `wrappedkey_v0` 硬件包装密钥），并开启 metadata 加密。解密依赖 vendor 的安全服务：`qseecomd` 注册完监听器后，再启动 Keymaster 4.1、Gatekeeper 和 KeyMint。服务定义沿用原厂 vendor 的 rc 文件，启动顺序写在 `init.recovery.qcom.rc`。
 
-**RPMB**：KeyMint 对带抗回滚属性的 key 需要访问 UFS RPMB（`/dev/0:0:0:49476`，well-known LUN 0xC144）。这个节点默认是 `0600 root:root`，而 qseecomd 启动后会降到 system 用户，所以必须在启动 qseecomd 前 `chown system system` + `chmod 0660`。漏掉这一步时 `rpmb_ufs` 会打印 `Unable to open ... error no: 13`，KeyMint 的 `begin` 返回 `-8 INCOMPATIBLE_BLOCK_MODE`，metadata 解密失败。
+**RPMB**：KeyMint 对带抗回滚属性的 key 需要访问 UFS RPMB（`/dev/0:0:0:49476`，well-known LUN 0xC144）。原厂 vendor 的 `/etc/ueventd.rc` 里有规则 `/dev/0:0:0:49476 0600 system system`，recovery 的 `/vendor/etc/ueventd.rc` 也加上这条（节点创建时生效）；`init.recovery.qcom.rc` 里再 `chown system system` + `chmod 0660` 兜底。这个节点默认是 `0600 root:root`，而 qseecomd 启动后会降到 system 用户；漏掉时会打印 `Unable to open ... error no: 13`，KeyMint 的 `begin` 返回 `-8 INCOMPATIBLE_BLOCK_MODE`，metadata 解密失败。
 
-**VNDK**：qseecomd、Keymaster、KeyMint 等 HIDL 服务通过各自 rc 里的 `setenv LD_LIBRARY_PATH` 优先使用 `/vendor/lib64/vndk-v32` 下的 Android 12 VNDK 基础库（libcrypto、libbase、libcutils、libhidlbase 等）；AIDL 服务（misight、震动）保持系统库，避免系统 `libbinder_ndk` 需要的 `libutils`/`libc++` 新符号与 v32 版本冲突。
+**VNDK**：qseecomd、Keymaster、KeyMint 等 HIDL 服务通过各自 rc 里的 `setenv LD_LIBRARY_PATH` 优先使用 `/vendor/lib64/vndk-v32` 下的 Android 12 VNDK 基础库（libcrypto、libbase、libcutils、libhidlbase 等）；AIDL 服务中的 misight 保持系统库；震动服务使用 vndk 目录里改名后的 `libu32.so`（v32 libutils），系统 `libbinder_ndk` 仍用系统 libutils，避免 `String16` 等符号冲突。
 
-**震动**：ROM 自带的 AIDL vibrator HAL（实例 `IVibrator/vibratorfeature`），依赖库、manifest、misight 服务都已放进 ramdisk；效果文件见上。HAL 能解析到 49 个效果，但在 `libaachaptics` 初始化后触发 `RefBase` abort。系统正常启动时同一个 HAL 可以运行，怀疑是 recovery 的 AOSP 16 libutils 严格引用计数检查或更底层的 Android 12/16 混搭问题。
+**震动**：ROM 自带的 AIDL vibrator HAL（实例 `IVibrator/vibratorfeature`）。根因是 `Vibrator` 构造函数里的 `android::Thread::run()`：Android 12 的 libutils 用 `incStrong`，Android 16 用 `incStrongRequireStrong`，后者要求对象已有强引用，厂商代码没有，于是 abort。修复方式是把 v32 libutils 的 SONAME 改成 `libu32.so`，并把厂商服务二进制的 NEEDED 从 `libutils.so` 改成 `libu32.so`；系统 `libbinder_ndk` 仍用系统 libutils，两份库共存。服务 rc 里给 `vibratorfeature-hal-service` 单独设置 `LD_LIBRARY_PATH` 指向 `/vendor/lib64/vndk-v32`。HAL 现在常驻并注册成功。
 
 ## 已知问题
 
 - ~~data 解密~~：已修复，见“设计说明”的 RPMB 一段。根因不是版本属性或 GCM 参数，而是 UFS RPMB 节点权限；修复后在 `recovery.log` 里可以看到 `Successfully decrypted metadata encrypted data partition` 和 `Data successfully decrypted`。
-- **震动 HAL abort**：厂商 HAL 在 recovery 的 AOSP 16 libutils 下 `RefBase` 崩溃；系统正常启动时正常。可能要用 Android 12 的 libutils/基线，或者修 HAL。当前 rc 是 `oneshot`，不会重启循环。
+- ~~震动 HAL abort~~：已修复，见“设计说明”的震动一段（libu32）。
 - **时区名无效**：`persist.sys.timezone=TAIST-8TAIDT`，ramdisk 没有 `/system/usr/share/zoneinfo`，每条命令会打 `__bionic_open_tzdata` 警告；时钟偏移本身正确，不影响功能。
 - **屏幕空闲会息屏**：TWRP 会把亮度降到 0，触碰会亮；不是故障。
-- **b 槽没有系统**：只切到有系统的槽位，切到空槽会丢 vendor_dlkm，触摸也会失效。
+- **b 槽没有系统**：只切到有系统的槽位；recovery 已把触摸模块打进 ramdisk，但空槽仍然没有 system/vendor，无法开机。QTI boot HAL 报 3 个槽位，实际只有 0/a、1/b，不要切到 2。
 
 ## 从官方固件取文件
 
