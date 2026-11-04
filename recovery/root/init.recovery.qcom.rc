@@ -37,6 +37,15 @@ on fs
     copy /vendor/etc/navbar-gestures.xml /twres/pages/templates/navbar.xml
     # 修正 TWRP 从 USB Storage 退出后 MTP 不恢复：覆盖挂载页的退出动作
     copy /vendor/etc/mount-usb-mtp.xml /twres/pages/mount.xml
+    # 终端字体换 DroidSansMono，键盘 longpress 小符号下移/右移
+    copy /vendor/etc/images.xml /twres/resources/images.xml
+    copy /vendor/etc/keyboard.xml /twres/pages/templates/keyboard.xml
+    copy /vendor/etc/DroidSansMono.ttf /twres/fonts/DroidSansMono.ttf
+    # 中文语言包会把 fixed / keylabel-longpress 强制换成比例字体，这里用改过的语言包
+    # 指向 Sarasa Mono SC（中文等宽），终端和键盘小符号才不会被比例字体撑乱
+    copy /vendor/etc/zh_CN.xml /twres/languages/zh_CN.xml
+    copy /vendor/etc/SarasaMonoSC-Regular.ttf /twres/fonts/SarasaMonoSC-Regular.ttf
+    copy /vendor/etc/main.xml /twres/pages/main.xml
     wait /dev/block/platform/soc/${ro.boot.bootdevice}
     symlink /dev/block/platform/soc/${ro.boot.bootdevice} /dev/block/bootdevice
     write /proc/sys/kernel/firmware_config/force_sysfs_fallback 1
