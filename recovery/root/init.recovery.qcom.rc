@@ -35,6 +35,8 @@ on property:sys.usb.state=sideload
 on fs
     # 居中后手势热区要覆盖物理屏幕边缘：用设备树里的 override 覆盖主题文件
     copy /vendor/etc/navbar-gestures.xml /twres/pages/templates/navbar.xml
+    # 修正 TWRP 从 USB Storage 退出后 MTP 不恢复：覆盖挂载页的退出动作
+    copy /vendor/etc/mount-usb-mtp.xml /twres/pages/mount.xml
     wait /dev/block/platform/soc/${ro.boot.bootdevice}
     symlink /dev/block/platform/soc/${ro.boot.bootdevice} /dev/block/bootdevice
     write /proc/sys/kernel/firmware_config/force_sysfs_fallback 1

@@ -69,7 +69,7 @@ fastboot reboot recovery
 | 能进入界面 | 屏幕显示橙狐，不反复重启 |
 | 触控 | 点击位置准确（面板原生横屏，界面旋转 270°，不需要 SWAP/FLIP） |
 | ADB | 电脑上 `adb shell` 能连上，第一次 attach 不需要拔插 |
-| MTP | 挂载菜单启用 MTP 后，电脑出现便携设备，可读写 `/sdcard`（当前默认设置可能为关） |
+| MTP | 挂载菜单启用 MTP 后，电脑出现便携设备，可读写 `/sdcard`（`tw_mtp_enabled` 默认 1，开机会自动启动） |
 | USB Storage | 挂载菜单出现 USB Storage，电脑能读写 |
 | AVB2.0 | 设置/高级页出现“禁用 vbmeta AVB2.0”，默认自动处理关闭 |
 | 分区挂载 | 挂载菜单里能勾选 system、vendor 等逻辑分区 |
@@ -88,7 +88,7 @@ fastboot reboot recovery
 
 **boot 控制**：A/B 槽位直接用原厂 vendor 里的 HIDL 1.2 boot HAL（`android.hardware.boot@1.2-service`），不再编译 LineageOS 的 bootctrl 和 gpt-utils，也不需要内核头文件。服务名是 `vendor.boot-hal-1-2`，由 `init.recovery.qcom.rc` 在 `on fs` 里显式启动；实现库 `android.hardware.boot@1.0-impl-1.2-qti.so` 和依赖库都放在 ramdisk 的 `/vendor/lib64`。
 
-**屏幕方向**：面板原生是 2880x1800 横屏。原厂系统把它旋转 270 度作为自然方向，橙狐也一样，界面是 1800x2880 的竖屏。四角实测驱动坐标系和竖屏画面一致，不需要任何 `RECOVERY_TOUCHSCREEN_*` 参数。触控驱动由 TWRP 从 vendor_dlkm 加载 `xiaomi_touch.ko` 和 `nt36532_touch.ko`；这两个模块同时放进了 ramdisk 的 `/vendor/lib/modules` 和 `/lib/modules`，vendor_dlkm 缺失时仍可触摸。触控固件放在 ramdisk 的 `/lib/firmware`。
+**屏幕方向**：面板原生是 2880x1800 横屏。原厂系统把它旋转 270 度作为自然方向，橙狐也一样，界面是 1800x2880 的竖屏。四角实测驱动坐标系和竖屏画面一致，不需要任何 `RECOVERY_TOUCHSCREEN_*` 参数。触控驱动由 TWRP 在挂载 vendor_dlkm 之后从 ramdisk 的 `/vendor/lib/modules` 加载 `xiaomi_touch.ko` 和 `nt36532_touch.ko`；这两个模块在 `/lib/modules` 也有一份，但 TWRP 的加载流程依赖 vendor_dlkm 挂载成功，所以 b 槽（vendor_dlkm_b 为空）启动 recovery 时没有触摸，adb 仍可用。触控固件放在 ramdisk 的 `/lib/firmware`。
 
 **版本号和安全补丁**：厂商的 `libqtikeymint`/`libqtikeymaster4` 会读 `ro.build.version.release`、`ro.build.version.security_patch` 和 `ro.vendor.build.security_patch` 来判断 metadata key 是否需要升级。必须和当前系统一致：release 16、security_patch 2026-08-01、vendor patch 2026-02-01。boot 头部保持原厂值 12.0.0/2025-09，用 `BOARD_MKBOOTIMG_ARGS` 显式覆盖。不要把 `PLATFORM_VERSION_LAST_STABLE` 改成 12，CTS 校验会中止。
 
@@ -96,7 +96,9 @@ fastboot reboot recovery
 
 **USB OTG**：`twrp.flags` 里的 `/usb_otg` 条目负责真正的 OTG。`recovery.fstab` 里原厂的 `/devices/... voldmanaged=usbotg:auto` 行会让 TWRP 把 `/dev/block/*` 展开成大量假卷，已注释掉。
 
-**MTP 与 USB Storage**：recovery 的通用 init 只创建 `ffs.adb` 和 `ffs.fastboot`，没有 MTP。`init.recovery.qcom.rc` 在 `on boot` 里先创建 configfs 的 `ffs.mtp` 和 `mass_storage.0`，再 mount FunctionFS 到 `/dev/usb-ffs/mtp`，并在 `sys.usb.config=mtp,adb` / `mass_storage,adb` 时绑定 `f1`/`f2`。USB Storage 使用 `mass_storage.0` 的 configfs LUN 路径，不依赖 MTP。MTP 在挂载菜单里启用；`tw_mtp_enabled` 默认可能为 0，手动开一次即可。**不要用 Fox FIFO 的 `mtp enable`（`/system/bin/foxin`）做测试**：dispatcher 会打开 `/system/bin/foxout` 写结果，如果不同时读取，写 FIFO 会阻塞 GUI 动作线程，屏幕看起来卡死；MTP 请走界面。
+**MTP 与 USB Storage**：recovery 的通用 init 只创建 `ffs.adb` 和 `ffs.fastboot`，没有 MTP。`init.recovery.qcom.rc` 在 `on boot` 里先创建 configfs 的 `ffs.mtp` 和 `mass_storage.0`，再 mount FunctionFS 到 `/dev/usb-ffs/mtp`，并在 `sys.usb.config=mtp,adb` / `mass_storage,adb` 时绑定 `f1`/`f2`。USB Storage 使用 `mass_storage.0` 的 configfs LUN 路径，不依赖 MTP。`tw_mtp_enabled` 的默认值是 1（`data.cpp`），开机时由 `twrp.cpp` 自动启动 MTP；设置只保存在 `/sdcard/Fox/.foxs`，不从镜像里写死。
+
+**USB Storage 退出后 MTP 不恢复**是 TWRP 自身的问题：切换 USB 配置时 MTP 子进程会收到 FunctionFS 的 DISABLE（`errno 108`）退出，但父进程的 `mtppid` 没有清掉，`usb_storage_disable()` 再调用 `Enable_MTP()` 时直接返回“MTP already enabled”，于是按钮还亮着但 MTP 已经没了。设备树用主题覆盖修：`recovery/root/vendor/etc/mount-usb-mtp.xml` 在 USB 页的三个退出动作里，于 `unmount usb` 后加 `stopmtp`、等 500 ms、再 `startmtp`，由 `init.recovery.qcom.rc` 的 `on fs` 复制到 `/twres/pages/mount.xml`。代价是退出 USB Storage 一定会把 MTP 打开（即使进去前是关的）。**不要用 Fox FIFO 的 `mtp enable`（`/system/bin/foxin`）做测试**：dispatcher 会打开 `/system/bin/foxout` 写结果，如果不同时读取，写 FIFO 会阻塞 GUI 动作线程，屏幕看起来卡死；MTP 请走界面。
 
 **AVB2.0**：`vendorsetup.sh` 打开 `OF_SUPPORT_VBMETA_AVB2_PATCHING=1`，设置/高级/安装页出现“禁用 vbmeta AVB2.0”。它修改 `vbmeta_a/b` 和 `vbmeta_system_a/b` 的 flags，可手动执行，或在刷 ROM 后按开关执行；默认不会自动改。`BOARD_AVB_ENABLE` 只是用测试密钥给 recovery 签名，不是绕过 AVB。`OF_PATCH_AVB20` 在 A/B 设备上被源码排除，不适用。
 
@@ -114,7 +116,8 @@ fastboot reboot recovery
 - ~~震动 HAL abort~~：已修复，见“设计说明”的震动一段（libu32）。
 - **时区名无效**：`persist.sys.timezone=TAIST-8TAIDT`，ramdisk 没有 `/system/usr/share/zoneinfo`，每条命令会打 `__bionic_open_tzdata` 警告；时钟偏移本身正确，不影响功能。
 - **屏幕空闲会息屏**：TWRP 会把亮度降到 0，触碰会亮；不是故障。
-- **槽位切换 UI 只认 A/B，当前 b 槽是空的**：UI（Reboot 页）只显示当前槽和“切换到另一个槽”，点击后走 vendor boot HAL 的 `SetActiveBootSlot(0/1)`，不会写 super 元数据，也不会提供第三个槽。super 的 `metadata_slot_count` 和 QTI boot HAL 都报 3，但 `get-suffix 2` 直接报错；这个“3”是元数据副本/QTI HAL 的计数，和 recovery UI 无关。实测当前设备 super 里的 `*_b` 逻辑分区（system/vendor/product/system_ext/odm/vendor_dlkm/mi_ext）全部是 0 扇区，`recovery_b` 也不是当前这份 recovery。切到 b 后系统分区消失、落到 fastboot，根因是 b 槽没有系统，不是 UI 误选第三个槽。不要切 b；以后要切必须先用完整 OTA/线刷包填好 b 的 super，并把当前 recovery 刷到 `recovery_b`，再用 fastboot `--set-active=b` 并确认。
+- **槽位切换 UI 只认 A/B，当前 b 槽是空的**：UI（Reboot 页）只显示当前槽和“切换到另一个槽”，点击后走 vendor boot HAL 的 `SetActiveBootSlot(0/1)`，不会写 super 元数据，也不会提供第三个槽。super 的 `metadata_slot_count` 和 QTI boot HAL 都报 3，但 `get-suffix 2` 直接报错；这个“3”是元数据副本/QTI HAL 的计数，和 recovery UI 无关。实测当前设备 super 里的 `*_b` 逻辑分区（system/vendor/product/system_ext/odm/vendor_dlkm/mi_ext）全部是 0 扇区；`recovery_b` 已在 2026-11-04 刷成与 `recovery_a` 相同的这份 recovery。切到 b 后系统分区消失、落到 fastboot，根因是 b 槽没有系统，不是 UI 误选第三个槽。不要切 b；以后要切必须先用完整 OTA/线刷包填好 b 的 super，并保持 `recovery_b` 与 `recovery_a` 相同，再用 fastboot `--set-active=b` 并确认。
+- **b 槽 recovery 没有触摸**：b 的 `vendor_dlkm_b` 是空的，TWRP 挂载失败后不会从 ramdisk 加载 `xiaomi_touch.ko`/`nt36532_touch.ko`，NVT 驱动不 probe，`/dev/input` 里没有触摸设备；adb 和 MTP 仍正常。切回 a 槽后触摸恢复。2026-11-04 实测：recovery_b 与 recovery_a 逐字节相同、boot_a/boot_b 相同，b 槽能正常启动这份 rec 并完成切回 a。
 
 ## 从官方固件取文件
 
