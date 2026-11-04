@@ -102,6 +102,8 @@ fastboot reboot recovery
 
 **主题字体与启动页**：橙狐主题在 ramdisk 的 `/twres`。中文语言包 `zh_CN.xml` 会把 `fixed`、`keylabel-longpress` 等几乎所有字体资源强制替换成 `wqy-microhei.ttf`（比例字体），主题里换字体不会生效。TWRP 的终端按固定格宽逐格绘制（格宽取 `measureEx("N")`），键盘 longpress 小符号按字宽右对齐，遇到比例字体就会出现字母挨太近/错位、小符号位置不齐。设备树自带一份改过的 `zh_CN.xml`（只把第 27 行 `keylabel-longpress` 和第 38 行 `fixed` 指向 `SarasaMonoSC-Regular.ttf`），并带上 Sarasa Mono SC Regular（中文等宽，25.6MB）；`init.recovery.qcom.rc` 在 `on fs` 把两者复制到 `/twres/languages/` 和 `/twres/fonts/`。代价是 ramdisk 增加约 25.6MB，镜像内容约 93MB（分区 100MB）。启动页由 `main.xml` 的 `tw_clear_destination` 决定：主题里的 `menu` 实际是文件管理的选项弹层，不是主菜单；本设备改为 `advanced`，开机进“高级”tab。
 
+**设置持久化**：橙狐把设置保存在 `/sdcard/Fox/.foxs`，并在 `/persist/.foxs` 留一份备份。本机 `/data` 是 f2fs，挂载参数含 `checkpoint=disable:0`，`sync(2)` 只做异步回写、不提交检查点；重启前刚写下的 `.foxs` 会在下一次启动时被文件系统回滚，表现为“设置重启后全部丢失”。源码补丁在 `TWFunc::tw_reboot()` 的 `DataManager::Flush()` 之后对 `/data` 调用 `syncfs()`（f2fs 会执行 `f2fs_sync_fs(wait=1)` 并写 checkpoint），保证设置真正落盘。另外主题的勾选项写值改为 `persist=1`，列表每次刷新时从 `DataManager` 重读勾选状态，避免页面解析早于设置文件加载导致显示成默认值；解密完成前不读取 `/sdcard` 上的设置文件。补丁见 `patches/0001-fox-settings-persistence.patch`。中文语言包把 `mtp_enabled` 误翻成“找不到 Media 存储。”，设备树里的 `zh_CN.xml` 已改成“MTP 已启用”。
+
 **AVB2.0**：`vendorsetup.sh` 打开 `OF_SUPPORT_VBMETA_AVB2_PATCHING=1`，设置/高级/安装页出现“禁用 vbmeta AVB2.0”。它修改 `vbmeta_a/b` 和 `vbmeta_system_a/b` 的 flags，可手动执行，或在刷 ROM 后按开关执行；默认不会自动改。`BOARD_AVB_ENABLE` 只是用测试密钥给 recovery 签名，不是绕过 AVB。`OF_PATCH_AVB20` 在 A/B 设备上被源码排除，不适用。
 
 **解密**：userdata 使用 FBE v2（`inlinecrypt_optimized` 加 `wrappedkey_v0` 硬件包装密钥），并开启 metadata 加密。解密依赖 vendor 的安全服务：`qseecomd` 注册完监听器后，再启动 Keymaster 4.1、Gatekeeper 和 KeyMint。服务定义沿用原厂 vendor 的 rc 文件，启动顺序写在 `init.recovery.qcom.rc`。

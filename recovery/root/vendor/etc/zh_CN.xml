@@ -404,7 +404,7 @@
         <string name="no_kernel_selinux">内核不支持读取 SELinux Contexts。</string>
         <string name="full_selinux">存在完整的 SELinux 支持。</string>
         <string name="no_selinux">没有 SELinux 支持 (无 libselinux) 。</string>
-        <string name="mtp_enabled">找不到 Media 存储。</string>
+        <string name="mtp_enabled">MTP 已启用</string>
         <string name="mtp_disabled">已禁用 MTP</string>
         <string name="mtp_crash">MTP 崩溃，不在启动时启用 MTP。</string>
         <string name="decrypt_success">成功使用默认密码解密。</string>
