@@ -4,7 +4,7 @@
 
 这棵树从零写成：设置取自小米官方 OS3.0.6.0.VMHCNXM 完整包、TWRP/橙狐/AOSP 文档，boot 控制相关的专有文件取自 OS3.0.306.3.WMHCNXM 完整包，来源写在各文件的注释里。专有文件清单见 `proprietary-files.txt`。
 
-**状态：部分验证。**已确认：OrangeFox UI、触摸、USB（免拔插）、电池、CPU 温度、data 解密（metadata + userdata）、震动、system/vendor 等逻辑分区挂载、boot HAL、keymaster、gatekeeper、keymint、qseecomd、logd。原厂 `voldmanaged` 行造成的 132 个假 OTG 存储卷也已修掉，不会再误把 UFS 的 sde/sdf 分区（包括 `vm-bootsys_b`）挂成 `/storage/usbotg-N`。
+**状态：部分验证。**已确认：OrangeFox UI、触摸、MTP、USB Storage、AVB2.0 菜单、USB（免拔插）、电池、CPU 温度、data 解密（metadata + userdata）、震动、system/vendor 等逻辑分区挂载、boot HAL、keymaster、gatekeeper、keymint、qseecomd、logd。原厂 `voldmanaged` 行造成的 132 个假 OTG 存储卷也已修掉，不会再误把 UFS 的 sde/sdf 分区（包括 `vm-bootsys_b`）挂成 `/storage/usbotg-N`。
 
 **data 解密已修复**：根因是恢复环境里 UFS RPMB 设备节点 `/dev/0:0:0:49476` 默认是 `0600 root:root`，而 qseecomd 实际以 system 运行，打不开 RPMB；KeyMint 对带抗回滚属性的 key 返回 `-8`。`init.recovery.qcom.rc` 在启动 qseecomd 前提前 `chown system system` 并 `chmod 0660`，metadata 和 userdata 解密均通过。
 
@@ -69,6 +69,9 @@ fastboot reboot recovery
 | 能进入界面 | 屏幕显示橙狐，不反复重启 |
 | 触控 | 点击位置准确（面板原生横屏，界面旋转 270°，不需要 SWAP/FLIP） |
 | ADB | 电脑上 `adb shell` 能连上，第一次 attach 不需要拔插 |
+| MTP | 挂载菜单启用 MTP 后，电脑出现便携设备，可读写 `/sdcard`（当前默认设置可能为关） |
+| USB Storage | 挂载菜单出现 USB Storage，电脑能读写 |
+| AVB2.0 | 设置/高级页出现“禁用 vbmeta AVB2.0”，默认自动处理关闭 |
 | 分区挂载 | 挂载菜单里能勾选 system、vendor 等逻辑分区 |
 | 槽位 | 只做只读核对：`bootctl get-current-slot` 与 `fastboot getvar current-slot` 一致（当前为 0/a）。b 槽是空的，不要切；原因见“已知问题” |
 | fastbootd | 在 recovery 里执行 `adb reboot fastboot`，电脑上 `fastboot getvar is-userspace` 返回 yes |
@@ -92,6 +95,10 @@ fastboot reboot recovery
 **ADSP 和电池**：ADSP 固件（`adsp.*`）放在 ramdisk 的 `/lib/firmware`，因为内核的 `firmware_class.path` 指向那里；震动效果文件（187 个 `*_RTP.bin` 等）放在 `/vendor/firmware`。不能把整个 modem 镜像 bind 到 `/vendor/firmware`，否则会盖住 vendor 分区的效果文件。ADSP 的 remoteproc 状态是 running，电池和充电正常。
 
 **USB OTG**：`twrp.flags` 里的 `/usb_otg` 条目负责真正的 OTG。`recovery.fstab` 里原厂的 `/devices/... voldmanaged=usbotg:auto` 行会让 TWRP 把 `/dev/block/*` 展开成大量假卷，已注释掉。
+
+**MTP 与 USB Storage**：recovery 的通用 init 只创建 `ffs.adb` 和 `ffs.fastboot`，没有 MTP。`init.recovery.qcom.rc` 在 `on boot` 里先创建 configfs 的 `ffs.mtp` 和 `mass_storage.0`，再 mount FunctionFS 到 `/dev/usb-ffs/mtp`，并在 `sys.usb.config=mtp,adb` / `mass_storage,adb` 时绑定 `f1`/`f2`。USB Storage 使用 `mass_storage.0` 的 configfs LUN 路径，不依赖 MTP。MTP 在挂载菜单里启用；`tw_mtp_enabled` 默认可能为 0，手动开一次即可。**不要用 Fox FIFO 的 `mtp enable`（`/system/bin/foxin`）做测试**：dispatcher 会打开 `/system/bin/foxout` 写结果，如果不同时读取，写 FIFO 会阻塞 GUI 动作线程，屏幕看起来卡死；MTP 请走界面。
+
+**AVB2.0**：`vendorsetup.sh` 打开 `OF_SUPPORT_VBMETA_AVB2_PATCHING=1`，设置/高级/安装页出现“禁用 vbmeta AVB2.0”。它修改 `vbmeta_a/b` 和 `vbmeta_system_a/b` 的 flags，可手动执行，或在刷 ROM 后按开关执行；默认不会自动改。`BOARD_AVB_ENABLE` 只是用测试密钥给 recovery 签名，不是绕过 AVB。`OF_PATCH_AVB20` 在 A/B 设备上被源码排除，不适用。
 
 **解密**：userdata 使用 FBE v2（`inlinecrypt_optimized` 加 `wrappedkey_v0` 硬件包装密钥），并开启 metadata 加密。解密依赖 vendor 的安全服务：`qseecomd` 注册完监听器后，再启动 Keymaster 4.1、Gatekeeper 和 KeyMint。服务定义沿用原厂 vendor 的 rc 文件，启动顺序写在 `init.recovery.qcom.rc`。
 
