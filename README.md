@@ -1,63 +1,70 @@
 # 小米平板 6 Max 14（yudi）OrangeFox Recovery 设备树
 
-这是为小米平板 6 Max 14（代号 yudi）构建 OrangeFox R12.0 recovery 的设备树，基于 OrangeFox 的 fox_16.0 分支（Android 16）。
+小米平板 6 Max 14（代号 yudi）的 OrangeFox Recovery 设备树，基于 OrangeFox 的 fox_16.0 分支（Android 16）。
 
-## 功能
+这棵树从零写成。分区布局和初始配置取自小米官方完整包，厂商服务和库取自 ROM，每个文件的来源和校验值见 [proprietary-files.txt](proprietary-files.txt)。
 
-设备可以启动 OrangeFox。触摸、解密、MTP、ADB、卡刷、备份恢复、ADB sideload、震动和中文主题字体可用。通过 boot HAL 读取和切换槽位正常，fastbootd 和原厂的 Keymaster、KeyMint、Gatekeeper 服务也工作正常。当前设备 b 槽没有系统，切槽前先看[已知问题](docs/known-issues.md#另一槽没有系统时切槽会落到-fastboot)。Windows 使用 fastbootd 前需要安装 Google USB 驱动，见 [功能说明](docs/features.md#fastbootd)。
+## 功能状态
 
-每个功能的行为、默认值和限制见 [docs/features.md](docs/features.md)。已知问题和尚未验证的功能见 [docs/known-issues.md](docs/known-issues.md)。
+| 功能 | 状态 | 说明 |
+| --- | --- | --- |
+| 启动、触摸、震动 | 已验证 | 两个槽位刷入同一镜像都能启动 |
+| 电池、充电状态、CPU 温度 | 已验证 | |
+| ADB、MTP | 已验证 | MTP 在 Windows 上双向复制过文件 |
+| 中文主题和字体 | 已验证 | |
+| 设置重启后保留 | 已验证 | 需要打 [补丁](patches/README.md) |
+| 异常重启后写入不丢失 | 已验证 | 用 SysRq 强制重启测试 |
+| 解密 data | 部分验证 | 没有锁屏密码时已验证；设置了锁屏密码、多用户的情况未验证 |
+| 刷入 zip | 部分验证 | 只用测试 zip 验证过脚本会执行；刷入完整 ROM 未验证 |
+| 备份和恢复 | 部分验证 | 只验证过 boot 分区；data、super 未验证 |
+| ADB sideload | 部分验证 | 只用测试 zip 验证过 |
+| fastbootd | 部分验证 | `getvar` 和 `reboot` 正常；通过它刷写分区未验证 |
+| 读取和切换槽位 | 部分验证 | 切换生效；启动到另一个槽的系统未验证 |
+| USB Storage | 部分验证 | 设备端能启用；电脑端读写未验证 |
+| USB OTG | 未验证 | |
+| 格式化 data、分区修复和调整 | 未验证 | 属于破坏性操作 |
+| 禁用 vbmeta AVB2.0 | 未验证 | 菜单存在，未实际执行 |
+
+每个功能的工作方式见 [功能说明](docs/features.md)，测试方法和通过标准见 [验证清单](docs/verification.md)。
 
 ## 兼容性
 
-- 机型：小米平板 6 Max 14（yudi）
-- 系统：OS3.0.306.x（Android 16）
-- 槽位：A/B，`recovery_a` 和 `recovery_b` 都可以刷入
-- 启动内核：boot 分区的内核，目前验证到 5.10.272
-
-Keymaster 和 KeyMint 的版本、安全补丁必须与当前系统一致。更换 ROM 后可能需要调整，见 [功能说明](docs/features.md#解密)。
+- **机型**：小米平板 6 Max 14（yudi）。
+- **系统**：在 OS3.0.306.3（Android 16）上验证。解密需要 recovery 里的版本号和安全补丁级别与系统完全一致，换用其他版本的 ROM 前，先按 [功能说明](docs/features.md#解密) 调整。
+- **内核**：recovery 不带内核，使用 boot 分区的内核启动。目前在 5.10.272 的自编 GKI 内核上验证过；其他内核只要保持与原厂相同的模块接口（KMI），理论上都能启动。
 
 ## 刷入与回退
 
-yudi 的 recovery 不带内核，不能用 `fastboot boot` 临时启动，必须刷入 recovery 分区。
+recovery 镜像不带内核，不能用 `fastboot boot` 临时启动，只能刷入 recovery 分区。
 
 ```sh
 adb reboot bootloader
-fastboot getvar current-slot
-fastboot flash recovery_a recovery.img
+fastboot getvar current-slot                 # 先只刷当前槽位
+fastboot flash recovery_a recovery.img       # 当前槽位是 b 时改为 recovery_b
 fastboot reboot recovery
 ```
 
-当前槽位是 b 时，把 `recovery_a` 换成 `recovery_b`。建议先只刷当前槽位，确认能启动后再刷另一个槽位。
+确认能正常启动后，再刷另一个槽位。
 
-回退时刷回原厂 recovery。原厂 recovery 在官方完整包的 payload 里，可以用 payload 解包工具取出 `recovery.img`。
+回退时刷回原厂 recovery。它在官方完整包的 payload 里，用 payload 解包工具可以取出 `recovery.img`。
 
 ## 文档
 
-- [功能说明](docs/features.md)
-- [已知问题](docs/known-issues.md)
-- [构建](docs/building.md)
-- [验证清单](docs/verification.md)
-- [更新日志](CHANGELOG.md)
-- [补丁说明](patches/README.md)
-- [参考资料](docs/references.md)
-- [开发记录](docs/notes/2026-11-05-recovery-build.md)
-
-## 参考
-
-本设备树建立在 OrangeFox、TWRP 和 AOSP Android 16 的源码之上：
-
-- [OrangeFox fox_16.0 manifest](https://gitlab.com/OrangeFox/Manifest/-/tree/fox_16.0)
-- [OrangeFox recovery](https://gitlab.com/OrangeFox/bootable/recovery)
-- [TWRP recovery](https://github.com/TeamWin/android_bootable_recovery)
-- [AOSP Android 16 build](https://android.googlesource.com/platform/build/+/refs/tags/android-16.0.0_r1)
-- [其他设备树（liuqin、mondrian 等）](docs/references.md#其他设备树)
-- [完整参考资料](docs/references.md)
+| 文档 | 内容 |
+| --- | --- |
+| [功能说明](docs/features.md) | 每个功能的工作方式和限制 |
+| [已知问题](docs/known-issues.md) | 已知的问题和处理办法 |
+| [构建](docs/building.md) | 拉取源码、打补丁、编译 |
+| [验证清单](docs/verification.md) | 刷入后的测试方法和通过标准 |
+| [更新日志](CHANGELOG.md) | 各版本的变化 |
+| [补丁说明](patches/README.md) | 对 OrangeFox 源码的修改 |
+| [参考资料](docs/references.md) | 源码、固件和对照用的设备树 |
+| [开发记录](docs/notes/2026-11-05-recovery-build.md) | 调研和实验的过程 |
 
 ## 许可证
 
-设备树配置、ramdisk 覆盖、主题覆盖和补丁采用 GNU GPL v3.0，见 [LICENSE](LICENSE)。OrangeFox 和 TWRP 本体同样是 GPL-3.0，本仓库不声称拥有它们的版权。
+设备树配置、ramdisk 覆盖文件、主题覆盖文件和补丁采用 GNU GPL v3.0，见 [LICENSE](LICENSE)。OrangeFox 和 TWRP 本身同样是 GPL-3.0，本仓库不主张它们的版权。
 
-`recovery/root` 下的小米二进制、库和固件来自小米官方 ROM，版权归小米，不在 GPL 许可范围内。它们只用于在对应设备上运行 recovery。没有该设备或 ROM 使用权的人应删除这些文件，并按 [proprietary-files.txt](proprietary-files.txt) 从自己的官方包提取。
+`recovery/root` 下的小米二进制、库和固件版权归小米，不在 GPL 许可范围内。它们大部分取自小米官方完整包；boot HAL、VNDK v32 库和 `libdrm.so` 取自一个第三方重打包的 306.3 包，没能与官方校验值核对，详见 [参考资料](docs/references.md#设备与固件)。这些文件只用于在对应设备上运行 recovery。
 
 Sarasa Mono SC 字体采用 SIL Open Font License 1.1，见 [licenses/SarasaGothic-OFL.txt](licenses/SarasaGothic-OFL.txt)。

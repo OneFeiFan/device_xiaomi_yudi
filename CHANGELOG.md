@@ -2,14 +2,16 @@
 
 ## R12.0（2026-11-05，本地构建）
 
-- 新增：小米平板 6 Max 14（yudi）的 OrangeFox R12.0 recovery 设备树。
-- 新增：触摸、FBE 解密、Keymaster 4.1、KeyMint、Gatekeeper 和 boot HAL。
-- 新增：AIDL 震动 HAL、MTP、ADB、ADB sideload、卡刷、备份恢复和 A/B 槽位。
-- 新增：中文主题和字体，终端使用 Sarasa Mono SC 的 GBK 子集。
-- 修正：主题勾选设置在重启后丢失。
-- 修正：下拉面板里 MTP 提示的误译。
-- 修正：VNDK v31 与 v32 的重复库。
-- 修正：fastbootd 因缺少 health 服务不初始化 USB。设备端已能枚举为 `18d1:4ee0`，Windows 需要安装 fastboot 驱动。
-- 精简：移除 45MB 预编译内核，`prebuilt/kernel` 改为 0 字节占位文件。关闭 UFFD GC 和 OTA 内核 VINTF 要求以支持无内核构建。
+第一个版本。
 
-验证：实机验证了启动、触摸、解密、MTP 双向传输、卡刷、备份恢复、ADB sideload、电池、ADSP、震动和 fastbootd。fastbootd 完成了 `getvar` 和 `reboot recovery` 验证；Windows 使用前需要安装 Google USB 驱动（`18D1:4EE0`）。
+- 设备树：从零编写，分区布局和初始配置取自官方 OS3.0.6.0 完整包。
+- 解密：FBE v2 和 metadata 加密，使用原厂的 qseecomd、Keymaster 4.1、KeyMint 和 Gatekeeper。
+- 槽位：使用原厂的 HIDL 1.2 boot HAL，不再编译高通 bootctrl。
+- fastbootd：加入原厂 health 服务后，USB 能正常初始化。
+- 震动：使用 ROM 自带的小米震动 HAL，配合改名的 Android 12 libutils。
+- 界面：中文主题，终端和键盘使用 Sarasa Mono SC 的 GBK 子集。
+- 修正：主题勾选的设置重启后丢失。
+- 修正：下拉面板里 MTP 提示的误译。
+- 精简：去掉 45 MB 的预编译内核，`prebuilt/kernel` 改为 0 字节占位文件；ADSP 固件改为从 modem 分区链接，字体改为子集，recovery 根目录从约 93 MB 降到约 49 MB。
+
+验证：启动、触摸、震动、电池、ADB、MTP、中文显示、设置保存和异常重启后的写入都已在实机上验证。解密只验证了没有锁屏密码的情况；刷入 zip 和 sideload 只用测试 zip 验证；备份恢复只验证了 boot 分区；fastbootd 只验证了 `getvar` 和 `reboot`。完整状态见 [README](README.md#功能状态)。

@@ -1,90 +1,119 @@
 # 验证清单
 
-刷入后按下面的顺序检查。每一项都给出通过标准，不记录某一次的具体结果。
+刷入新构建的镜像后，按下面的顺序检查。每一项都写明通过标准；某一次的测试结果不记在这里，而是更新到 [README 的功能状态表](../README.md#功能状态)。
 
-## 启动和服务
+前三部分不改动任何数据，每次构建后都应该跑一遍。第四部分会改写分区，需要事先准备。
+
+## 一、基本功能
+
+### 确认运行的是新镜像
 
 ```sh
-adb wait-for-device
-adb shell "getprop init.svc.recovery"
-adb shell "getprop init.svc.vendor.boot-hal-1-2; getprop init.svc.vendor.qseecomd; getprop init.svc.vendor.keymaster-4-1; getprop init.svc.vendor.keymint-qti; getprop init.svc.gatekeeper-1-0; getprop init.svc.vibratorfeature-hal-service; getprop init.svc.vendor.mi_misight"
+adb shell "getprop ro.boot.slot_suffix; getprop ro.build.date"
 ```
 
-通过标准：`recovery` 是 running，后面每个服务都是 running。
+通过标准：构建时间是这次构建的时间。如果不是，说明启动的槽位里还是旧镜像，把两个槽位都刷一遍。
 
-## ADSP、电池和解密
+### 服务
+
+```sh
+adb shell "for s in recovery vendor.boot-hal-1-2 vendor.qseecomd vendor.keymaster-4-1 vendor.keymint-qti gatekeeper-1-0 health-hal-2-1 vibratorfeature-hal-service vendor.mi_misight; do echo \$s=\$(getprop init.svc.\$s); done"
+```
+
+通过标准：每一项都是 `running`。
+
+### ADSP、电池和固件
 
 ```sh
 adb shell "cat /sys/class/remoteproc/remoteproc0/state"
-adb shell "cat /sys/class/power_supply/battery/capacity; cat /sys/class/power_supply/battery/status"
-adb shell "ls /sdcard/Fox/.foxs"
+adb shell "cat /sys/class/power_supply/battery/capacity /sys/class/power_supply/battery/status"
 adb shell "dmesg | grep -c 'Direct firmware load failed'"
 ```
 
-通过标准：remoteproc 是 running，电池容量和状态能读到，`.foxs` 存在，固件加载失败次数是 0。
+通过标准：remoteproc 是 `running`；能读到电量和充电状态；固件加载失败次数为 0。
 
-## 震动
+### 触摸、温度和震动
 
-在设置页切换一个开关，或者在“高级”页点一个按钮。
+在界面上依次点击四个角和中间，在设置页切换几个开关。
 
-通过标准：马达有实际震动。
+通过标准：落点与手指位置一致；状态栏有 CPU 温度；切换开关时马达有震动。
 
-## 触摸和温度
+### 主题和中文字体
 
-在界面上点击四个角和中间，确认落点与手指一致。状态栏的 CPU 温度应有读数。
+打开终端，执行 `ls /sdcard` 等会输出中文文件名的命令。
 
-## 主题和中文字体
+通过标准：终端字体等宽；常用汉字和 GBK 范围内的生僻字不显示成方块。截图工具只能截到起始页，这一项要在设备上直接看。
 
-打开终端，输入几个中文文件名或执行会输出中文的命令。字体应等宽，常见汉字和 GBK 范围内的生僻字不应显示成方块。
+## 二、解密和数据
 
-Fox RPC 的截图只能截到起始页，终端和其他页面的显示要用肉眼在设备上确认。
+### 解密
 
-## MTP
+```sh
+adb shell "grep -E 'decrypt|Decrypt' /tmp/recovery.log | tail -5"
+adb shell "ls /sdcard"
+```
 
-在 Windows 的“此电脑”里打开设备，向 Internal Storage 复制一个文件，再从设备复制回电脑。
+通过标准：日志里有 `Data successfully decrypted`；`/sdcard` 下的文件名是正常的名字，不是乱码。
 
-通过标准：两个方向都能复制，文件内容一致。中文文件名和内容不能乱码。
+要分别测两种情况：
+- 系统没有设置锁屏密码；
+- 系统设置了锁屏 PIN 或密码。进入 recovery 后会要求输入密码，输入后再按上面的方法检查。
 
-## USB Storage
+### 设置保存
 
-在“挂载”页启用 USB Storage，电脑上应出现一个可读写的磁盘。退出后 MTP 应重新出现。
+在设置页勾选几项，重启 recovery，再进设置页查看。也可以用命令：
 
-通过标准：电脑能读写这个磁盘，退出后 Internal Storage 仍可访问。
+```sh
+adb shell "fox internal set tw_hidden_files 1"
+adb reboot recovery
+adb shell "fox internal get tw_hidden_files"
+```
 
-## 卡刷 zip
+通过标准：重启后勾选还在，读回的值是 1。
 
-用一个只写测试文件的 zip 验证。zip 的 `update-binary` 写入 `/sdcard/Fox/zip-test.txt`。
+### 异常重启后的写入
+
+```sh
+adb shell "echo durability-test > /sdcard/durability-test; sync"
+adb shell "echo b > /proc/sysrq-trigger"
+# 重新进入 recovery 后
+adb shell "cat /sdcard/durability-test; grep ' /data ' /proc/mounts"
+```
+
+通过标准：文件还在；`/data` 的挂载参数里没有 `checkpoint=disable`。
+
+## 三、传输
+
+### MTP
+
+在 Windows 的“此电脑”里打开设备，向 Internal Storage 复制一个中文文件名的文件，再从设备复制回电脑。
+
+通过标准：两个方向都能复制，文件名和内容都正确。
+
+### USB Storage
+
+在“挂载”页启用 USB Storage，在电脑上读写这个磁盘，然后退出。
+
+通过标准：电脑能读写；退出后 MTP 的 Internal Storage 重新出现。
+
+### 刷入 zip 和 ADB sideload
+
+准备一个测试 zip，它的 `update-binary` 只向 `/sdcard/Fox/zip-test.txt` 写一行文字。
 
 ```sh
 adb push fox-zip-test.zip /sdcard/
 adb shell "rm -f /sdcard/Fox/zip-test.txt"
 adb shell "fox flash /sdcard/fox-zip-test.zip --no-verify"
 adb shell "cat /sdcard/Fox/zip-test.txt"
-```
 
-通过标准：命令返回成功，测试文件存在且内容正确。
-
-## 备份和恢复
-
-```sh
-adb shell "sha256sum /dev/block/bootdevice/by-name/boot"
-adb shell "fox backup boot --name boot-test --storage internal"
-adb shell "fox restore boot --name boot-test"
-adb shell "sha256sum /dev/block/bootdevice/by-name/boot"
-```
-
-通过标准：备份目录里有 `boot.emmc.win` 和 digest，恢复后 boot 分区的 sha256 与恢复前一致。
-
-## ADB sideload
-
-```sh
-adb shell "fox sideload start"
+adb shell "rm -f /sdcard/Fox/zip-test.txt; fox sideload start"
 adb sideload fox-zip-test.zip
+adb shell "cat /sdcard/Fox/zip-test.txt"
 ```
 
-通过标准：传输到 100%，zip 里的脚本执行，退出后 `adb devices` 能重新看到 recovery。
+通过标准：两种方式下测试文件都被写出；sideload 退出后 `adb devices` 能重新看到设备。
 
-## fastbootd
+### fastbootd
 
 ```sh
 adb reboot fastboot
@@ -94,33 +123,42 @@ fastboot getvar product
 fastboot reboot recovery
 ```
 
-通过标准：`fastboot devices` 能看到设备，`current-slot` 返回当前槽位，`product` 返回 `yudi`，`fastboot reboot recovery` 能回到 recovery。设备在 fastbootd 模式下枚举为 `18d1:4ee0`。
+通过标准：能看到设备；`current-slot` 是当前槽位；`product` 是 `yudi`；最后能回到 recovery。
 
-Windows 需要先为这个 USB 设备安装 Google USB 驱动（`android_winusb.inf`）。设备管理器显示代码 28 表示缺驱动。Linux 不需要额外驱动。
+## 四、需要事先准备的测试
 
-## 设置持久化
+这些测试会改写分区。开始前先备份重要数据，并准备好原厂 recovery 和线刷包。
 
-在设置页勾选几项，重启 recovery，再进入设置页确认勾选还在。
-
-也可以用 `fox internal get tw_hidden_files` 和 `fox internal set tw_hidden_files 1` 做端到端检查。重启后读回的值应与写入一致。
-
-通过标准：重启前后的值一致，`/sdcard/Fox/.foxs` 的修改时间会更新。
-
-## 异常重启后的写入
+### boot 分区的备份和恢复
 
 ```sh
-adb shell "echo durability-test > /sdcard/durability-test; sync"
-adb shell "echo b > /proc/sysrq-trigger"
-# 重启后重新进入 recovery
-adb shell "cat /sdcard/durability-test"
+adb shell 'sha256sum /dev/block/bootdevice/by-name/boot$(getprop ro.boot.slot_suffix)'
+adb shell "fox backup boot --name boot-test --storage internal"
+adb shell "fox restore boot --name boot-test"
+adb shell 'sha256sum /dev/block/bootdevice/by-name/boot$(getprop ro.boot.slot_suffix)'
 ```
 
-通过标准：文件仍然存在。`/proc/mounts` 的 `/data` 行不应出现 `checkpoint=disable`。
+通过标准：两次 sha256 一致。
 
-## 槽位
+### data 的备份和恢复
+
+先备份 data，再在内部存储新建一个测试文件，然后恢复刚才的备份。
+
+通过标准：恢复后测试文件消失，其余文件完好；重启进入系统后，应用和数据正常。
+
+### 通过 fastbootd 刷写分区
+
+用当前槽位正在使用的同一个 recovery 镜像，通过 fastbootd 重新刷一次：
 
 ```sh
-adb shell "fox status"
+fastboot flash recovery_a recovery.img       # 换成当前槽位
+fastboot reboot recovery
 ```
 
-确认 Boot slot 是当前实际槽位。不要在没有系统的槽位之间切换，见[已知问题](known-issues.md#另一槽没有系统时切槽会落到-fastboot)。
+通过标准：刷写成功，并能重新进入 recovery。
+
+### 刷入完整 ROM 和切换槽位
+
+在 recovery 里刷入官方完整包。A/B 设备会把系统装到另一个槽位，并把那个槽位的 recovery 换成原厂 recovery，所以刷完后要在另一个槽位的 recovery 分区重新刷入 OrangeFox。
+
+通过标准：刷入过程没有报错；切换到另一个槽位后能进入系统，也能进入 OrangeFox。
