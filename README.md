@@ -4,7 +4,7 @@
 
 ## 功能
 
-设备可以启动 OrangeFox。触摸、解密、MTP、ADB、卡刷、备份恢复、ADB sideload、震动和中文主题字体可用。A/B 槽位控制、fastbootd，以及原厂的 Keymaster、KeyMint、Gatekeeper 服务工作正常。Windows 使用 fastbootd 前需要安装 Google USB 驱动，见 [功能说明](docs/features.md#fastbootd)。
+设备可以启动 OrangeFox。触摸、解密、MTP、ADB、卡刷、备份恢复、ADB sideload、震动和中文主题字体可用。通过 boot HAL 读取和切换槽位正常，fastbootd 和原厂的 Keymaster、KeyMint、Gatekeeper 服务也工作正常。当前设备 b 槽没有系统，切槽前先看[已知问题](docs/known-issues.md#另一槽没有系统时切槽会落到-fastboot)。Windows 使用 fastbootd 前需要安装 Google USB 驱动，见 [功能说明](docs/features.md#fastbootd)。
 
 每个功能的行为、默认值和限制见 [docs/features.md](docs/features.md)。已知问题和尚未验证的功能见 [docs/known-issues.md](docs/known-issues.md)。
 

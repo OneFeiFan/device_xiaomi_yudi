@@ -8,7 +8,6 @@
 - OrangeFox manifest（fox_16.0）：<https://gitlab.com/OrangeFox/Manifest/-/tree/fox_16.0>
 - OrangeFox recovery：<https://gitlab.com/OrangeFox/bootable/recovery>
 - TWRP recovery：<https://github.com/TeamWin/android_bootable_recovery>
-- TWRP 最小 manifest：<https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp>
 - AOSP build（android-16.0.0_r1）：<https://android.googlesource.com/platform/build/+/refs/tags/android-16.0.0_r1>
 - AOSP system/core（init、fastboot 等）：<https://android.googlesource.com/platform/system/core/+/refs/tags/android-16.0.0_r1>
 - AOSP hwservicemanager：<https://android.googlesource.com/platform/system/hwservicemanager/+/refs/tags/android-16.0.0_r1>
