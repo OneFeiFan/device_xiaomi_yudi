@@ -34,6 +34,7 @@
 | 逻辑分区 | system/vendor/product/system_ext 等可挂载 |
 | 震动 HAL | `vibratorfeature-hal-service` 常驻，`IVibrator/vibratorfeature` 注册成功 |
 | 设置持久化 | RPC 端到端验证：改值 → 重启 → 读回一致；界面点击走同一套 `SetValue`/`Flush` |
+| 写入跨重启 | 在 `/sdcard/Fox` 写 marker 文件 + `sync` → 重启 → 文件仍在（不需要 syncfs 补丁） |
 | AVB2.0 菜单 | 设置/高级/安装页出现“禁用 vbmeta AVB2.0” |
 | 假 OTG 卷修复 | 不再把 UFS 的 sde/sdf 挂成 132 个 `/storage/usbotg-N` |
 | 中文提示修复 | 下拉面板不再显示误译的“找不到 Media 储存”，显示“MTP 已启用” |
@@ -80,7 +81,7 @@ repo sync -c --no-tags -j8
 # 2. 放入设备树
 git clone https://github.com/OneFeiFan/device_xiaomi_yudi device/xiaomi/yudi
 
-# 3. 打 settings 补丁（必须，否则设置重启后会丢）
+# 3. 打 settings 补丁（主题勾选项持久化）
 cd bootable/recovery
 git apply ../../device/xiaomi/yudi/patches/0001-fox-settings-persistence.patch
 cd ../..
@@ -94,7 +95,7 @@ GOGC=50 GOMAXPROCS=8 mka -j12 adbd recoveryimage
 
 产物是 `out/target/product/yudi/OrangeFox-*.img` 和 `recovery.img`。
 
-> 补丁是对 `bootable/recovery` 的两处修改：`tw_reboot()` 里 `syncfs()` 保证 f2fs 落盘，以及主题勾选写值 `persist=1`。每次 `repo sync` 覆盖 `bootable/recovery` 后都要重新打一次。
+> 补丁只改 `bootable/recovery/gui/listbox.cpp`：主题勾选写值加 `persist=1`。部分设置变量（如 `fox_boot_*`）不在 `vars.xml` 或默认持久化表里，不加这一条会只写内存。每次 `repo sync` 覆盖 `bootable/recovery` 后都要重新打一次。
 
 **注意**：`recovery/root` 的 staging 有时会残留旧的 `libminuitwrp.so`，改了触摸代码却看不到效果时，先删掉 `out/target/product/yudi/recovery/root` 和 `ramdisk-recovery.img` 再编。
 
@@ -162,7 +163,7 @@ licenses/                第三方许可证
 
 **主题字体与启动页**：橙狐主题在 ramdisk 的 `/twres`。中文语言包 `zh_CN.xml` 会把 `fixed`、`keylabel-longpress` 等几乎所有字体资源强制替换成 `wqy-microhei.ttf`（比例字体），主题里换字体不会生效。TWRP 的终端按固定格宽逐格绘制（格宽取 `measureEx("N")`），键盘 longpress 小符号按字宽右对齐，遇到比例字体就会出现字母挨太近/错位、小符号位置不齐。设备树自带一份改过的 `zh_CN.xml`（只把 `keylabel-longpress` 和 `fixed` 指向 `SarasaMonoSC-Regular.ttf`），并带上 Sarasa Mono SC Regular（中文等宽，25.6MB）；`init.recovery.qcom.rc` 在 `on fs` 把两者复制到 `/twres/languages/` 和 `/twres/fonts/`。代价是 ramdisk 增加约 25.6MB，镜像内容约 93MB（分区 100MB）。启动页由 `main.xml` 的 `tw_clear_destination` 决定：主题里的 `menu` 实际是文件管理的选项弹层，不是主菜单；本设备改为 `advanced`，开机进“高级”tab。中文语言包还把 `mtp_enabled` 误翻成“找不到 Media 存储。”，设备树里的 `zh_CN.xml` 已改成“MTP 已启用”。
 
-**设置持久化**：橙狐把设置保存在 `/sdcard/Fox/.foxs`，并在 `/persist/.foxs` 留一份备份。本机 `/data` 是 f2fs，挂载参数含 `checkpoint=disable:0`，`sync(2)` 只做异步回写、不提交检查点；重启前刚写下的 `.foxs` 会在下一次启动时被文件系统回滚，表现为“设置重启后全部丢失”。源码补丁两处：`TWFunc::tw_reboot()` 在 `DataManager::Flush()` 之后对 `/data` 调用 `syncfs()`（f2fs 会执行 `f2fs_sync_fs(wait=1)` 并写 checkpoint），保证设置真正落盘；主题勾选写值改为 `persist=1`，因为部分设置变量（如 `fox_boot_*`）既不在 `vars.xml` 也不在默认持久化表里，原写法只写内存。补丁见 `patches/0001-fox-settings-persistence.patch`。设置页的勾选状态在进入页面时由 `SetPageFocus()` 从 `DataManager` 重新读取，不需要额外改列表刷新。
+**设置持久化**：橙狐把设置保存在 `/sdcard/Fox/.foxs`，并在 `/persist/.foxs` 留一份备份。本机 `/data` 是 f2fs；fstab 里的 `checkpoint=fs` 是 fs_mgr 的 OTA checkpoint 标志，init 可能在开机早期用 `checkpoint=disable` 挂载 `/data`，这种挂载下写入不提交检查点，重启时会被文件系统回滚，表现为“设置重启后全部丢失”。设备树从主 `recovery.fstab` 的 `/data` 行去掉了 `checkpoint=fs`（同时去掉了 `fsync_mode=nobarrier`），让 recovery 用正常的 checkpoint 策略挂载；实测“改设置 / 写文件后重启”都能保留，不再需要额外改 `tw_reboot()`。注意 TWRP 还会解析 vendor 分区里的 fstab（开机复制为 `additional.fstab`），它仍带 `nobarrier`，但当前配置下耐久性测试通过。源码侧只剩一处：主题勾选写值改为 `persist=1`，因为部分设置变量（如 `fox_boot_*`）既不在 `vars.xml` 也不在默认持久化表里，原写法只写内存。补丁见 `patches/0001-fox-settings-persistence.patch`。设置页的勾选状态在进入页面时由 `SetPageFocus()` 从 `DataManager` 重新读取，不需要额外改列表刷新。
 
 **AVB2.0**：`vendorsetup.sh` 打开 `OF_SUPPORT_VBMETA_AVB2_PATCHING=1`，设置/高级/安装页出现“禁用 vbmeta AVB2.0”。它修改 `vbmeta_a/b` 和 `vbmeta_system_a/b` 的 flags，可手动执行，或在刷 ROM 后按开关执行；默认不会自动改。`BOARD_AVB_ENABLE` 只是用测试密钥给 recovery 签名，不是绕过 AVB。`OF_PATCH_AVB20` 在 A/B 设备上被源码排除，不适用。
 

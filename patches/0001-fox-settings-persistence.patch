@@ -14,26 +14,3 @@ index 27e9cc6..066c41b 100644
  	} else {
  		item.selected = 1;
  		string str = item.variableValue;
-diff --git a/twrp-functions.cpp b/twrp-functions.cpp
-index ef35ae7..49a17ed 100755
---- a/twrp-functions.cpp
-+++ b/twrp-functions.cpp
-@@ -1089,6 +1089,18 @@ void TWFunc::Update_Intent_File(string Intent)
- int TWFunc::tw_reboot(RebootCommand command)
- {
- 	DataManager::Flush();
-+
-+	// The data filesystem (f2fs) is mounted with checkpoint=disable:0, so
-+	// sync(2) only schedules writeback and does not commit a checkpoint.
-+	// Without one, a reboot rolls the filesystem back to its last checkpoint
-+	// and the settings .foxs file that Flush() just wrote disappears.
-+	// syncfs() ends up in f2fs_sync_fs(wait=1), which writes a checkpoint.
-+	int sync_fd = open("/data", O_RDONLY | O_DIRECTORY);
-+	if (sync_fd >= 0) {
-+		syncfs(sync_fd);
-+		close(sync_fd);
-+	}
-+
- 	Update_Log_File();
- 
-   	// if we haven't called Deactivation_Process before, check whether to call it now 
