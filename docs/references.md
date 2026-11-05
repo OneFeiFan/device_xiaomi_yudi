@@ -24,8 +24,10 @@
 - LineageOS sm8550-common：<https://github.com/LineageOS/android_device_xiaomi_sm8550-common>
 - LineageOS mondrian：<https://github.com/LineageOS/android_device_xiaomi_mondrian>
 - OrangeFox mondrian 设备树：<https://github.com/ymdzq/OFRP-device_xiaomi_mondrian>
+- OrangeFox enuma 设备树：<https://github.com/Tlrenhb/OFRP-device_xiaomi_enuma/blob/fox_12.1-a14/system.prop>
+- TWRP merlin 设备树：<https://github.com/akashpalani7/twrp_device_xiaomi_merlin/commit/e541ba82951707d29550c52ca002336d04614681>
 
-liuqin 的两棵树是同一平台的 TWRP/OrangeFox 配置，用来核对模块加载、服务启动和密钥相关设置。LineageOS 的三棵树用来核对高通设备树里 bootctrl 的 Soong namespace 写法。mondrian 的 OrangeFox 更新记录把 `keymaster_ver` 默认值设为 4.1，是本设备树 Keymaster 4.1 配置的参考。
+liuqin 的两棵树是同一平台的 TWRP/OrangeFox 配置，用来核对模块加载、服务启动和密钥相关设置。LineageOS 的三棵树用来核对高通设备树里 bootctrl 的 Soong namespace 写法。mondrian 的 OrangeFox 更新记录把 `keymaster_ver` 默认值设为 4.1，是本设备树 Keymaster 4.1 配置的参考。enuma 的 `system.prop` 和 merlin 的提交里都有 `vendor.gatekeeper.disable_spu=true`，用来确认这个属性的写法和用途。
 
 LineageOS 没有公开的 liuqin 设备树（`LineageOS/android_device_xiaomi_liuqin` 返回 404），liuqin 的参考以上面两棵 TWRP 树为准。
 
@@ -50,6 +52,8 @@ LineageOS 没有公开的 liuqin 设备树（`LineageOS/android_device_xiaomi_li
 - `system/hwservicemanager` 和 `system/libhidl`：HIDL 服务注册、接口链查询。
 - `system/core/fastboot/device`：fastbootd 的 health 查询和 USB 初始化。
 - `hardware/interfaces/health/2.1`：health 服务实现和 2.0 兼容查询。
+- `system/vold/Decrypt.cpp`：synthetic password、scrypt 和 Gatekeeper 验证流程。
+- `hardware/interfaces/gatekeeper/1.0`：Gatekeeper HIDL 的 `verify` 返回码映射。
 
 ## 审计与写作规范
 

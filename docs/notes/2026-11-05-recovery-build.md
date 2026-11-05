@@ -1,6 +1,6 @@
 # 2026-11-05 recovery 构建记录
 
-记录从 2026-11-05 开始，2026-11-06 补入了数据耐久性、震动确认和仓库体积清理。
+记录从 2026-11-05 开始，2026-11-06 补入了数据耐久性、震动确认、仓库体积清理和 Gatekeeper 密码修复。
 
 这份记录保留调研过程、实验结论和当时的判断，供后续维护参考。功能说明和已知问题分别写在 `docs/features.md` 和 `docs/known-issues.md`。
 
@@ -32,7 +32,7 @@ Android 16 的 recovery 构建会通过 UFFD GC 的 sysprop 依赖去内核里�
 
 最初 recovery 头部写成 Android 16.0.0 / 2099-12，高于 ROM 的 12.0.0 / 2025-09，KeyMint 返回 `-62 KEY_REQUIRES_UPGRADE`。把头部改成与 boot 一致后仍失败。
 
-反查厂商库发现 `libqtikeymint` 和 `libqtikeymaster4` 读取的是 `ro.build.version.release`、`ro.build.version.security_patch` 和 `ro.vendor.build.security_patch`，不是 boot 头部。系统实际值是 release 16、security patch 2026-08-01、vendor patch 2026-02-01。改 BoardConfig 后解密通过。
+反查厂商库发现 `libqtikeymint` 和 `libqtikeymaster4` 读取的是 `ro.build.version.release`、`ro.build.version.security_patch` 和 `ro.vendor.build.security_patch`，不是 boot 头部。系统侧的值是 release 16、security patch 2026-08-01、vendor patch 2026-02-01。改 BoardConfig 后解密通过。后来实测 recovery 的 `ro.build.version.release` 是 12、`release_or_codename` 是 16，当前组合仍可解密，见下文。
 
 boot 头部仍然用 `BOARD_MKBOOTIMG_ARGS` 写成 12.0.0 / 2025-09，与原厂 boot 一致。`BOOT_SECURITY_PATCH` 会被这组参数覆盖。
 
@@ -73,6 +73,22 @@ ADSP 固件原本 26 个文件放在 ramdisk 的 `/lib/firmware`。后来改成�
 日志显示 fastbootd 启动后一直等待 `android.hardware.health@2.0::IHealth/default`，每秒重试，根本没有走到 USB 初始化。原厂 vendor 里有 `android.hardware.health@2.1-service`，把它和依赖库、VINTF 片段打进 ramdisk 并在 `on fs` 启动。那条提前触发的 fastboot 规则已删除。
 
 修复后 fastbootd 会打开 `/dev/usb-ffs/fastboot/ep0` 并初始化 FunctionFS，设备在主机上枚举为 `18d1:4ee0`。Windows 上安装 Google USB 驱动（`android_winusb.inf`）后，`fastboot devices`、`getvar current-slot`、`getvar product` 和 `reboot recovery` 都正常。没有驱动时设备管理器显示代码 28。
+
+## Gatekeeper、密码类型和 RPMB（2026-11-06）
+
+用户设置图案锁屏后，recovery 能识别出 `password type: pattern`，但 Gatekeeper 拒绝验证。logcat 里依次出现 `SPU is not available`、`IsSbKmAvailable failed`、`GatekeeperHalDevice: verify_legacy`、`ret: -45`，TWRP 日志停在 `GateKeeper response error` 和 `failed to unwrapSyntheticPasswordBlob`。
+
+没有锁屏密码时不会触发这个问题：TWRP 直接使用 `default-password`，跳过 Gatekeeper。设置图案、PIN 或文本密码后，才需要 Gatekeeper 验证。高通这个 HAL 在没有 SPU 的 recovery 里会先尝试 SPU，失败后走 `verify_legacy` 并返回 `-45`。
+
+在 recovery 里执行 `setprop vendor.gatekeeper.disable_spu true` 并重启 `gatekeeper-1-0` 后，图案解密通过。随后把这一行写进 `init.recovery.qcom.rc` 的 `on fs` 段，做成永久修复。最终镜像里 `getprop vendor.gatekeeper.disable_spu` 为 `true`。
+
+用户随后把锁屏改成 4 位数字密码。recovery 日志显示 `password type: PIN`，`GateKeeper status ok`，`User 0 Decrypted Successfully!`。纯数字密码在 Android 里就是 PIN，和文本密码、图案走同一条 synthetic password + Gatekeeper 路径。
+
+用 `twrp decrypt` 命令行测了一次，从执行到 `Data successfully decrypted` 约 2.8 秒。当前 PIN 凭据的 scrypt 参数是 N=2048、r=8、p=2；scrypt 和 Gatekeeper 验证是正常开销。默认密码跳过这两步，所以几乎是立即解密。
+
+另外发现 recovery 的 `ro.build.version.release` 实际是 12，`release_or_codename` 是 16；系统侧两个值都是 16。当前这组值可以正常解密，文档已按实际 `getprop` 结果改写，不再声称 `release` 必须等于系统。
+
+RPMB 节点 `/dev/0:0:0:49476` 原来在 `ueventd.rc` 设为 `0600 system system`，init 里又 `chown/chmod 0660`。ueventd 在 early-init 冷启动时就加载 `/vendor/etc/ueventd.rc`，早于 `on fs`，所以把规则改成 `0660 system system`，删掉 init 里的 `wait/chown/chmod` 三行。实机验证节点权限是 `crw-rw---- system system`。
 
 ## 测试结论
 

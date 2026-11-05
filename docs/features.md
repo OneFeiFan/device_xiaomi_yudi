@@ -20,17 +20,24 @@ recovery 镜像不带内核，由引导程序用 boot 分区的内核启动，�
 
 ## 解密
 
-userdata 使用 FBE v2（`inlinecrypt_optimized` 加 `wrappedkey_v0` 硬件包装密钥），并开启了 metadata 加密。解密依赖原厂的 qseecomd、Keymaster 4.1、KeyMint 和 Gatekeeper，启动顺序写在 `init.recovery.qcom.rc`：先设置 RPMB 节点权限，再启动 qseecomd，等它注册完监听器后，再启动其他服务。
+userdata 使用 FBE v2（`inlinecrypt_optimized` 加 `wrappedkey_v0` 硬件包装密钥），并开启了 metadata 加密。解密依赖原厂的 qseecomd、Keymaster 4.1、KeyMint 和 Gatekeeper，启动顺序写在 `init.recovery.qcom.rc`：启动 qseecomd，等它注册完监听器后，再启动其他服务。RPMB 节点权限由 `vendor/etc/ueventd.rc` 在启动早期设为 `0660 system system`，init 里不再重复设置。
 
-厂商的 KeyMint 库会读取下面三个属性，判断密钥是否需要升级。recovery 里的值必须与当前系统完全一致：
+Android 的锁屏凭据分图案、PIN 和文本密码三类；纯数字的密码在系统里就是 PIN，recovery 日志会显示 `password type: PIN`。三类都走 synthetic password + Gatekeeper 验证，目前实测了图案和 4 位 PIN。
 
-| 属性 | 当前值 |
+recovery 没有 SPU，高通 Gatekeeper 默认会先尝试 SPU，`verify_legacy` 返回 `-45`，图案、PIN 和文本密码都会验证失败。没有锁屏密码时不受影响，因为默认密码不经过 Gatekeeper。`init.recovery.qcom.rc` 在启动时设置 `vendor.gatekeeper.disable_spu true`，让 Gatekeeper 走普通 TEE；不要删除这一行。
+
+输入图案、PIN 或文本密码后，recovery 先用 scrypt 派生 password token，再通过 Gatekeeper 验证，最后解开 synthetic password。当前 PIN 的 scrypt 参数是 N=2048、r=8、p=2，整个过程约 2–3 秒；没有锁屏密码时 TWRP 直接使用 `default-password`，跳过 scrypt 和 Gatekeeper，所以几乎是立即解密。这个等待是正常开销，不是卡死。
+
+厂商的 KeyMint 库会读取版本和安全补丁属性，判断密钥是否需要升级。当前 recovery 的实际值是：
+
+| 属性 | recovery 实际值 |
 | --- | --- |
-| `ro.build.version.release` | 16 |
+| `ro.build.version.release` | 12 |
+| `ro.build.version.release_or_codename` | 16 |
 | `ro.build.version.security_patch` | 2026-08-01 |
 | `ro.vendor.build.security_patch` | 2026-02-01 |
 
-这三个值写在 `BoardConfig.mk` 里，对应 OS3.0.306.3。换用其他版本的 ROM 时，从新系统的 `/system/build.prop` 和 `/vendor/build.prop` 读出对应的值，改好后重新构建。实测 recovery 的值高于系统时，KeyMint 返回 `-62`（`KEY_REQUIRES_UPGRADE`），解密失败；值必须与系统一致，不要凭经验调高或调低。
+系统侧 `ro.build.version.release` 是 16，`release_or_codename` 也是 16；其他两项相同。当前 recovery 的 `release` 是 12（Android 16 的兼容值），实测这组值可以解密。换用其他版本的 ROM 时，先对齐 security patch 和 vendor patch；如果解密失败，再检查 `release` 和 `release_or_codename`。实测 recovery 的安全补丁高于系统时，KeyMint 返回 `-62`（`KEY_REQUIRES_UPGRADE`），解密失败，所以不要凭经验调高。
 
 ## 电池、充电和温度
 

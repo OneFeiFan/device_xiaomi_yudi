@@ -69,14 +69,13 @@ on fs
     # A/B 槽位控制：原厂 vendor 的 boot HAL（HIDL 1.2）
     start vendor.boot-hal-1-2
 
+    # recovery 里 SPU 不可用，高通 Gatekeeper 默认会先尝试 SPU，
+    # verify_legacy 返回 -45；关掉 SPU 后走普通 TEE，图案、PIN 和文本密码才能验证。
+    setprop vendor.gatekeeper.disable_spu true
+
     # 解密：qseecomd 需要的设备节点权限和工作目录
     chmod 0660 /dev/qseecom
     chown system drmrpc /dev/qseecom
-    # UFS RPMB：KeyMint TA 的抗回滚状态要用；节点默认 0600 root，
-    # 而 qseecomd 实际以 system 运行，必须提前放开，否则 begin 返回 -8
-    wait /dev/0:0:0:49476
-    chown system system /dev/0:0:0:49476
-    chmod 0660 /dev/0:0:0:49476
     chmod 0664 /dev/ion
     chown system system /dev/ion
     mkdir /mnt/vendor 0775 root system

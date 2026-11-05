@@ -55,13 +55,15 @@ GOGC=50 GOMAXPROCS=8 mka -j14 adbd recoveryimage
 
 ## 增量构建
 
-完整构建过一次后，只改 C/C++ 或 `recovery/root` 里已有的文件，可以跳过 Soong 和 Kati，直接调 ninja：
+完整构建过一次后，只改 C/C++ 时可以跳过 Soong 和 Kati，直接调 ninja：
 
 ```sh
 source build/envsetup.sh
 lunch twrp_yudi-bp2a-eng
 prebuilts/build-tools/linux-x86/bin/ninja -f out/combined-twrp_yudi.ninja -j14 adbd recoveryimage
 ```
+
+只改 `recovery/root` 里已有的文件时，ninja 不一定知道暂存目录要重新拷贝。可靠的做法是先把文件同步到 `out/target/product/yudi/recovery/root/` 的对应路径，再执行上面的 ninja；或者直接走 `mka`，它会先跑 Soong/Kati，慢一些但不会漏文件。
 
 改 `BoardConfig.mk`、`device.mk`、`Android.bp`、`vendorsetup.sh`，或者新增、删除会被 glob 的源文件时，必须回到 `mka` 重新生成 ninja。
 

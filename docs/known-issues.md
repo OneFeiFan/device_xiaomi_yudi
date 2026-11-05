@@ -10,7 +10,7 @@
 
 ## 换用其他版本的 ROM 后解密失败
 
-KeyMint 要求 recovery 里的版本号和安全补丁级别与系统完全一致，这些值目前写在 `BoardConfig.mk` 里。系统更新后，需要按 [功能说明](features.md#解密) 改成新系统的值，再重新构建。
+KeyMint 要求 recovery 的安全补丁级别和 vendor 安全补丁与系统一致，版本属性也要检查。这些值目前写在 `BoardConfig.mk` 里。系统更新后，需要按 [功能说明](features.md#解密) 对照新系统的值，必要时重新构建。
 
 ## sideload 后 MTP 不会自动恢复
 

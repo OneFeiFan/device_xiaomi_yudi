@@ -49,15 +49,22 @@ adb shell "dmesg | grep -c 'Direct firmware load failed'"
 ### 解密
 
 ```sh
-adb shell "grep -E 'decrypt|Decrypt' /tmp/recovery.log | tail -5"
+adb shell "getprop vendor.gatekeeper.disable_spu"
+adb shell "ls -l /dev/0:0:0:49476"
+adb shell "grep -E 'password type|GateKeeper|Decrypted Successfully|Data successfully decrypted' /tmp/recovery.log | tail -8"
 adb shell "ls /sdcard"
 ```
 
-通过标准：日志里有 `Data successfully decrypted`；`/sdcard` 下的文件名是正常的名字，不是乱码。
+通过标准：`vendor.gatekeeper.disable_spu` 是 `true`；RPMB 节点是 `crw-rw---- system system`；日志里有 `password type: PIN`、`pattern` 或 `password`、`GateKeeper status ok`、`User 0 Decrypted Successfully!`；`/sdcard` 下的文件名正常，不是乱码。
 
-要分别测两种情况：
-- 系统没有设置锁屏密码；
-- 系统设置了锁屏 PIN 或密码。进入 recovery 后会要求输入密码，输入后再按上面的方法检查。
+要分别测这几种情况：
+- 系统没有设置锁屏密码（默认密码）；
+- 图案；
+- 4 位数字 PIN；
+- 文本密码；
+- 多用户。
+
+输入图案、PIN 或文本密码后需要约 2–3 秒完成 scrypt 和 Gatekeeper 验证，这段时间界面看起来像卡住，是正常开销。默认密码不经过这两步，几乎立即解密。
 
 ### 设置保存
 

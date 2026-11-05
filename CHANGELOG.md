@@ -12,6 +12,8 @@
 - 界面：中文主题，终端和键盘使用 Sarasa Mono SC 的 GBK 子集。
 - 修正：主题勾选的设置重启后丢失。
 - 修正：下拉面板里 MTP 提示的误译。
+- 修正：recovery 里没有 SPU 时 Gatekeeper 拒绝图案、PIN 和文本密码（`verify_legacy` 返回 `-45`）。启动时设置 `vendor.gatekeeper.disable_spu=true`，图案和 4 位 PIN 解密通过。
+- 修正：RPMB 节点权限重复设置，统一由 `vendor/etc/ueventd.rc` 设为 `0660 system system`。
 - 精简：去掉 45 MB 的预编译内核，`prebuilt/kernel` 改为 0 字节占位文件；ADSP 固件改为从 modem 分区链接，字体改为子集，recovery 根目录从约 93 MB 降到约 49 MB。
 
-验证：启动、触摸、震动、电池、ADB、MTP、中文显示、设置保存和异常重启后的写入都已在实机上验证。解密只验证了没有锁屏密码的情况；刷入 zip 和 sideload 只用测试 zip 验证；备份恢复只验证了 boot 分区；fastbootd 只验证了 `getvar` 和 `reboot`。完整状态见 [README](README.md#功能状态)。
+验证：启动、触摸、震动、电池、ADB、MTP、中文显示、设置保存和异常重启后的写入都已在实机上验证。解密验证了无锁屏、图案和 4 位 PIN；文本密码和多用户未验证。刷入 zip 和 sideload 只用测试 zip 验证；备份恢复只验证了 boot 分区；fastbootd 只验证了 `getvar` 和 `reboot`。完整状态见 [README](README.md#功能状态)。
