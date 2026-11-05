@@ -9,9 +9,11 @@ lib/firmware/novatek_nt36532_m80_mp_csot.bin	vendor 分区：/firmware/novatek_n
 lib/firmware/novatek_spi_fw.bin	vendor 分区：/firmware/novatek_spi_fw.bin	b32283d2427451f6e1dbe73eb450793e03e2644995c88fa0023ce20f77b68c05
 lib/modules/nt36532_touch.ko	vendor_dlkm 分区：/lib/modules/nt36532_touch.ko（补载到 /lib/modules）	e0c088d1ff75d696f4a7fc9622b66df956c954cf22f4e771827a98975ae9059f
 lib/modules/xiaomi_touch.ko	vendor_dlkm 分区：/lib/modules/xiaomi_touch.ko（补载到 /lib/modules）	7c5434f8e33bd47a26c079125a85593ad289963f4e061c3eb4218bf8886aed37
+system/bin/link-adsp.sh	来源待核对	ac6a7d4e6a8f453b2b09e4bad2b5750654dd1ef4fcad28e886c59f4de5b9a5b5
 system/lib64/libtinyalsa.so	系统分区：/system/lib64/libtinyalsa.so（取自运行系统）	b20ec3777c4308884acc00a872c5d20f5232ff56f8ddf2b309e494bccd02ecd2
 vendor/bin/hw/android.hardware.boot@1.2-service	vendor 分区：/bin/hw/android.hardware.boot@1.2-service	c5317622b35231f01bb980246ad923427c83d7f7b2ff34acd8c6696ef75d89a0
 vendor/bin/hw/android.hardware.gatekeeper@1.0-service-qti	vendor 分区：/bin/hw/android.hardware.gatekeeper@1.0-service-qti	2f0538bf02cf62a0cb66e8351205edbef28b0e77d6d6da2175310becc71df2a6
+vendor/bin/hw/android.hardware.health@2.1-service	vendor 分区：/bin/hw/android.hardware.health@2.1-service	4a582bc4b87ca3cbe82efc1c71d88a2588b52f304d61836e1203e958d37e3e03
 vendor/bin/hw/android.hardware.keymaster@4.1-service-qti	vendor 分区：/bin/hw/android.hardware.keymaster@4.1-service-qti	718d9eaf65b29667a59ba32f736d4f08b53530f06b2fb392c801e8bb2c05763a
 vendor/bin/hw/android.hardware.security.keymint-service-qti	vendor 分区：/bin/hw/android.hardware.security.keymint-service-qti	6f759625e8f1463dcc4b282e04503df5c49c0c0835bb7dee7f3f2f46c41ba0e9
 vendor/bin/hw/vendor.qti.hardware.qseecom@1.0-service	vendor 分区：/bin/hw/vendor.qti.hardware.qseecom@1.0-service	aae2686eb9b692e224bf2c8419dcd6af0f49e80f8b8715c02c09dca974e95be9
@@ -19,6 +21,7 @@ vendor/bin/hw/vendor.xiaomi.hardware.misight.service	vendor 分区：/bin/hw/ven
 vendor/bin/qseecomd	vendor 分区：/bin/qseecomd	be82385357dd80d91fb94ab6b7d25eb5d0566c018fa1f7fc38f6f478f406578a
 vendor/etc/gpfspath_oem_config.xml	vendor 分区：/etc/gpfspath_oem_config.xml	f33b193963bbbee24df9de611384139959aa3080f956b6e908abab4cee616f07
 vendor/etc/vintf/manifest/android.hardware.boot@1.2.xml	vendor 分区：/etc/vintf/manifest/android.hardware.boot@1.2.xml	0c4d9c601e8ec42d712d3b55dc5e4806e915d7659325dcb1ea6f700c8d9c4d24
+vendor/etc/vintf/manifest/android.hardware.health@2.1.xml	vendor 分区：/etc/vintf/manifest/android.hardware.health@2.1.xml	d79a8058bf0dd9d4cf7bf65f6ef2f47c3fd9452e641ebc746465d619aabb509c
 vendor/etc/vintf/manifest/android.hardware.security.keymint-service-qti-rkp.xml	vendor 分区：/etc/vintf/manifest/android.hardware.security.keymint-service-qti-rkp.xml	d71ec30051dffe6e260f2787d87f22fa12c5ed4afe3e57c022dc9722efbab605
 vendor/etc/vintf/manifest/mi-misight.xml	vendor 分区：/etc/vintf/manifest/mi-misight.xml	c458fb374cd1657e0c577a549eb5eeb3cd4ab5bc55af40ea6b3c935b078961ab
 vendor/etc/vintf/manifest/vendor.xiaomi.hardware.vibratorfeature.service.xml	vendor 分区：/etc/vintf/manifest/vendor.xiaomi.hardware.vibratorfeature.service.xml	24d49bdb7721de21a8e0204d290da6464798af149f51d47b22b80669e561ad7e
@@ -210,16 +213,17 @@ vendor/firmware/vpu20_4v.mbn	vendor 分区：/firmware/vpu20_4v.mbn	ddf29b2bf42a
 vendor/firmware/vpu20_4v.mdt	vendor 分区：/firmware/vpu20_4v.mdt	c7a323bb8e020055444c8a92752648df6b7016db7dad033d6622048b54c337af
 vendor/lib/modules/adsp_loader_dlkm.ko	vendor 分区：/lib/modules/adsp_loader_dlkm.ko	f89bcc0785b3305fcab1b3865c94674ea4ebefc5d349ad90a914a21e434097c6
 vendor/lib/modules/gpr_dlkm.ko	vendor 分区：/lib/modules/gpr_dlkm.ko	f49785e6cedb72dc5be2f923eaf0ce3d62b9d1d23565708bc189e29aa7a88f8b
-vendor/lib/modules/nt36532_touch.ko	vendor 分区：/lib/modules/nt36532_touch.ko	e0c088d1ff75d696f4a7fc9622b66df956c954cf22f4e771827a98975ae9059f
 vendor/lib/modules/q6_notifier_dlkm.ko	vendor 分区：/lib/modules/q6_notifier_dlkm.ko	32e77add9df10922323c6948e9cc9ed8e46b703d55456a4f3232d860ee6115b8
 vendor/lib/modules/q6_pdr_dlkm.ko	vendor 分区：/lib/modules/q6_pdr_dlkm.ko	20591e349216017c4c49520f4436265cc89a814caf45e9f64e4bf280b56e19ea
 vendor/lib/modules/snd_event_dlkm.ko	vendor 分区：/lib/modules/snd_event_dlkm.ko	ecf0de5fd86167f77ee98ead58625ae6d34318e28d3e40ca54295abbad064531
 vendor/lib/modules/spf_core_dlkm.ko	vendor 分区：/lib/modules/spf_core_dlkm.ko	f4d0b686d06cc748a4041a63b8cd2d468ff1e5b9a7a78522d65265f906915a09
-vendor/lib/modules/xiaomi_touch.ko	vendor 分区：/lib/modules/xiaomi_touch.ko	7c5434f8e33bd47a26c079125a85593ad289963f4e061c3eb4218bf8886aed37
 vendor/lib64/android.hardware.boot@1.0.so	vendor 分区：/lib64/android.hardware.boot@1.0.so	51c084d0e5476798b1d5fb3c8be719356fa8870a4da728256390e8e3e527a68e
 vendor/lib64/android.hardware.boot@1.1.so	vendor 分区：/lib64/android.hardware.boot@1.1.so	71887b990a1a229a184b79c542e0169217966d7843129d3273c114ff7bd02298
 vendor/lib64/android.hardware.boot@1.2.so	vendor 分区：/lib64/android.hardware.boot@1.2.so	ee73ea2bddf887a99388e7e3185a3c6d0a78f5443bc48eaccee97196bd2afc12
 vendor/lib64/android.hardware.gatekeeper@1.0.so	vendor 分区：/lib64/android.hardware.gatekeeper@1.0.so	8e99e2dd437179a96cef62c0e93e36bf490888edb2fac4e99dcd172de449aaf6
+vendor/lib64/android.hardware.health@1.0.so	vendor 分区：/lib64/android.hardware.health@1.0.so	8048cf446ac232fb14c2ada05eb5710790b203932a4eb6355ee3902be62e3679
+vendor/lib64/android.hardware.health@2.0.so	vendor 分区：/lib64/android.hardware.health@2.0.so	126ee8b2d2eadad5c911d09e7075fc5b46658852a97fc477f9f14b69684c94ea
+vendor/lib64/android.hardware.health@2.1.so	vendor 分区：/lib64/android.hardware.health@2.1.so	a4c8833164a15e32cf81af6e41d1b7a6d3311d21e8574675faddfccd77ca57f3
 vendor/lib64/android.hardware.keymaster@3.0.so	vendor 分区：/lib64/android.hardware.keymaster@3.0.so	6fa204933735858f5dc13e7b9142d29315ea5515173107314295924a7571a333
 vendor/lib64/android.hardware.keymaster@4.0.so	vendor 分区：/lib64/android.hardware.keymaster@4.0.so	139456827cd98f1778671efd63cec6df30792183c9148bba57285bbda11b5f57
 vendor/lib64/android.hardware.keymaster@4.1.so	vendor 分区：/lib64/android.hardware.keymaster@4.1.so	c85a46015030bb0066f4b3440a176fc41674f0db890080bbdf22b3a46279f8db
@@ -227,6 +231,7 @@ vendor/lib64/android.hardware.vibrator-V1-ndk_platform.so	vendor 分区：/lib64
 vendor/lib64/android.hidl.allocator@1.0.so	vendor 分区：/lib64/android.hidl.allocator@1.0.so	66ad33eecb874725b5feb870a66c8cdfca7833b174675200b585c3632de7c42a
 vendor/lib64/hw/android.hardware.boot@1.0-impl-1.2-qti.so	vendor 分区：/lib64/hw/android.hardware.boot@1.0-impl-1.2-qti.so	ad5b7d5b36fe8cd41881894d5cdf212c2d56a522922e4b684dcb9112fc227a4e
 vendor/lib64/hw/android.hardware.gatekeeper@1.0-impl-qti.so	vendor 分区：/lib64/hw/android.hardware.gatekeeper@1.0-impl-qti.so	4e0d3b867a1d9a8db054c7e57fe67dd189f463f0bdd72ead5b68990e669944fd
+vendor/lib64/hw/android.hardware.health@2.0-impl-2.1-qti.so	vendor 分区：/lib64/hw/android.hardware.health@2.0-impl-2.1-qti.so	796250c1cec7a339f38918dccc36b7e7c6dec0f7e7164dc5f26ac5d823fe8d08
 vendor/lib64/hw/vendor.qti.hardware.qseecom@1.0-impl.so	vendor 分区：/lib64/hw/vendor.qti.hardware.qseecom@1.0-impl.so	e5729696e246fa3b19b6e5046721e1fd325b96f3cdaee941c0cc7c0b8d4d5373
 vendor/lib64/libGPreqcancel.so	vendor 分区：/lib64/libGPreqcancel.so	e8d4672d607af7dd0071d13fb2b9c821da735cbdc209b84d4056df00e24d9a01
 vendor/lib64/libGPreqcancel_svc.so	vendor 分区：/lib64/libGPreqcancel_svc.so	a0064d6f2acde18dedf456fca8620e9d5db139ee3d2728a9fabdc8d7541d10dc
@@ -281,19 +286,14 @@ vendor/lib64/vndk-v32/libz.so	system_ext 分区（306.3）：/lib64/vndk-32/libz
 
 ## 符号链接
 # 路径	原始来源	目标
-vendor/firmware/wlan/qca_cld/WCNSS_qcom_cfg.ini	vendor 分区：/firmware/wlan/qca_cld/WCNSS_qcom_cfg.ini	-> /vendor/etc/wifi/WCNSS_qcom_cfg.ini
-vendor/firmware/wlan/qca_cld/qca6490/WCNSS_qcom_cfg.ini	vendor 分区：/firmware/wlan/qca_cld/qca6490/WCNSS_qcom_cfg.ini	-> /vendor/etc/wifi/qca6490/WCNSS_qcom_cfg.ini
-vendor/firmware/wlan/qca_cld/qca6490/wlan_mac.bin	vendor 分区：/firmware/wlan/qca_cld/qca6490/wlan_mac.bin	-> /mnt/vendor/persist/wlan/wlan_mac.bin
-vendor/firmware/wlan/qca_cld/qca6750/WCNSS_qcom_cfg.ini	vendor 分区：/firmware/wlan/qca_cld/qca6750/WCNSS_qcom_cfg.ini	-> /vendor/etc/wifi/qca6750/WCNSS_qcom_cfg.ini
-vendor/firmware/wlan/qca_cld/qca6750/wlan_mac.bin	vendor 分区：/firmware/wlan/qca_cld/qca6750/wlan_mac.bin	-> /mnt/vendor/persist/wlan/wlan_mac.bin
-vendor/firmware/wlanmdsp.otaupdate	vendor 分区：/firmware/wlanmdsp.otaupdate	-> /data/vendor/firmware/wlanmdsp.mbn
 
 ## 已修改文件
 # 路径	原始来源	原厂 sha256	当前 sha256	修改内容
 vendor/bin/hw/vendor.xiaomi.hardware.vibratorfeature.service	vendor 分区：/bin/hw/vendor.xiaomi.hardware.vibratorfeature.service	d6f127217517ad99764c11c31b455e7aed17457515854b0afe067e5c7685b913	b6d9c10cd230b954bebf8d91163754ed39d3a62f6107530cfef7d3faba19ebb9	NEEDED 从 libutils.so 改为 libu32.so（v32 libutils 改名版）
-vendor/etc/charger_fstab.qti	recovery 分区 ramdisk：/vendor/etc/charger_fstab.qti	（待补）	a61037cfc258d6cead0b87551c0e8b16e26aa51a510a7ff1a44f568824d7f1d6	modem 行去掉 context=u:object_r:firmware_file:s0（recovery 策略无此类型）；原厂 recovery ramdisk 原文件待补
+vendor/etc/charger_fstab.qti	recovery 分区 ramdisk：/vendor/etc/charger_fstab.qti	ea20ec5865dbfc2d877fcd7cc407f2eb58a1e7c89f3b9ed2389dc7f996dade33	a61037cfc258d6cead0b87551c0e8b16e26aa51a510a7ff1a44f568824d7f1d6	modem 行去掉 context=u:object_r:firmware_file:s0（recovery 策略无此类型）
 vendor/etc/init/android.hardware.boot@1.2-service.rc	vendor 分区：/etc/init/android.hardware.boot@1.2-service.rc	5ea90531b8c88cb2599b846897959866cbf80d277ed5aa9f4964e979ea661fab	d13bc39ca5eebedc939299898241000347b2460c5aa29112ced96af5301e245a	加 disabled + seclabel u:r:recovery:s0；按服务需要调整 setenv/LD_LIBRARY_PATH
 vendor/etc/init/android.hardware.gatekeeper@1.0-service-qti.rc	vendor 分区：/etc/init/android.hardware.gatekeeper@1.0-service-qti.rc	7ce6d8a9f91c4493c39087950535164917b66755ed70c94446ab9533bbad1783	acc1dd2422e7b82edd8f5aaecf561a3d2b2667c75fcb76c9bb98e85e260fcba6	加 disabled + seclabel u:r:recovery:s0；按服务需要调整 setenv/LD_LIBRARY_PATH
+vendor/etc/init/android.hardware.health@2.1-service.rc	vendor 分区：/etc/init/android.hardware.health@2.1-service.rc	aa3631c26bbb5468694bc52928f0be2667ab0958629a7914bed9e8ec28dc0b3c	0e26f3340e1ad9e3f5939b040b556acdfc00539af6b1d8bace5a8e5292b5122c	加 disabled + seclabel u:r:recovery:s0，由 init.recovery.qcom.rc 启动（fastbootd 需要 health）
 vendor/etc/init/android.hardware.keymaster@4.1-service-qti.rc	vendor 分区：/etc/init/android.hardware.keymaster@4.1-service-qti.rc	3da2bc55b1929b6bcfa6daeb0f472dcae34c5804ed259c5746c25a2daf9c46f1	cbc453945f178309142256892b9674af80e578354fb167563e681548dc9b2491	加 disabled + seclabel u:r:recovery:s0；按服务需要调整 setenv/LD_LIBRARY_PATH
 vendor/etc/init/android.hardware.security.keymint-service-qti.rc	vendor 分区：/etc/init/android.hardware.security.keymint-service-qti.rc	b9e599d625b4fe6573c02939dbebb1b4114762e56e898254632884d9f303b48f	ebfe2abfb933cdd7e80cefb5b0c9277e5407da5d5bcb4a6505717c01ce784555	加 disabled + seclabel u:r:recovery:s0；按服务需要调整 setenv/LD_LIBRARY_PATH
 vendor/etc/init/mi-misight.rc	vendor 分区：/etc/init/mi-misight.rc	55868c27881a7c679d75be16e120012d7cd1b82c6b40d4acca1a3be7060bfe09	dd3f008023ffda1dd96a965d00a5fe0a7b9d4fb0506bb608ceacdbf8c0b42cf0	加 disabled + seclabel u:r:recovery:s0；按服务需要调整 setenv/LD_LIBRARY_PATH
@@ -302,4 +302,4 @@ vendor/etc/init/vendor.qti.hardware.qseecom@1.0-service.rc	vendor 分区：/etc/
 vendor/etc/init/vendor.xiaomi.hardware.vibratorfeature.service.rc	vendor 分区：/etc/init/vendor.xiaomi.hardware.vibratorfeature.service.rc	111eebb7497bde26263e93abf4c7790d3f05f9f5fc722fc40006469ff7dec42b	09119d20637ac9ab3da0d661c0573b7b6dab5981237b122f327016b62aa0f77b	加 disabled + seclabel u:r:recovery:s0；按服务需要调整 setenv/LD_LIBRARY_PATH
 vendor/etc/ueventd.rc	vendor 分区：/etc/ueventd.rc	62476865da5b81f9c252fdc14441811c71e95d69b8acfbcaca5d13d866ea2c83	3223c499a528534e67f0bfef3fdf3963590de3ebfdaaaa47d23e0811e03850e6	新增 RPMB /dev/0:0:0:49476、dma_heap/qseecom/ion 等 recovery 需要的权限规则
 vendor/etc/vintf/manifest.xml	vendor 分区：/etc/vintf/manifest_cape.xml + HAL 片段（合并）	e0c247fc5cc5758bcf00661c7ab4793bfd1a05459ba1690b9eaf351fbcf06a1b	445873fcdecc03c5417cdaf58d422b6743e19a33d502db4c6c3721a69540aad0	由 manifest_cape.xml 与 boot/keymint 等 HAL 片段合并
-vendor/lib64/vndk-v32/libu32.so	system_ext 分区（306.3）VNDK 32：libutils.so（改名）	（待补）	e3a8e94c6fdcba7ca33f02ba13b78b2797435378586ef87b2efee6e1c79c2b96	由 VNDK 32 libutils.so 改名并把 SONAME 改为 libu32.so，与系统 libutils 共存
+vendor/lib64/vndk-v32/libu32.so	system_ext 分区（306.3）VNDK 32：libutils.so（改名）	4e79345702a63bd6ccfab277028060d8cfc11fc9bcfdf85629b4b59a82b1a009	e3a8e94c6fdcba7ca33f02ba13b78b2797435378586ef87b2efee6e1c79c2b96	由 VNDK 32 libutils.so 改名并把 SONAME 改为 libu32.so，与系统 libutils 共存

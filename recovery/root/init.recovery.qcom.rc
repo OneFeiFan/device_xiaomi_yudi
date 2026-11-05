@@ -13,6 +13,12 @@ on early-init
     insmod /vendor/lib/modules/spf_core_dlkm.ko
     insmod /vendor/lib/modules/adsp_loader_dlkm.ko
 
+service link-adsp /system/bin/sh /system/bin/link-adsp.sh
+    class core
+    user root
+    oneshot
+    seclabel u:r:recovery:s0
+
 on init
     setprop sys.usb.configfs 1
     # 触控固件放在 ramdisk 的 /lib/firmware：/vendor/firmware 之后会被 ADSP 固件覆盖
@@ -40,45 +46,25 @@ on fs
     write /proc/sys/kernel/firmware_config/force_sysfs_fallback 1
 
     # ADSP 固件在 modem 分区的 /image 下，不再放进 ramdisk（省约 24MB）。
-    # 内核固件搜索路径是 /lib/firmware，用符号链接接过去即可。
+    # 用脚本把 /image/adsp.* 全部链到 /lib/firmware，段数变化时不用改 init。
     # 震动效果文件在 vendor 分区的 /vendor/firmware，不能把整个 modem 镜像
     # bind 到 /vendor/firmware，否则会盖住它们。
     mkdir /vendor/firmware_mnt
     mkdir /vendor/firmware
     mount_all /vendor/etc/charger_fstab.qti --early
     wait /vendor/firmware_mnt/image/adsp.mdt
-    symlink /vendor/firmware_mnt/image/adsp.mdt /lib/firmware/adsp.mdt
-    symlink /vendor/firmware_mnt/image/adsp.b00 /lib/firmware/adsp.b00
-    symlink /vendor/firmware_mnt/image/adsp.b01 /lib/firmware/adsp.b01
-    symlink /vendor/firmware_mnt/image/adsp.b02 /lib/firmware/adsp.b02
-    symlink /vendor/firmware_mnt/image/adsp.b03 /lib/firmware/adsp.b03
-    symlink /vendor/firmware_mnt/image/adsp.b04 /lib/firmware/adsp.b04
-    symlink /vendor/firmware_mnt/image/adsp.b05 /lib/firmware/adsp.b05
-    symlink /vendor/firmware_mnt/image/adsp.b06 /lib/firmware/adsp.b06
-    symlink /vendor/firmware_mnt/image/adsp.b07 /lib/firmware/adsp.b07
-    symlink /vendor/firmware_mnt/image/adsp.b08 /lib/firmware/adsp.b08
-    symlink /vendor/firmware_mnt/image/adsp.b09 /lib/firmware/adsp.b09
-    symlink /vendor/firmware_mnt/image/adsp.b10 /lib/firmware/adsp.b10
-    symlink /vendor/firmware_mnt/image/adsp.b11 /lib/firmware/adsp.b11
-    symlink /vendor/firmware_mnt/image/adsp.b12 /lib/firmware/adsp.b12
-    symlink /vendor/firmware_mnt/image/adsp.b13 /lib/firmware/adsp.b13
-    symlink /vendor/firmware_mnt/image/adsp.b14 /lib/firmware/adsp.b14
-    symlink /vendor/firmware_mnt/image/adsp.b15 /lib/firmware/adsp.b15
-    symlink /vendor/firmware_mnt/image/adsp.b16 /lib/firmware/adsp.b16
-    symlink /vendor/firmware_mnt/image/adsp.b17 /lib/firmware/adsp.b17
-    symlink /vendor/firmware_mnt/image/adsp.b18 /lib/firmware/adsp.b18
-    symlink /vendor/firmware_mnt/image/adsp.b19 /lib/firmware/adsp.b19
-    symlink /vendor/firmware_mnt/image/adsp.b20 /lib/firmware/adsp.b20
-    symlink /vendor/firmware_mnt/image/adsp.b21 /lib/firmware/adsp.b21
-    symlink /vendor/firmware_mnt/image/adsp.b22 /lib/firmware/adsp.b22
-    symlink /vendor/firmware_mnt/image/adsp.b23 /lib/firmware/adsp.b23
-    symlink /vendor/firmware_mnt/image/adsp.b25 /lib/firmware/adsp.b25
+    start link-adsp
+    wait_for_prop sys.adsp.links.ready 1
     wait /sys/kernel/boot_adsp/boot
     write /sys/kernel/boot_adsp/boot 1
     wait /sys/class/power_supply/battery
 
     # 解密服务的库在 /vendor/lib64；Gatekeeper 的实现库在 /vendor/lib64/hw
     export LD_LIBRARY_PATH /system/lib64:/vendor/lib64:/vendor/lib64/hw
+
+    # 原厂 health HIDL 服务。fastbootd 启动时先查 IHealth，查不到就会一直重试，
+    # USB 初始化根本不会进行。
+    start health-hal-2-1
 
     # A/B 槽位控制：原厂 vendor 的 boot HAL（HIDL 1.2）
     start vendor.boot-hal-1-2

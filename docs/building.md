@@ -1,0 +1,72 @@
+# 构建
+
+## 环境
+
+- Linux 或 WSL2，约 150GB 磁盘
+- 16GB 以上内存
+- repo、git、ccache
+- Android 16 源码，OrangeFox 的 `fox_16.0` 分支
+
+## 拉取源码
+
+```sh
+mkdir orangefox_16
+cd orangefox_16
+repo init -u https://gitlab.com/OrangeFox/Manifest.git -b fox_16.0
+repo sync -c --no-tags -j8
+```
+
+## 放入设备树
+
+```sh
+git clone https://github.com/OneFeiFan/device_xiaomi_yudi device/xiaomi/yudi
+```
+
+`recovery/root` 不需要在 `device.mk` 里拷贝。构建系统会把它铺进 recovery 的 ramdisk。
+
+## 打补丁
+
+`bootable/recovery/gui/listbox.cpp` 需要加一条 `persist=1`，否则部分主题勾选项只写内存。补丁在 `patches/0001-fox-settings-persistence.patch`。
+
+```sh
+cd bootable/recovery
+git apply ../../device/xiaomi/yudi/patches/0001-fox-settings-persistence.patch
+cd ../..
+```
+
+每次 `repo sync` 覆盖 `bootable/recovery` 后都要重新打一次。
+
+## 编译
+
+```sh
+export FOX_BUILD_DEVICE=yudi
+source build/envsetup.sh
+lunch twrp_yudi-bp2a-eng
+GOGC=50 GOMAXPROCS=8 mka -j14 adbd recoveryimage
+```
+
+内存紧张时降低并发数。产物在 `out/target/product/yudi/`：
+
+- `recovery.img`
+- `OrangeFox-*.img`
+- `OrangeFox-*.zip`
+
+## 增量构建
+
+完整构建过一次后，只改 C/C++ 或 `recovery/root` 里已有的文件，可以跳过 Soong 和 Kati，直接调 ninja：
+
+```sh
+source build/envsetup.sh
+lunch twrp_yudi-bp2a-eng
+prebuilts/build-tools/linux-x86/bin/ninja -f out/combined-twrp_yudi.ninja -j14 adbd recoveryimage
+```
+
+改 `BoardConfig.mk`、`device.mk`、`Android.bp`、`vendorsetup.sh`，或者新增、删除会被 glob 的源文件时，必须回到 `mka` 重新生成 ninja。
+
+直接调 ninja 前先 `source build/envsetup.sh` 和 `lunch`，否则 OrangeFox 的打包文件名可能缺设备名。`m --skip-soong-tests recoveryimage` 可以省掉 Soong 自检。
+
+## ramdisk 暂存
+
+`out/target/product/yudi/recovery/root` 偶尔会残留旧的 `libminuitwrp.so`。改了触摸相关代码却看不到效果时，先删掉这个目录和 `ramdisk-recovery.img` 再编。
+
+改了 ramdisk 或主题文件后如果 ninja 认为无事可做，先删 `out/target/product/yudi/recovery.img`。必要时再删 `out/target/product/yudi/recovery/root`。
