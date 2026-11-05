@@ -30,7 +30,7 @@ userdata 使用 FBE v2（`inlinecrypt_optimized` 加 `wrappedkey_v0` 硬件包�
 | `ro.build.version.security_patch` | 2026-08-01 |
 | `ro.vendor.build.security_patch` | 2026-02-01 |
 
-这三个值写在 `BoardConfig.mk` 里，对应 OS3.0.306.3。换用其他版本的 ROM 时，从新系统的 `/system/build.prop` 和 `/vendor/build.prop` 读出对应的值，改好后重新构建。值偏低时 KeyMint 会要求升级密钥，解密失败；值偏高时如果升级成功，升级后的密钥会写回磁盘，系统反而解不开，所以绝不能高于系统。
+这三个值写在 `BoardConfig.mk` 里，对应 OS3.0.306.3。换用其他版本的 ROM 时，从新系统的 `/system/build.prop` 和 `/vendor/build.prop` 读出对应的值，改好后重新构建。实测 recovery 的值高于系统时，KeyMint 返回 `-62`（`KEY_REQUIRES_UPGRADE`），解密失败；值必须与系统一致，不要凭经验调高或调低。
 
 ## 电池、充电和温度
 

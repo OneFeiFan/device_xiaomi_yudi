@@ -8,7 +8,7 @@
 
 | 功能 | 状态 | 说明 |
 | --- | --- | --- |
-| 启动、触摸、震动 | 已验证 | 两个槽位刷入同一镜像都能启动 |
+| 启动、触摸、震动 | 已验证 | 两个 recovery 分区刷入同一镜像都能启动 |
 | 电池、充电状态、CPU 温度 | 已验证 | |
 | ADB、MTP | 已验证 | MTP 在 Windows 上双向复制过文件 |
 | 中文主题和字体 | 已验证 | |
@@ -19,7 +19,7 @@
 | 备份和恢复 | 部分验证 | 只验证过 boot 分区；data、super 未验证 |
 | ADB sideload | 部分验证 | 只用测试 zip 验证过 |
 | fastbootd | 部分验证 | `getvar` 和 `reboot` 正常；通过它刷写分区未验证 |
-| 读取和切换槽位 | 部分验证 | 切换生效；启动到另一个槽的系统未验证 |
+| 读取和切换槽位 | 部分验证 | 切换生效；目标槽没有系统时会停在 fastboot，见[已知问题](docs/known-issues.md#另一槽没有系统时切槽会停在-fastboot) |
 | USB Storage | 部分验证 | 设备端能启用；电脑端读写未验证 |
 | USB OTG | 未验证 | |
 | 格式化 data、分区修复和调整 | 未验证 | 属于破坏性操作 |
@@ -61,10 +61,21 @@ fastboot reboot recovery
 | [参考资料](docs/references.md) | 源码、固件和对照用的设备树 |
 | [开发记录](docs/notes/2026-11-05-recovery-build.md) | 调研和实验的过程 |
 
+## 参考
+
+本设备树基于 OrangeFox、TWRP 和 AOSP Android 16 的源码，并对照了 liuqin、mondrian 等设备树：
+
+- [OrangeFox fox_16.0 manifest](https://gitlab.com/OrangeFox/Manifest/-/tree/fox_16.0)
+- [OrangeFox recovery](https://gitlab.com/OrangeFox/bootable/recovery)
+- [TWRP recovery](https://github.com/TeamWin/android_bootable_recovery)
+- [AOSP Android 16 build](https://android.googlesource.com/platform/build/+/refs/tags/android-16.0.0_r1)
+- [其他设备树（liuqin、mondrian 等）](docs/references.md#其他设备树)
+- [完整参考资料](docs/references.md)
+
 ## 许可证
 
 设备树配置、ramdisk 覆盖文件、主题覆盖文件和补丁采用 GNU GPL v3.0，见 [LICENSE](LICENSE)。OrangeFox 和 TWRP 本身同样是 GPL-3.0，本仓库不主张它们的版权。
 
-`recovery/root` 下的小米二进制、库和固件版权归小米，不在 GPL 许可范围内。它们大部分取自小米官方完整包；boot HAL、VNDK v32 库和 `libdrm.so` 取自一个第三方重打包的 306.3 包，没能与官方校验值核对，详见 [参考资料](docs/references.md#设备与固件)。这些文件只用于在对应设备上运行 recovery。
+`recovery/root` 下的小米二进制、库和固件版权归小米，不在 GPL 许可范围内。它们大部分取自小米官方完整包；boot HAL、VNDK v32 库、`libdrm.so` 和 `libu32.so` 对应的原始 libutils 取自一个第三方重打包的 306.3 包，没能与官方校验值核对，详见 [参考资料](docs/references.md#设备与固件)。这些文件只用于在对应设备上运行 recovery。
 
 Sarasa Mono SC 字体采用 SIL Open Font License 1.1，见 [licenses/SarasaGothic-OFL.txt](licenses/SarasaGothic-OFL.txt)。
