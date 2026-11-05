@@ -1,78 +1,332 @@
 # 专有文件清单
-# 默认取自小米官方完整包 yudi-ota_full-OS3.0.6.0.VMHCNXM-user-15.0-7b73783799.zip。
-# boot HAL 文件取自 yudi-ota_full-OS3.0.306.3.WMHCNXM-user-16.0-b255c0d484-2in1-Root.zip（下面标注 306.3）。
-# 列：ramdisk 内的路径、在官方包中的来源、sha256 前 16 位。
-lib/firmware/novatek_nt36532_m80_fw_csot.bin	vendor 分区：/firmware/novatek_nt36532_m80_fw_csot.bin	3a1e294219570984
-lib/firmware/novatek_nt36532_m80_mp_csot.bin	vendor 分区：/firmware/novatek_nt36532_m80_mp_csot.bin	84058de8f61b824e
-lib/firmware/novatek_spi_fw.bin	vendor 分区：/firmware/novatek_spi_fw.bin	b32283d2427451f6
-vendor/etc/charger_fstab.qti	recovery 分区 ramdisk：/vendor/etc/charger_fstab.qti	ea20ec5865dbfc2d
-vendor/etc/gpfspath_oem_config.xml	vendor 分区：/etc/gpfspath_oem_config.xml	f33b193963bbbee2
-vendor/etc/vintf/manifest.xml	vendor 分区：/etc/vintf/manifest_cape.xml + 各 HAL fragments（合并为设备清单）	d0a5413182cc1400
-vendor/etc/vintf/manifest/android.hardware.health@2.1.xml	vendor 分区：/etc/vintf/manifest/android.hardware.health@2.1.xml	d79a8058bf0dd9d4
-vendor/etc/vintf/manifest_cape.xml	vendor 分区：/etc/vintf/manifest_cape.xml	e0c247fc5cc5758b
-vendor/etc/vintf/manifest/android.hardware.security.keymint-service-qti-rkp.xml	vendor 分区：/etc/vintf/manifest/android.hardware.security.keymint-service-qti-rkp.xml	d71ec30051dffe6e
-vendor/etc/init/android.hardware.gatekeeper@1.0-service-qti.rc	vendor 分区：/etc/init/android.hardware.gatekeeper@1.0-service-qti.rc	7ce6d8a9f91c4493
-vendor/etc/init/android.hardware.keymaster@4.1-service-qti.rc	vendor 分区：/etc/init/android.hardware.keymaster@4.1-service-qti.rc	3da2bc55b1929b6b
-vendor/etc/init/android.hardware.security.keymint-service-qti.rc	vendor 分区：/etc/init/android.hardware.security.keymint-service-qti.rc	b9e599d625b4fe65
-vendor/etc/init/qseecomd.rc	vendor 分区：/etc/init/qseecomd.rc	09a1eaa5077f1ab8
-vendor/etc/init/vendor.qti.hardware.qseecom@1.0-service.rc	vendor 分区：/etc/init/vendor.qti.hardware.qseecom@1.0-service.rc	fe3a6b4c1fbd70e6
-vendor/lib/modules/adsp_loader_dlkm.ko	recovery 分区 ramdisk：/vendor/lib/modules/adsp_loader_dlkm.ko	f89bcc0785b3305f
-vendor/lib/modules/gpr_dlkm.ko	recovery 分区 ramdisk：/vendor/lib/modules/gpr_dlkm.ko	f49785e6cedb72dc
-vendor/lib/modules/q6_notifier_dlkm.ko	recovery 分区 ramdisk：/vendor/lib/modules/q6_notifier_dlkm.ko	32e77add9df10922
-vendor/lib/modules/q6_pdr_dlkm.ko	recovery 分区 ramdisk：/vendor/lib/modules/q6_pdr_dlkm.ko	20591e349216017c
-vendor/lib/modules/snd_event_dlkm.ko	recovery 分区 ramdisk：/vendor/lib/modules/snd_event_dlkm.ko	ecf0de5fd86167f7
-vendor/lib/modules/spf_core_dlkm.ko	recovery 分区 ramdisk：/vendor/lib/modules/spf_core_dlkm.ko	f4d0b686d06cc748
-vendor/lib64/android.hardware.gatekeeper@1.0.so	vendor 分区：/lib64/android.hardware.gatekeeper@1.0.so	8e99e2dd437179a9
-vendor/lib64/android.hardware.keymaster@3.0.so	vendor 分区：/lib64/android.hardware.keymaster@3.0.so	6fa204933735858f
-vendor/lib64/android.hardware.keymaster@4.0.so	vendor 分区：/lib64/android.hardware.keymaster@4.0.so	139456827cd98f17
-vendor/lib64/android.hardware.keymaster@4.1.so	vendor 分区：/lib64/android.hardware.keymaster@4.1.so	c85a46015030bb00
-vendor/lib64/android.hardware.security.keymint-V1-ndk_platform.so	system_ext 分区：/apex/com.android.vndk.v31.apex → /lib64/android.hardware.security.keymint-V1-ndk_platform.so	683cbfc1512f16e8
-vendor/lib64/android.hardware.security.secureclock-V1-ndk_platform.so	system_ext 分区：/apex/com.android.vndk.v31.apex → /lib64/android.hardware.security.secureclock-V1-ndk_platform.so	2b5b1c44eb71ee35
-vendor/lib64/android.hardware.security.sharedsecret-V1-ndk_platform.so	system_ext 分区：/apex/com.android.vndk.v31.apex → /lib64/android.hardware.security.sharedsecret-V1-ndk_platform.so	ef38d7300519550a
-vendor/lib64/android.hidl.allocator@1.0.so	vendor 分区：/lib64/android.hidl.allocator@1.0.so	66ad33eecb874725
-vendor/lib64/android.hidl.memory.token@1.0.so	system_ext 分区：/apex/com.android.vndk.v31.apex → /lib64/android.hidl.memory.token@1.0.so	d9c76db27909c5e1
-vendor/lib64/android.hidl.memory@1.0.so	system_ext 分区：/apex/com.android.vndk.v31.apex → /lib64/android.hidl.memory@1.0.so	b54aaa99b251103e
-vendor/lib64/libGPreqcancel.so	vendor 分区：/lib64/libGPreqcancel.so	e8d4672d607af7dd
-vendor/lib64/libGPreqcancel_svc.so	vendor 分区：/lib64/libGPreqcancel_svc.so	a0064d6f2acde18d
-vendor/lib64/libQSEEComAPI.so	vendor 分区：/lib64/libQSEEComAPI.so	7df6de3cda9b2c2c
-vendor/lib64/libdiag.so	vendor 分区：/lib64/libdiag.so	a3f21e64bc459073
-vendor/lib64/libdisplayconfig.qti.so	vendor 分区：/lib64/libdisplayconfig.qti.so	71a3fc75fa07b1dd
-vendor/lib64/libdmabufheap.so	system_ext 分区：/apex/com.android.vndk.v31.apex → /lib64/libdmabufheap.so	7dd8c7f03d244d02
-vendor/lib64/libdrm.so	vendor 分区（306.3）：/lib64/libdrm.so	28cb1c84cb0b59bc
-vendor/lib64/libdrmfs.so	vendor 分区：/lib64/libdrmfs.so	76a691968e342032
-vendor/lib64/libdrmtime.so	vendor 分区：/lib64/libdrmtime.so	50f509c15984a751
-vendor/lib64/libhidlmemory.so	system_ext 分区：/apex/com.android.vndk.v31.apex → /lib64/libhidlmemory.so	05beea3d604c0df8
-vendor/lib64/libion.so	system_ext 分区：/apex/com.android.vndk.v31.apex → /lib64/libion.so	abdcdaa78553907e
-vendor/lib64/libkeymaster_messages.so	vendor 分区：/lib64/libkeymaster_messages.so	13c137249ab8d2d0
-vendor/lib64/libkeymasterdeviceutils.so	vendor 分区：/lib64/libkeymasterdeviceutils.so	1aecc86929ec95e6
-vendor/lib64/libkeymasterutils.so	vendor 分区：/lib64/libkeymasterutils.so	699c54704f0b361d
-vendor/lib64/libops.so	vendor 分区：/lib64/libops.so	0b65e8686c13ece3
-vendor/lib64/libqcbor.so	vendor 分区：/lib64/libqcbor.so	880f55ba65846a28
-vendor/lib64/libqisl.so	vendor 分区：/lib64/libqisl.so	74acadc4be885d7d
-vendor/lib64/libqtikeymaster4.so	vendor 分区：/lib64/libqtikeymaster4.so	694bfcf4d4cfdbb1
-vendor/lib64/libqtikeymint.so	vendor 分区：/lib64/libqtikeymint.so	b04d1b58a3c8aa15
-vendor/lib64/librpmb.so	vendor 分区：/lib64/librpmb.so	c8e12a4abb92cb01
-vendor/lib64/libspcom.so	vendor 分区：/lib64/libspcom.so	3ae2444f8da2e776
-vendor/lib64/libspl.so	vendor 分区：/lib64/libspl.so	b657ab09f2f12e0f
-vendor/lib64/libssd.so	vendor 分区：/lib64/libssd.so	64b060fef67880e6
-vendor/lib64/libtime_genoff.so	vendor 分区：/lib64/libtime_genoff.so	150cf6f527a68b77
-vendor/lib64/libvmmem.so	vendor 分区：/lib64/libvmmem.so	0d95b87347448850
-vendor/lib64/libxml2.so	system_ext 分区：/apex/com.android.vndk.v31.apex → /lib64/libxml2.so	3eef7622fdd63ee0
-vendor/lib64/vendor.display.config@2.0.so	vendor 分区：/lib64/vendor.display.config@2.0.so	f6742f1bb0d880e0
-vendor/lib64/vendor.qti.hardware.qseecom@1.0.so	vendor 分区：/lib64/vendor.qti.hardware.qseecom@1.0.so	1b0139ffc61325b9
-vendor/lib64/hw/android.hardware.gatekeeper@1.0-impl-qti.so	vendor 分区：/lib64/hw/android.hardware.gatekeeper@1.0-impl-qti.so	4e0d3b867a1d9a8d
-vendor/lib64/hw/vendor.qti.hardware.qseecom@1.0-impl.so	vendor 分区：/lib64/hw/vendor.qti.hardware.qseecom@1.0-impl.so	e5729696e246fa3b
-vendor/bin/qseecomd	vendor 分区：/bin/qseecomd	be82385357dd80d9
-vendor/bin/hw/android.hardware.gatekeeper@1.0-service-qti	vendor 分区：/bin/hw/android.hardware.gatekeeper@1.0-service-qti	2f0538bf02cf62a0
-vendor/bin/hw/android.hardware.keymaster@4.1-service-qti	vendor 分区：/bin/hw/android.hardware.keymaster@4.1-service-qti	718d9eaf65b29667
-vendor/bin/hw/android.hardware.security.keymint-service-qti	vendor 分区：/bin/hw/android.hardware.security.keymint-service-qti	6f759625e8f1463d
-vendor/bin/hw/vendor.qti.hardware.qseecom@1.0-service	vendor 分区：/bin/hw/vendor.qti.hardware.qseecom@1.0-service	aae2686eb9b692e2
-vendor/bin/hw/android.hardware.boot@1.2-service	vendor 分区（306.3）：/bin/hw/android.hardware.boot@1.2-service	c5317622b35231f0
-vendor/lib64/hw/android.hardware.boot@1.0-impl-1.2-qti.so	vendor 分区（306.3）：/lib64/hw/android.hardware.boot@1.0-impl-1.2-qti.so	ad5b7d5b36fe8cd4
-vendor/lib64/android.hardware.boot@1.0.so	vendor 分区（306.3）：/lib64/android.hardware.boot@1.0.so	51c084d0e5476798
-vendor/lib64/android.hardware.boot@1.1.so	vendor 分区（306.3）：/lib64/android.hardware.boot@1.1.so	71887b990a1a229a
-vendor/lib64/android.hardware.boot@1.2.so	vendor 分区（306.3）：/lib64/android.hardware.boot@1.2.so	ee73ea2bddf887a9
-vendor/lib64/libboot_control_qti.so	vendor 分区（306.3）：/lib64/libboot_control_qti.so	1084c57017c20f12
-vendor/lib64/librecovery_updater.so	vendor 分区（306.3）：/lib64/librecovery_updater.so	f15bd6dd1ad19172
-vendor/etc/init/android.hardware.boot@1.2-service.rc	vendor 分区（306.3）：/etc/init/android.hardware.boot@1.2-service.rc	5ea90531b8c88cb2
-vendor/etc/vintf/manifest/android.hardware.boot@1.2.xml	vendor 分区（306.3）：/etc/vintf/manifest/android.hardware.boot@1.2.xml	0c4d9c601e8ec42d
+# 路径相对 recovery/root；sha256 为完整值。
+# 未修改文件按来源分区列出；已修改文件见文末“已修改文件”一节。
+# 设备树自有文件（init.recovery.qcom.rc、脚本、fstab、twrp.flags、主题覆盖、字体）不在本清单。
+#
+# 路径	来源	sha256
+lib/firmware/adsp.b00	modem 分区：/image/adsp.b00	2ae7daed25132c907deec5ddb2f4a8b7951e656f20b2f286b7fc57b47f7055ad
+lib/firmware/adsp.b01	modem 分区：/image/adsp.b01	86189c1a91031af1a752e9dc2870ffe9428df18fb0d6568719512b0df6ce6147
+lib/firmware/adsp.b02	modem 分区：/image/adsp.b02	9236b909f0db45584120da52509bcc8766363cbcac0e056ac539f0f59d10619f
+lib/firmware/adsp.b03	modem 分区：/image/adsp.b03	5da5f260b596f7dec24d812e7aed63ea51c2df8ac868a9bf949fd8593e87c5b2
+lib/firmware/adsp.b04	modem 分区：/image/adsp.b04	63b4a31546c755a9af7c3e4cf3320f896c39e0bf5b05eed2fea41353b1b2b71b
+lib/firmware/adsp.b05	modem 分区：/image/adsp.b05	b6018d88d11d5cd57bd7db30c721a486f48720a5f09ab169308f6dd25c0f7c49
+lib/firmware/adsp.b06	modem 分区：/image/adsp.b06	ba44e20e02514f0aa0d2ae12eb68f003aecedde9d4decbc908107a2d7b5a6e7c
+lib/firmware/adsp.b07	modem 分区：/image/adsp.b07	a2e92212c47ef06ad51f5c18da478520b6d81cd8a57c9e82643068e673f76d7b
+lib/firmware/adsp.b08	modem 分区：/image/adsp.b08	e9315eb11871cb2ee3044981427555a93c0adeaea9611c207697e9630ed1bb44
+lib/firmware/adsp.b09	modem 分区：/image/adsp.b09	3b7943a7cb4f6c74dfe67c9a46bea866825b18d5b0f41e8c6af89fa31dc901aa
+lib/firmware/adsp.b10	modem 分区：/image/adsp.b10	2dd820156d2e4394aab396a5f7bb1c0266abfe42eefd4ae8115234a5236b0ffc
+lib/firmware/adsp.b11	modem 分区：/image/adsp.b11	9e3638e5c66be7b3d3e07f28d82d9b52463cdf6345ee987085fbb9ae528105a8
+lib/firmware/adsp.b12	modem 分区：/image/adsp.b12	02bec4dcc4237d0e4d1edf5ce7edfa21184b047e52109a66ea11d76055152708
+lib/firmware/adsp.b13	modem 分区：/image/adsp.b13	420556ca6507418dc149161918aad4562a95946bd12a7224a9b950a25ad8583c
+lib/firmware/adsp.b14	modem 分区：/image/adsp.b14	4f3bd5bd24e95a58a136fb5032a812e089d1e86765b548431c6064002659d16a
+lib/firmware/adsp.b15	modem 分区：/image/adsp.b15	d203342f498f15bc6a747e47cc457aa56e22fc6ff1c1ec0b93aefe27dd865de0
+lib/firmware/adsp.b16	modem 分区：/image/adsp.b16	315f26eccb77441d76d53979ee9bf60e79dff6cd86ab7ffa077ddddf55c821eb
+lib/firmware/adsp.b17	modem 分区：/image/adsp.b17	14b2a7ac0b14ba35fe0b4b659ed1db7c32d25723dee2620d9565ab8005d484a0
+lib/firmware/adsp.b18	modem 分区：/image/adsp.b18	f70374af2f992c78cb5f74fc163fae3e3c8d4c2ccae8dc7ac417105cd29a1eae
+lib/firmware/adsp.b19	modem 分区：/image/adsp.b19	f38b43e338faf218d8c0ead3679de90045bd7cc705f1d6e187a27d8cb8d8cd33
+lib/firmware/adsp.b20	modem 分区：/image/adsp.b20	53924afdad39a03e63c24376c83d6fcc9aba97af105df47ffac36dd2b70a1f2c
+lib/firmware/adsp.b21	modem 分区：/image/adsp.b21	9f7aa6cc53f9594bc02fb11c812d0251694d65e278e5e7f0786b24f1a8254b74
+lib/firmware/adsp.b22	modem 分区：/image/adsp.b22	03ac9dc5bf67a31167981ab263cc9ca5b91ad4ee5c56fd47923c744e78dbf11b
+lib/firmware/adsp.b23	modem 分区：/image/adsp.b23	01ba45007af25e86986680cad197057ff8b669c77f0c8a715d99cb9ba3bf962e
+lib/firmware/adsp.b25	modem 分区：/image/adsp.b25	cd1db0e933a10d4c99cc72a79b39d8d6e24a01d7713c6bf7cfa68eb3f56cdd6e
+lib/firmware/adsp.mdt	modem 分区：/image/adsp.mdt	8f116df2cb9abe715db6a8914b1ab6683f95ef731a2baceb95498d826fc8cfbf
+lib/firmware/novatek_nt36532_m80_fw_csot.bin	vendor 分区：/firmware/novatek_nt36532_m80_fw_csot.bin	3a1e294219570984698211b9c0d3e7cda736848ff2aef5d8d4d5d9619381634d
+lib/firmware/novatek_nt36532_m80_mp_csot.bin	vendor 分区：/firmware/novatek_nt36532_m80_mp_csot.bin	84058de8f61b824e91ad2fc93915eab6b8f828221b8eae9e13d350203e8a3038
+lib/firmware/novatek_spi_fw.bin	vendor 分区：/firmware/novatek_spi_fw.bin	b32283d2427451f6e1dbe73eb450793e03e2644995c88fa0023ce20f77b68c05
+lib/modules/nt36532_touch.ko	vendor_dlkm 分区：/lib/modules/nt36532_touch.ko（补载到 /lib/modules）	e0c088d1ff75d696f4a7fc9622b66df956c954cf22f4e771827a98975ae9059f
+lib/modules/xiaomi_touch.ko	vendor_dlkm 分区：/lib/modules/xiaomi_touch.ko（补载到 /lib/modules）	7c5434f8e33bd47a26c079125a85593ad289963f4e061c3eb4218bf8886aed37
+system/lib64/libtinyalsa.so	系统分区：/system/lib64/libtinyalsa.so（取自运行系统）	b20ec3777c4308884acc00a872c5d20f5232ff56f8ddf2b309e494bccd02ecd2
+vendor/bin/hw/android.hardware.boot@1.2-service	vendor 分区：/bin/hw/android.hardware.boot@1.2-service	c5317622b35231f01bb980246ad923427c83d7f7b2ff34acd8c6696ef75d89a0
+vendor/bin/hw/android.hardware.gatekeeper@1.0-service-qti	vendor 分区：/bin/hw/android.hardware.gatekeeper@1.0-service-qti	2f0538bf02cf62a0cb66e8351205edbef28b0e77d6d6da2175310becc71df2a6
+vendor/bin/hw/android.hardware.keymaster@4.1-service-qti	vendor 分区：/bin/hw/android.hardware.keymaster@4.1-service-qti	718d9eaf65b29667a59ba32f736d4f08b53530f06b2fb392c801e8bb2c05763a
+vendor/bin/hw/android.hardware.security.keymint-service-qti	vendor 分区：/bin/hw/android.hardware.security.keymint-service-qti	6f759625e8f1463dcc4b282e04503df5c49c0c0835bb7dee7f3f2f46c41ba0e9
+vendor/bin/hw/vendor.qti.hardware.qseecom@1.0-service	vendor 分区：/bin/hw/vendor.qti.hardware.qseecom@1.0-service	aae2686eb9b692e224bf2c8419dcd6af0f49e80f8b8715c02c09dca974e95be9
+vendor/bin/hw/vendor.xiaomi.hardware.misight.service	vendor 分区：/bin/hw/vendor.xiaomi.hardware.misight.service	444a88047cb600cfd084705e8c8e94f67764428487db6dc26d5853bf06aceca8
+vendor/bin/qseecomd	vendor 分区：/bin/qseecomd	be82385357dd80d91fb94ab6b7d25eb5d0566c018fa1f7fc38f6f478f406578a
+vendor/etc/gpfspath_oem_config.xml	vendor 分区：/etc/gpfspath_oem_config.xml	f33b193963bbbee24df9de611384139959aa3080f956b6e908abab4cee616f07
+vendor/etc/images.xml	vendor 分区：/etc/images.xml	f24f95a0b2786580b542c1649cfbcc62f1a3412928eec99ed5012703f5370919
+vendor/etc/vintf/manifest/android.hardware.boot@1.2.xml	vendor 分区：/etc/vintf/manifest/android.hardware.boot@1.2.xml	0c4d9c601e8ec42d712d3b55dc5e4806e915d7659325dcb1ea6f700c8d9c4d24
+vendor/etc/vintf/manifest/android.hardware.security.keymint-service-qti-rkp.xml	vendor 分区：/etc/vintf/manifest/android.hardware.security.keymint-service-qti-rkp.xml	d71ec30051dffe6e260f2787d87f22fa12c5ed4afe3e57c022dc9722efbab605
+vendor/etc/vintf/manifest/mi-misight.xml	vendor 分区：/etc/vintf/manifest/mi-misight.xml	c458fb374cd1657e0c577a549eb5eeb3cd4ab5bc55af40ea6b3c935b078961ab
+vendor/etc/vintf/manifest/vendor.xiaomi.hardware.vibratorfeature.service.xml	vendor 分区：/etc/vintf/manifest/vendor.xiaomi.hardware.vibratorfeature.service.xml	24d49bdb7721de21a8e0204d290da6464798af149f51d47b22b80669e561ad7e
+vendor/etc/vintf/manifest_cape.xml	vendor 分区：/etc/vintf/manifest_cape.xml	e0c247fc5cc5758bcf00661c7ab4793bfd1a05459ba1690b9eaf351fbcf06a1b
+vendor/firmware/0_seqbinwav_P_RTP.bin	vendor 分区：/firmware/0_seqbinwav_P_RTP.bin	7b6177792920af2f141bd3021ca1f3a95b5b7b8bde204b2855dc090630cca9bf
+vendor/firmware/157_fodMotionTriang_P_RTP.bin	vendor 分区：/firmware/157_fodMotionTriang_P_RTP.bin	a7cfabdd21d835259433dae3c4d086f9b780357f58b46a70ddfb12a45cbaece6
+vendor/firmware/158_fodMotionFlare_P_RTP.bin	vendor 分区：/firmware/158_fodMotionFlare_P_RTP.bin	3f4f1110c3bfd109b1cfe9c0587e2447ce56f730188e9ae059ae5da07af1b590
+vendor/firmware/159_fodMotionRipple_P_RTP.bin	vendor 分区：/firmware/159_fodMotionRipple_P_RTP.bin	1c6537c47ee6a01570f6de9e68bbf3fd62007a5b458fe42337da9807727d3e9f
+vendor/firmware/160_fodMotionSpiral_P_RTP.bin	vendor 分区：/firmware/160_fodMotionSpiral_P_RTP.bin	8961bf6a01329b52a3658c7026c338b4f6faeb512d941fb451a71d7220c1f524
+vendor/firmware/161_gameboxLaunch_P_RTP.bin	vendor 分区：/firmware/161_gameboxLaunch_P_RTP.bin	0e770394a35f0a924ec5ebe3796020236ed7721c823daaeb182d4076411059ae
+vendor/firmware/162_GestureBackPull_P_RTP.bin	vendor 分区：/firmware/162_GestureBackPull_P_RTP.bin	c121fe26b17d3cb75b5998b7e62394f158c8c1e13e044903f4b7b35f6760d473
+vendor/firmware/163_GestureBackRelease_P_RTP.bin	vendor 分区：/firmware/163_GestureBackRelease_P_RTP.bin	d46d956ac67471c34ffcf3bef7da6500e9ab8efe391ea3debe2c93cda94ad6c2
+vendor/firmware/164_alert_P_RTP.bin	vendor 分区：/firmware/164_alert_P_RTP.bin	0dc02d3505fb907fa671bef949970d00efdecaa4d16a0f3ca3c786ccdfc22e76
+vendor/firmware/165_feedbackNegativeLight_P_RTP.bin	vendor 分区：/firmware/165_feedbackNegativeLight_P_RTP.bin	9d3569c0577193a2842fdcd8b2a7678be12b3cbab654f3be413ab7328730e69d
+vendor/firmware/166_feedbackNeutral_P_RTP.bin	vendor 分区：/firmware/166_feedbackNeutral_P_RTP.bin	3f92430f151aa10413183e9b4520f8c0d2a61ff9e2b10185862facfc200374ee
+vendor/firmware/167_feedbackPositive_P_RTP.bin	vendor 分区：/firmware/167_feedbackPositive_P_RTP.bin	9e40d2b7a32d6dd0e3d70ec5c2218dca7e2b38e129e2861b3f1a592068640eb5
+vendor/firmware/168_fingerprintRecord_P_RTP.bin	vendor 分区：/firmware/168_fingerprintRecord_P_RTP.bin	dcb0c784fce26591132ee30c18eb76514e48fc88ceaeaa27932287a28736795b
+vendor/firmware/169_lockdown_P_RTP.bin	vendor 分区：/firmware/169_lockdown_P_RTP.bin	1c378db709b722e8fe7439f7217b5af1a7122b6ec52c83d7140673e0eeea5d4c
+vendor/firmware/171_todoAlldone_P_RTP.bin	vendor 分区：/firmware/171_todoAlldone_P_RTP.bin	a925d0db7c90abd944a2631658146764b355a709fc611cd779e692253c32a08d
+vendor/firmware/172_uninstallAnimationIcon_P_RTP.bin	vendor 分区：/firmware/172_uninstallAnimationIcon_P_RTP.bin	b7d4bbaa37ec1ecbb213de14e78ab06d9bf6644698b50842bc9f4357f6d839e0
+vendor/firmware/1_seqbinwav_P_RTP.bin	vendor 分区：/firmware/1_seqbinwav_P_RTP.bin	d46d956ac67471c34ffcf3bef7da6500e9ab8efe391ea3debe2c93cda94ad6c2
+vendor/firmware/2_seqbinwav_P_RTP.bin	vendor 分区：/firmware/2_seqbinwav_P_RTP.bin	c121fe26b17d3cb75b5998b7e62394f158c8c1e13e044903f4b7b35f6760d473
+vendor/firmware/3_seqbinwav_P_RTP.bin	vendor 分区：/firmware/3_seqbinwav_P_RTP.bin	3f92430f151aa10413183e9b4520f8c0d2a61ff9e2b10185862facfc200374ee
+vendor/firmware/4_seqbinwav_P_RTP.bin	vendor 分区：/firmware/4_seqbinwav_P_RTP.bin	dcb0c784fce26591132ee30c18eb76514e48fc88ceaeaa27932287a28736795b
+vendor/firmware/5_seqbinwav_P_RTP.bin	vendor 分区：/firmware/5_seqbinwav_P_RTP.bin	1bb8f883c9e1577753e0bace4e8b1fc4bcea0ba945cc27a804725711f8c91df0
+vendor/firmware/6_seqbinwav_P_RTP.bin	vendor 分区：/firmware/6_seqbinwav_P_RTP.bin	d04ad6b4028eccb13a56a841044d57d720de5db86cbd02c9016aefbbbdb9b8f7
+vendor/firmware/72_GestureUpSlide_P_RTP.bin	vendor 分区：/firmware/72_GestureUpSlide_P_RTP.bin	e8a6c18d1fbfb9593275dc6bf51d52e001cb5b86dd84d640293c9bd08699fc3b
+vendor/firmware/73_fodMotionPlanet_P_RTP.bin	vendor 分区：/firmware/73_fodMotionPlanet_P_RTP.bin	1b22efd623172154670184d3d8b89a5dd8f0852ed034a05ba3b2781545949b71
+vendor/firmware/74_ChargeWire_P_RTP.bin	vendor 分区：/firmware/74_ChargeWire_P_RTP.bin	7901e12ab35158c7f9d0f01e12fd7f6cfb9a73dea7b3a7d43cd5c05e31000fef
+vendor/firmware/75_ChargeWireless_P_RTP.bin	vendor 分区：/firmware/75_ChargeWireless_P_RTP.bin	feafb86885f36c3e0903fd0de8bf7052d026b8a5f654c74ec1949cf442b861f3
+vendor/firmware/76_UnlockFailed_P_RTP.bin	vendor 分区：/firmware/76_UnlockFailed_P_RTP.bin	f2eb6429345ab5d282951a00442967e443fcb224c4d980e1a6a8b677ccad24af
+vendor/firmware/77_fodMotion1_P_RTP.bin	vendor 分区：/firmware/77_fodMotion1_P_RTP.bin	1814df2fb1572a81238aec7ead92824fb5c812cd8a85b658e32e37b39209e625
+vendor/firmware/78_fodMotion2_P_RTP.bin	vendor 分区：/firmware/78_fodMotion2_P_RTP.bin	800cc67f7efe612c4f101d805ab26249e98adbb25739cce412db5f3bc82448dc
+vendor/firmware/79_fodMotion3_P_RTP.bin	vendor 分区：/firmware/79_fodMotion3_P_RTP.bin	138ba0caeecfe1f8a4600f5c4033ef702255ede89da8fdf06637b0dd79778dd4
+vendor/firmware/7_seqbinwav_P_RTP.bin	vendor 分区：/firmware/7_seqbinwav_P_RTP.bin	e53541c7ac57e903edb627617737ea61d715a864ffb4a6a40f7f1f88547a81a8
+vendor/firmware/80_fodMotion4_P_RTP.bin	vendor 分区：/firmware/80_fodMotion4_P_RTP.bin	5bf0104491d8086272f848d8797e3dbb18394d03cfce2f6e1f066d17997b957f
+vendor/firmware/81_fodMotionAurora_P_RTP.bin	vendor 分区：/firmware/81_fodMotionAurora_P_RTP.bin	5fe9339e2c0edec4e2957c3c22dccbd19512e653cc0901fc41bbaa886710f91d
+vendor/firmware/82_FaceIDWrong2_P_RTP.bin	vendor 分区：/firmware/82_FaceIDWrong2_P_RTP.bin	45857c9c141d1a0d764dbcf6acc6d34600e72b31bd5fceb3023834822aecb7fa
+vendor/firmware/83_uninstallAnimation_P_RTP.bin	vendor 分区：/firmware/83_uninstallAnimation_P_RTP.bin	003b094382e2e113616b80eb2cf2b02fd512659a552530a204371dfb51d9f865
+vendor/firmware/84_uninstallDialog_P_RTP.bin	vendor 分区：/firmware/84_uninstallDialog_P_RTP.bin	7b6177792920af2f141bd3021ca1f3a95b5b7b8bde204b2855dc090630cca9bf
+vendor/firmware/85_screenshot_P_RTP.bin	vendor 分区：/firmware/85_screenshot_P_RTP.bin	c4d162fdd6de0181b763749564049b39c7dc7ba4e0d73fb6a45aaf3a2426f33d
+vendor/firmware/86_lockscreenCameraEntry_P_RTP.bin	vendor 分区：/firmware/86_lockscreenCameraEntry_P_RTP.bin	3f92430f151aa10413183e9b4520f8c0d2a61ff9e2b10185862facfc200374ee
+vendor/firmware/87_launcherEdit_P_RTP.bin	vendor 分区：/firmware/87_launcherEdit_P_RTP.bin	1bc07241a8866e2a00e39f410f471db922e6af12c60aaf8e535ce2ca7a65d56d
+vendor/firmware/88_launcherIconSelection_P_RTP.bin	vendor 分区：/firmware/88_launcherIconSelection_P_RTP.bin	dcb0c784fce26591132ee30c18eb76514e48fc88ceaeaa27932287a28736795b
+vendor/firmware/8_seqbinwav_P_RTP.bin	vendor 分区：/firmware/8_seqbinwav_P_RTP.bin	18d348bc62afb42fecef70ce0afab08feae34f640bd15061fad649f0b7fddd39
+vendor/firmware/90_taskCleanAll_P_RTP.bin	vendor 分区：/firmware/90_taskCleanAll_P_RTP.bin	5b65913fd8d2cb15942a43c1b63a5c9bac904e3bfa4669118cd686ea7049ccb3
+vendor/firmware/91_newIconFolder_P_RTP.bin	vendor 分区：/firmware/91_newIconFolder_P_RTP.bin	d04ad6b4028eccb13a56a841044d57d720de5db86cbd02c9016aefbbbdb9b8f7
+vendor/firmware/92_notificationRemove_P_RTP.bin	vendor 分区：/firmware/92_notificationRemove_P_RTP.bin	e8a361a61f0912c00aef41d67581c7d770981f08167455cd126333ee8841642d
+vendor/firmware/93_notificationCleanall_P_RTP.bin	vendor 分区：/firmware/93_notificationCleanall_P_RTP.bin	c2ffc58207ca10edbeaa77920f545bb6e5e450ae046156d239f192dad7699698
+vendor/firmware/96_nfcCard_P_RTP.bin	vendor 分区：/firmware/96_nfcCard_P_RTP.bin	7e0a7903d944959e8207ae043e7a17048b019c27f3ab6a20d84eb0fc33416562
+vendor/firmware/98_nfcCardSlow_P_RTP.bin	vendor 分区：/firmware/98_nfcCardSlow_P_RTP.bin	613bec491598dba49763f34780fd2b3500bd6793e46450969d08e126a2670c39
+vendor/firmware/99_POCO_P_RTP.bin	vendor 分区：/firmware/99_POCO_P_RTP.bin	066b41a4f4a0e37dffeba0760316a28fd7a1b8ea9d55b7379ae48cff6d5c5fb6
+vendor/firmware/9_seqbinwav_P_RTP.bin	vendor 分区：/firmware/9_seqbinwav_P_RTP.bin	e6efb8cb15efcabdee66ec2698b84c79b5b60ad46239d71fd6bfd049d80422d6
+vendor/firmware/BLH-cs35l43-dsp1-spk-prot.bin	vendor 分区：/firmware/BLH-cs35l43-dsp1-spk-prot.bin	e83371cc47bb7daca8f11447c7040f6cb2f867e359b76591531a8e7304cc473b
+vendor/firmware/BLL-cs35l43-dsp1-spk-prot.bin	vendor 分区：/firmware/BLL-cs35l43-dsp1-spk-prot.bin	b693bbcb41b3db9e8f9fadbe21ca0ab20dddccaa107445650138fc099f4f5180
+vendor/firmware/BRH-cs35l43-dsp1-spk-prot.bin	vendor 分区：/firmware/BRH-cs35l43-dsp1-spk-prot.bin	1afbb6ae09eff565a8f99405daee11248b499b0b9120b9729d24fbeb101ee34e
+vendor/firmware/BRL-cs35l43-dsp1-spk-prot.bin	vendor 分区：/firmware/BRL-cs35l43-dsp1-spk-prot.bin	82ade5d06ed7f3c1a36953a1c8a31ddbfa4e510d3fd5c72544a578487dedaf56
+vendor/firmware/CAMERA_ICP.b00	vendor 分区：/firmware/CAMERA_ICP.b00	278bb1cac0857fe3314734313d27c694badc1bc09f83b133bad2c703bc6ee4fd
+vendor/firmware/CAMERA_ICP.b01	vendor 分区：/firmware/CAMERA_ICP.b01	f2e98ca5b99711088aad41a78bc675c5aa099f7dde9bc61121eaa642160f52af
+vendor/firmware/CAMERA_ICP.b02	vendor 分区：/firmware/CAMERA_ICP.b02	281d88f29e022e10e9b020c85dc56284707a38c7af2f1758ecb199d360a0bb5e
+vendor/firmware/CAMERA_ICP.b03	vendor 分区：/firmware/CAMERA_ICP.b03	998166219fccad0816d85a1152e17bb89cf47465ecffc6615ba3b608bc6afdcf
+vendor/firmware/CAMERA_ICP.b04	vendor 分区：/firmware/CAMERA_ICP.b04	7a1b9d5dff73c70276f9b18b6440f9a8d674b446ece36dc3f44dead3da04e5a8
+vendor/firmware/CAMERA_ICP.b05	vendor 分区：/firmware/CAMERA_ICP.b05	c047e67c4b16a8630345deae029a22c3b245c35df5485e7e172b23a2380a6bd9
+vendor/firmware/CAMERA_ICP.b06	vendor 分区：/firmware/CAMERA_ICP.b06	1881c2584c0e18865c5f1575905251e46795a98a1cbacb78a5ad4b8448cdfbbc
+vendor/firmware/CAMERA_ICP.b07	vendor 分区：/firmware/CAMERA_ICP.b07	17b5bbea81099abafc9cf970586f97ee4d198e01dd80a7d63ef129f6407cc808
+vendor/firmware/CAMERA_ICP.b08	vendor 分区：/firmware/CAMERA_ICP.b08	d52c8c49dbeefa8011077e0e8cbf6f050cdabbd87b468f124628a977461292e3
+vendor/firmware/CAMERA_ICP.b09	vendor 分区：/firmware/CAMERA_ICP.b09	ebf15abd8f62dbd568f98a2af083e234a7204ac30b8055c9d107d200bcb4223d
+vendor/firmware/CAMERA_ICP.b10	vendor 分区：/firmware/CAMERA_ICP.b10	e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+vendor/firmware/CAMERA_ICP.b11	vendor 分区：/firmware/CAMERA_ICP.b11	e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+vendor/firmware/CAMERA_ICP.b12	vendor 分区：/firmware/CAMERA_ICP.b12	e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+vendor/firmware/CAMERA_ICP.b13	vendor 分区：/firmware/CAMERA_ICP.b13	e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+vendor/firmware/CAMERA_ICP.b14	vendor 分区：/firmware/CAMERA_ICP.b14	e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+vendor/firmware/CAMERA_ICP.b15	vendor 分区：/firmware/CAMERA_ICP.b15	e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+vendor/firmware/CAMERA_ICP.b16	vendor 分区：/firmware/CAMERA_ICP.b16	8ef0484361189f4b52f6850d4b63bc00df035c9ae6e4182df321f76ccba22869
+vendor/firmware/CAMERA_ICP.b17	vendor 分区：/firmware/CAMERA_ICP.b17	6a685950aa6bccb81d9d096b4ee80f8950ec712ae52381c0b4a3e48aed71c624
+vendor/firmware/CAMERA_ICP.b18	vendor 分区：/firmware/CAMERA_ICP.b18	6b2e4e1c1dfff8bc80e8fe556f0d66b3ab40ba5a750cd5e6744ef14298ccaa7e
+vendor/firmware/CAMERA_ICP.b19	vendor 分区：/firmware/CAMERA_ICP.b19	e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+vendor/firmware/CAMERA_ICP.b20	vendor 分区：/firmware/CAMERA_ICP.b20	8d3a367b85415f0e1493d6ae2d59f97b71157b530930545128bf542c4dc804ff
+vendor/firmware/CAMERA_ICP.b21	vendor 分区：/firmware/CAMERA_ICP.b21	5a3ce7c27f7a417090726462bd964cf51856f35696142032a1bd72a1a3040317
+vendor/firmware/CAMERA_ICP.elf	vendor 分区：/firmware/CAMERA_ICP.elf	8b1f76cce3df570f443af0551c6901fa3cba975d91d9281b2e7c9a33eff065fc
+vendor/firmware/CAMERA_ICP.mbn	vendor 分区：/firmware/CAMERA_ICP.mbn	699df758c3ea6ad1dfeea0b41a908cfeacaa40b6c01677bb597c98af708f6c8e
+vendor/firmware/CAMERA_ICP.mdt	vendor 分区：/firmware/CAMERA_ICP.mdt	bc271d9f78572a837d86c6b13a80727db6ef5d60a45c5213bb8ba7e82ed9a726
+vendor/firmware/CAMERA_ICP_170.elf	vendor 分区：/firmware/CAMERA_ICP_170.elf	3193c1c6a4fbbf2b51214fbfda9ec700b469cbc537f64735498d99c59d8e8f1b
+vendor/firmware/CAMERA_ICP_480.elf	vendor 分区：/firmware/CAMERA_ICP_480.elf	3c7ed81c67d461e313ea2d076ebde8d9e270384376809dc89ca8427af8021053
+vendor/firmware/TLH-cs35l43-dsp1-spk-prot.bin	vendor 分区：/firmware/TLH-cs35l43-dsp1-spk-prot.bin	852591d14fb64c53f16a9e38b4b3beae5d93e59fccfe0c0eac8c3ab822f8d615
+vendor/firmware/TLL-cs35l43-dsp1-spk-prot.bin	vendor 分区：/firmware/TLL-cs35l43-dsp1-spk-prot.bin	cf96d4cb18d80854cb3cdaf0d814c7aeb984a4048144db16bc21e0c7656330f2
+vendor/firmware/TRH-cs35l43-dsp1-spk-prot.bin	vendor 分区：/firmware/TRH-cs35l43-dsp1-spk-prot.bin	cfdf0ab6235b6a3704a323a7fd015a797dbd7c59b4373482bbad7f29a2ca2b31
+vendor/firmware/TRL-cs35l43-dsp1-spk-prot.bin	vendor 分区：/firmware/TRL-cs35l43-dsp1-spk-prot.bin	0769fabf927f1594de15ca42e13470bd9fdd79b5a533ebf787b3bc3ea071bb25
+vendor/firmware/a610_zap.b00	vendor 分区：/firmware/a610_zap.b00	682eb438ae3b07f3b996e7ef4ddb3128d5a44951e9a455ab7873688502d5429e
+vendor/firmware/a610_zap.b01	vendor 分区：/firmware/a610_zap.b01	a2b68960a8a3afbcdce6ebd2982ed083fad748dae1577d0ab716833cee93a023
+vendor/firmware/a610_zap.b02	vendor 分区：/firmware/a610_zap.b02	84c657996f3ec60a90d0c7223faad9b0700074fe00dc55596e0d3ba69b914d33
+vendor/firmware/a610_zap.elf	vendor 分区：/firmware/a610_zap.elf	7c5007205e82a20388a40134aaede1eec96e6c8ddb7411f306ffa5416349d80f
+vendor/firmware/a610_zap.mdt	vendor 分区：/firmware/a610_zap.mdt	e36b3803c0a21dd2b76fc7216f54f45c830caba3a2f6e3ceb958bdf3b19877eb
+vendor/firmware/a630_sqe.fw	vendor 分区：/firmware/a630_sqe.fw	413dbae60f122fe682a7c5500cb8788a6c0427b4c0b76abd6b08bb8061a10129
+vendor/firmware/a660_sqe.fw	vendor 分区：/firmware/a660_sqe.fw	01cacafc48ae96f061caa325a294a91024e626403b97fa556a9bcc42e4de6768
+vendor/firmware/a662_gmu.bin	vendor 分区：/firmware/a662_gmu.bin	f22cdc97b79dafe2a8495dc112df3fb09bbbc82337044d5b13ba21fec0df5840
+vendor/firmware/a662_zap.b00	vendor 分区：/firmware/a662_zap.b00	f2c460793fd9f6bfcfb1bc6146c2e2c187ec1ebe545049195400383f9c7639e7
+vendor/firmware/a662_zap.b01	vendor 分区：/firmware/a662_zap.b01	1a5fdbf458ea547c5459b301ab577a83461797b77bde9501fb48fc62d2d5f185
+vendor/firmware/a662_zap.b02	vendor 分区：/firmware/a662_zap.b02	0b259a39059ced02e568ebbe05a98bb4a9a9a37b04af4ce8b129c373c9a417bd
+vendor/firmware/a662_zap.elf	vendor 分区：/firmware/a662_zap.elf	b2ccfc5e5c47cd5ef72868648d93c4d4a9ce3173f9345b17061cae384a9ac926
+vendor/firmware/a662_zap.mbn	vendor 分区：/firmware/a662_zap.mbn	2de53e2bdbcaaf5d47030fedcdc3987fa25a37528f6e7250a3c14b4ac7b58d11
+vendor/firmware/a662_zap.mdt	vendor 分区：/firmware/a662_zap.mdt	99a776e22ca54b1619e3f1c09d7be9d4cb73ed05f6498d65bbeb8df1946deaad
+vendor/firmware/a710_sqe.fw	vendor 分区：/firmware/a710_sqe.fw	e257e855c61faf5bb81f77fd6a91bcb785fb90c57c04b44d84e8e76df7e5395f
+vendor/firmware/a710_zap.b00	vendor 分区：/firmware/a710_zap.b00	ea6488046b6d65f695efccf1517bba92b71597cd3d7e9a310d83a2ae5e27133c
+vendor/firmware/a710_zap.b01	vendor 分区：/firmware/a710_zap.b01	34e1cda9336999dc4141b462c52fc99df5b94780273c1d7e433f0518caaf108a
+vendor/firmware/a710_zap.b02	vendor 分区：/firmware/a710_zap.b02	7251342d071e60249a6f45af3542fcefe93588282c1529ddff1dedb75a811fee
+vendor/firmware/a710_zap.elf	vendor 分区：/firmware/a710_zap.elf	3e57679de6dadfb727197519dd1761590b87c5c59063c6d397669446a099bb56
+vendor/firmware/a710_zap.mbn	vendor 分区：/firmware/a710_zap.mbn	9191a610df48f4bf2b789f68d6cf044bb1455bd6c67c89f060192ab62fbbbb22
+vendor/firmware/a710_zap.mdt	vendor 分区：/firmware/a710_zap.mdt	6c36902c049f866e359b796e71bebf2c89dde838cd8d24b4491c885906aeb8e0
+vendor/firmware/a730_sqe.fw	vendor 分区：/firmware/a730_sqe.fw	e67d1829f57fc8326d806234b932dc3b78e28a9940df34c70752f17d5f38b7aa
+vendor/firmware/a730_zap.b00	vendor 分区：/firmware/a730_zap.b00	72686cdeedc16a47b320a91121763f8522fbd5cad26d0239ca12332f9b9fd661
+vendor/firmware/a730_zap.b01	vendor 分区：/firmware/a730_zap.b01	1fc98f97cf354b9704b20d0848f7b2739638539a57d88ecf5cc71ca1c5c4e6b9
+vendor/firmware/a730_zap.b02	vendor 分区：/firmware/a730_zap.b02	cd089369c3fb104c979087b9d9e4afd36b8b01cf0e3eeb1a8e1c4dc83ca651be
+vendor/firmware/a730_zap.elf	vendor 分区：/firmware/a730_zap.elf	b4fc62da3de90d50228815b016b2eafef7bf6bc6854bf24f8d721b9ee9bef5bd
+vendor/firmware/a730_zap.mbn	vendor 分区：/firmware/a730_zap.mbn	9a3dbbaedda3615506bf46d5069b4bda57c33b5b280fca4ba28ddefbc0b54b7b
+vendor/firmware/a730_zap.mdt	vendor 分区：/firmware/a730_zap.mdt	a75cb49c7d6027a35ff690f8020eb9a52f0405385fa1f53190b9bafbcf15d1ef
+vendor/firmware/cs35l43-dsp1-spk-prot.wmfw	vendor 分区：/firmware/cs35l43-dsp1-spk-prot.wmfw	13ce35d4e754dd9e3c77e6cf16dabf1553ed038882a615e403aa206f5f197e14
+vendor/firmware/evass-lt-21.b00	vendor 分区：/firmware/evass-lt-21.b00	3998e32a9821c526254fa735705e05c7a4ba7723a2d85b1fe4661818d9a004b4
+vendor/firmware/evass-lt-21.b01	vendor 分区：/firmware/evass-lt-21.b01	cd38c1ee05588b38a8a3035ab989caf977d952b69cc633ccc195cb32a4165891
+vendor/firmware/evass-lt-21.b02	vendor 分区：/firmware/evass-lt-21.b02	71ce9a1f86adc88f2ba673abead0b11efd0d063785ee16d36be40f294b3b8247
+vendor/firmware/evass-lt-21.b03	vendor 分区：/firmware/evass-lt-21.b03	de0f3769739fe06cee53bda9ee0d67fda7b2732e4d188295edaa97c34a330ddc
+vendor/firmware/evass-lt-21.b04	vendor 分区：/firmware/evass-lt-21.b04	d5b9061c04626772416fd3ab0a3ecb74e2fd33f64019b7570d0464f3bd324672
+vendor/firmware/evass-lt-21.b05	vendor 分区：/firmware/evass-lt-21.b05	e5207449ec5749c3ccd1b026385d12821a7d0822271317953a113a8e30e4e002
+vendor/firmware/evass-lt-21.b06	vendor 分区：/firmware/evass-lt-21.b06	1881c2584c0e18865c5f1575905251e46795a98a1cbacb78a5ad4b8448cdfbbc
+vendor/firmware/evass-lt-21.b07	vendor 分区：/firmware/evass-lt-21.b07	de0f3769739fe06cee53bda9ee0d67fda7b2732e4d188295edaa97c34a330ddc
+vendor/firmware/evass-lt-21.b08	vendor 分区：/firmware/evass-lt-21.b08	df8beab46c4cb5c047f5fa554aa21ec347880cb5122135ea0c89e494d05b0fc9
+vendor/firmware/evass-lt-21.b09	vendor 分区：/firmware/evass-lt-21.b09	947534bfb90555adcbbc3d486f74e4a201ffa8c2def59d5765a1e068d8b56de4
+vendor/firmware/evass-lt-21.b10	vendor 分区：/firmware/evass-lt-21.b10	e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+vendor/firmware/evass-lt-21.b11	vendor 分区：/firmware/evass-lt-21.b11	e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+vendor/firmware/evass-lt-21.b12	vendor 分区：/firmware/evass-lt-21.b12	e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+vendor/firmware/evass-lt-21.b13	vendor 分区：/firmware/evass-lt-21.b13	e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+vendor/firmware/evass-lt-21.b14	vendor 分区：/firmware/evass-lt-21.b14	e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+vendor/firmware/evass-lt-21.b15	vendor 分区：/firmware/evass-lt-21.b15	e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+vendor/firmware/evass-lt-21.b16	vendor 分区：/firmware/evass-lt-21.b16	e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+vendor/firmware/evass-lt-21.b17	vendor 分区：/firmware/evass-lt-21.b17	e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+vendor/firmware/evass-lt-21.b18	vendor 分区：/firmware/evass-lt-21.b18	ad7facb2586fc6e966c004d7d1d16b024f5805ff7cb47c7a85dabd8b48892ca7
+vendor/firmware/evass-lt-21.b19	vendor 分区：/firmware/evass-lt-21.b19	53f9404d4dd379e3bf6cceb263436685fc418bff2c8a1663adbcd792470fdc0d
+vendor/firmware/evass-lt-21.mbn	vendor 分区：/firmware/evass-lt-21.mbn	3e451fddb9a32266f067310c80c6e8d80702efef88476c3e0902dc23fb64ff94
+vendor/firmware/evass-lt-21.mdt	vendor 分区：/firmware/evass-lt-21.mdt	a5114d573b08f02717ae92fb88fc78d56827861b9feec01c90fa9b1736e940e5
+vendor/firmware/evass.b00	vendor 分区：/firmware/evass.b00	1e57fc6b656d4c9721fe8161caddceee5bc107649bcdb3a3289d2d9a69848bf4
+vendor/firmware/evass.b01	vendor 分区：/firmware/evass.b01	8c1cf6f2e7f81f6a802f9710c0f53d558d28c54f1ea157ebba49debc0be3bf3d
+vendor/firmware/evass.b02	vendor 分区：/firmware/evass.b02	914a865a4640797bae71ce4bf30deaa22a8d3f4abf52cfed81e4a5b0f5570a53
+vendor/firmware/evass.b03	vendor 分区：/firmware/evass.b03	17b5bbea81099abafc9cf970586f97ee4d198e01dd80a7d63ef129f6407cc808
+vendor/firmware/evass.b04	vendor 分区：/firmware/evass.b04	1341f160a8edb3290b7f728c2c12389e6666f40afd91e57e3a2d9e7139d46c9a
+vendor/firmware/evass.b05	vendor 分区：/firmware/evass.b05	c047e67c4b16a8630345deae029a22c3b245c35df5485e7e172b23a2380a6bd9
+vendor/firmware/evass.b06	vendor 分区：/firmware/evass.b06	1881c2584c0e18865c5f1575905251e46795a98a1cbacb78a5ad4b8448cdfbbc
+vendor/firmware/evass.b07	vendor 分区：/firmware/evass.b07	17b5bbea81099abafc9cf970586f97ee4d198e01dd80a7d63ef129f6407cc808
+vendor/firmware/evass.b08	vendor 分区：/firmware/evass.b08	06ba8aa388179e51c7cce33dd157b77d8b27f26baac28bc74d60a67a967dbc12
+vendor/firmware/evass.b09	vendor 分区：/firmware/evass.b09	9a2d94a79029fe8d73096a80d56fc494bd5387366ba281eacab8a5d23395ffbc
+vendor/firmware/evass.b10	vendor 分区：/firmware/evass.b10	e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+vendor/firmware/evass.b11	vendor 分区：/firmware/evass.b11	e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+vendor/firmware/evass.b12	vendor 分区：/firmware/evass.b12	e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+vendor/firmware/evass.b13	vendor 分区：/firmware/evass.b13	e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+vendor/firmware/evass.b14	vendor 分区：/firmware/evass.b14	e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+vendor/firmware/evass.b15	vendor 分区：/firmware/evass.b15	e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+vendor/firmware/evass.b16	vendor 分区：/firmware/evass.b16	e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+vendor/firmware/evass.b17	vendor 分区：/firmware/evass.b17	e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+vendor/firmware/evass.b18	vendor 分区：/firmware/evass.b18	ad7facb2586fc6e966c004d7d1d16b024f5805ff7cb47c7a85dabd8b48892ca7
+vendor/firmware/evass.b19	vendor 分区：/firmware/evass.b19	9b268aa4dd2796de3265946fce3901c8319752687cdb51a73fcb786550828678
+vendor/firmware/evass.mbn	vendor 分区：/firmware/evass.mbn	a1c3451d4b504860cc39cd4a4f7d2f4703173b8df73f156905fae004e5521d5c
+vendor/firmware/evass.mdt	vendor 分区：/firmware/evass.mdt	1505777e6212e0ea7ca8cd9914af7336f5622ebf9a1a3a66463167205de3ac7b
+vendor/firmware/evautil64.b00	vendor 分区：/firmware/evautil64.b00	b31462110823c787c146e3f62d4df3482d07c8c70c751bfc8f46dc3d71c98f90
+vendor/firmware/evautil64.b01	vendor 分区：/firmware/evautil64.b01	3e05d34bd3c684ecc0e64d0738f63a880aaa4c6f6bdefb6d7af06e28f365b995
+vendor/firmware/evautil64.b02	vendor 分区：/firmware/evautil64.b02	02c78f7fde4b5c64f25777a560bbd34d0d2d45d2f9da5b3374c720229885de84
+vendor/firmware/evautil64.b03	vendor 分区：/firmware/evautil64.b03	8cec135e4fb23a99bc774bfad41dfc57b8ec13d6275c3245a53214cdbab04b29
+vendor/firmware/evautil64.b04	vendor 分区：/firmware/evautil64.b04	bdc22f38ba33ade441cb1ab0ce872dca8129e1a1fd8e987706c958a7f830e081
+vendor/firmware/evautil64.b05	vendor 分区：/firmware/evautil64.b05	7a3b20f7e08e28bc464005494176f15fb2dadbcde05631727bcb1f40ad6e4a24
+vendor/firmware/evautil64.b06	vendor 分区：/firmware/evautil64.b06	92e5e69a98a7358637108cb16fdb2f3cb3b2e5cc81d513f5c3b6171512078f3f
+vendor/firmware/evautil64.b07	vendor 分区：/firmware/evautil64.b07	0ce1e1e8448e62490dd02c9d6555f8b5454034d9af1e1449d42c4e2eed22df7f
+vendor/firmware/evautil64.mdt	vendor 分区：/firmware/evautil64.mdt	53d8ed22cada8493a2b0e083120ae45b0660c5fd3eda20e377de5513508e71ab
+vendor/firmware/gmu_gen70000.bin	vendor 分区：/firmware/gmu_gen70000.bin	b2d3f0e2a98fd6259ab9ffef16df63265542e6cc9a970d53d476e823d432042a
+vendor/firmware/novatek_nt36532_m80_fw_csot.bin	vendor 分区：/firmware/novatek_nt36532_m80_fw_csot.bin	3a1e294219570984698211b9c0d3e7cda736848ff2aef5d8d4d5d9619381634d
+vendor/firmware/novatek_nt36532_m80_mp_csot.bin	vendor 分区：/firmware/novatek_nt36532_m80_mp_csot.bin	84058de8f61b824e91ad2fc93915eab6b8f828221b8eae9e13d350203e8a3038
+vendor/firmware/novatek_spi_fw.bin	vendor 分区：/firmware/novatek_spi_fw.bin	b32283d2427451f6e1dbe73eb450793e03e2644995c88fa0023ce20f77b68c05
+vendor/firmware/nvt_run_selftest_get_result_data_sample.bat	vendor 分区：/firmware/nvt_run_selftest_get_result_data_sample.bat	3c825ae207d171d8bf4865f63400d06d3aee8643df1fc443e9d85a19e3bc846e
+vendor/firmware/vpu20_4v.b00	vendor 分区：/firmware/vpu20_4v.b00	792648bed82431d6cbae4bc3120d845c8a6b244133ddd5b9c5e510df230221f8
+vendor/firmware/vpu20_4v.b01	vendor 分区：/firmware/vpu20_4v.b01	c918c75397e64d13d39e3e7a461793f370b30e714b91a9a6d152ae18bb358594
+vendor/firmware/vpu20_4v.b02	vendor 分区：/firmware/vpu20_4v.b02	5c810efcddb8df1e523c99097d5609a278f722e56b7ce575e5ba1f04726e22f4
+vendor/firmware/vpu20_4v.b03	vendor 分区：/firmware/vpu20_4v.b03	c5473a77b1fd5ee88aaa4ba92bb36b04fea90c4002423d33632e2b6902191475
+vendor/firmware/vpu20_4v.b04	vendor 分区：/firmware/vpu20_4v.b04	7a1b9d5dff73c70276f9b18b6440f9a8d674b446ece36dc3f44dead3da04e5a8
+vendor/firmware/vpu20_4v.b05	vendor 分区：/firmware/vpu20_4v.b05	c047e67c4b16a8630345deae029a22c3b245c35df5485e7e172b23a2380a6bd9
+vendor/firmware/vpu20_4v.b06	vendor 分区：/firmware/vpu20_4v.b06	1881c2584c0e18865c5f1575905251e46795a98a1cbacb78a5ad4b8448cdfbbc
+vendor/firmware/vpu20_4v.b07	vendor 分区：/firmware/vpu20_4v.b07	17b5bbea81099abafc9cf970586f97ee4d198e01dd80a7d63ef129f6407cc808
+vendor/firmware/vpu20_4v.b08	vendor 分区：/firmware/vpu20_4v.b08	85a5f9a6aed608ebdef5f1e1d3f948db99fccf15b19eaccc5c195f1732be0948
+vendor/firmware/vpu20_4v.b09	vendor 分区：/firmware/vpu20_4v.b09	590f95999f736445ff31312c8e3cedcf4f53eef472a6c01b12b5ae440fde8500
+vendor/firmware/vpu20_4v.b18	vendor 分区：/firmware/vpu20_4v.b18	43b09596e1496809aaa964b34c146580f0566c86bc9d7218a1288fd15fb93424
+vendor/firmware/vpu20_4v.b19	vendor 分区：/firmware/vpu20_4v.b19	acdd764e3cb34e17cb480a78f5e90bdc5048bafc6d5c19b1d844ad1385dc267e
+vendor/firmware/vpu20_4v.mbn	vendor 分区：/firmware/vpu20_4v.mbn	ddf29b2bf42a249a396743a9257343d5c6c55c492af4d6681f7787449f476585
+vendor/firmware/vpu20_4v.mdt	vendor 分区：/firmware/vpu20_4v.mdt	c7a323bb8e020055444c8a92752648df6b7016db7dad033d6622048b54c337af
+vendor/lib/modules/adsp_loader_dlkm.ko	vendor 分区：/lib/modules/adsp_loader_dlkm.ko	f89bcc0785b3305fcab1b3865c94674ea4ebefc5d349ad90a914a21e434097c6
+vendor/lib/modules/gpr_dlkm.ko	vendor 分区：/lib/modules/gpr_dlkm.ko	f49785e6cedb72dc5be2f923eaf0ce3d62b9d1d23565708bc189e29aa7a88f8b
+vendor/lib/modules/nt36532_touch.ko	vendor 分区：/lib/modules/nt36532_touch.ko	e0c088d1ff75d696f4a7fc9622b66df956c954cf22f4e771827a98975ae9059f
+vendor/lib/modules/q6_notifier_dlkm.ko	vendor 分区：/lib/modules/q6_notifier_dlkm.ko	32e77add9df10922323c6948e9cc9ed8e46b703d55456a4f3232d860ee6115b8
+vendor/lib/modules/q6_pdr_dlkm.ko	vendor 分区：/lib/modules/q6_pdr_dlkm.ko	20591e349216017c4c49520f4436265cc89a814caf45e9f64e4bf280b56e19ea
+vendor/lib/modules/snd_event_dlkm.ko	vendor 分区：/lib/modules/snd_event_dlkm.ko	ecf0de5fd86167f77ee98ead58625ae6d34318e28d3e40ca54295abbad064531
+vendor/lib/modules/spf_core_dlkm.ko	vendor 分区：/lib/modules/spf_core_dlkm.ko	f4d0b686d06cc748a4041a63b8cd2d468ff1e5b9a7a78522d65265f906915a09
+vendor/lib/modules/xiaomi_touch.ko	vendor 分区：/lib/modules/xiaomi_touch.ko	7c5434f8e33bd47a26c079125a85593ad289963f4e061c3eb4218bf8886aed37
+vendor/lib64/android.hardware.boot@1.0.so	vendor 分区：/lib64/android.hardware.boot@1.0.so	51c084d0e5476798b1d5fb3c8be719356fa8870a4da728256390e8e3e527a68e
+vendor/lib64/android.hardware.boot@1.1.so	vendor 分区：/lib64/android.hardware.boot@1.1.so	71887b990a1a229a184b79c542e0169217966d7843129d3273c114ff7bd02298
+vendor/lib64/android.hardware.boot@1.2.so	vendor 分区：/lib64/android.hardware.boot@1.2.so	ee73ea2bddf887a99388e7e3185a3c6d0a78f5443bc48eaccee97196bd2afc12
+vendor/lib64/android.hardware.gatekeeper@1.0.so	vendor 分区：/lib64/android.hardware.gatekeeper@1.0.so	8e99e2dd437179a96cef62c0e93e36bf490888edb2fac4e99dcd172de449aaf6
+vendor/lib64/android.hardware.keymaster@3.0.so	vendor 分区：/lib64/android.hardware.keymaster@3.0.so	6fa204933735858f5dc13e7b9142d29315ea5515173107314295924a7571a333
+vendor/lib64/android.hardware.keymaster@4.0.so	vendor 分区：/lib64/android.hardware.keymaster@4.0.so	139456827cd98f1778671efd63cec6df30792183c9148bba57285bbda11b5f57
+vendor/lib64/android.hardware.keymaster@4.1.so	vendor 分区：/lib64/android.hardware.keymaster@4.1.so	c85a46015030bb0066f4b3440a176fc41674f0db890080bbdf22b3a46279f8db
+vendor/lib64/android.hardware.vibrator-V1-ndk_platform.so	vendor 分区：/lib64/android.hardware.vibrator-V1-ndk_platform.so	03bffae8fe478839e7ba0bef316664f553d32893bf135ca14c83c80b8480618a
+vendor/lib64/android.hidl.allocator@1.0.so	vendor 分区：/lib64/android.hidl.allocator@1.0.so	66ad33eecb874725b5feb870a66c8cdfca7833b174675200b585c3632de7c42a
+vendor/lib64/hw/android.hardware.boot@1.0-impl-1.2-qti.so	vendor 分区：/lib64/hw/android.hardware.boot@1.0-impl-1.2-qti.so	ad5b7d5b36fe8cd41881894d5cdf212c2d56a522922e4b684dcb9112fc227a4e
+vendor/lib64/hw/android.hardware.gatekeeper@1.0-impl-qti.so	vendor 分区：/lib64/hw/android.hardware.gatekeeper@1.0-impl-qti.so	4e0d3b867a1d9a8db054c7e57fe67dd189f463f0bdd72ead5b68990e669944fd
+vendor/lib64/hw/vendor.qti.hardware.qseecom@1.0-impl.so	vendor 分区：/lib64/hw/vendor.qti.hardware.qseecom@1.0-impl.so	e5729696e246fa3b19b6e5046721e1fd325b96f3cdaee941c0cc7c0b8d4d5373
+vendor/lib64/libGPreqcancel.so	vendor 分区：/lib64/libGPreqcancel.so	e8d4672d607af7dd0071d13fb2b9c821da735cbdc209b84d4056df00e24d9a01
+vendor/lib64/libGPreqcancel_svc.so	vendor 分区：/lib64/libGPreqcancel_svc.so	a0064d6f2acde18dedf456fca8620e9d5db139ee3d2728a9fabdc8d7541d10dc
+vendor/lib64/libQSEEComAPI.so	vendor 分区：/lib64/libQSEEComAPI.so	7df6de3cda9b2c2cf839df63c365cd6814877898572a13ef86a5b34e07c79435
+vendor/lib64/libaachaptics.so	vendor 分区：/lib64/libaachaptics.so	2fb99dfa392cb8b80fd3a8478fac12f3568a1accba7588ad6977ebaa54ac739c
+vendor/lib64/libboot_control_qti.so	vendor 分区：/lib64/libboot_control_qti.so	1084c57017c20f1239f14700b8e74a11860e70c72f9ed9828f383bda34766c1d
+vendor/lib64/libdiag.so	vendor 分区：/lib64/libdiag.so	a3f21e64bc459073feef438397d196823ae0d2f07124415408d741d547165119
+vendor/lib64/libdisplayconfig.qti.so	vendor 分区：/lib64/libdisplayconfig.qti.so	71a3fc75fa07b1ddc9bfe633e523bbe77ee8699beef3b3e918c26b8f6cf47b60
+vendor/lib64/libdrm.so	vendor 分区：/lib64/libdrm.so	28cb1c84cb0b59bc6f9dda0fefef7a553747ce6f1384327ebdf6b16f3408fa62
+vendor/lib64/libdrmfs.so	vendor 分区：/lib64/libdrmfs.so	76a691968e34203282e77714339861668fa4ac0211842a9c72d077eb4f9057df
+vendor/lib64/libdrmtime.so	vendor 分区：/lib64/libdrmtime.so	50f509c15984a751039d117a76731a6a5d450d42cd0e3884e78e44bfa2ad646e
+vendor/lib64/libkeymaster_messages.so	vendor 分区：/lib64/libkeymaster_messages.so	13c137249ab8d2d0218c2b14e7a4fb71e057a3f3c8d9681a9ce6147a2e842889
+vendor/lib64/libkeymasterdeviceutils.so	vendor 分区：/lib64/libkeymasterdeviceutils.so	1aecc86929ec95e67f16190a6f4a0e71684f9e7ec0b8f57029d177bfdfbc89e5
+vendor/lib64/libkeymasterutils.so	vendor 分区：/lib64/libkeymasterutils.so	699c54704f0b361d157dceddf89d66fce1b63cd779b4a705332c9b73148af7fc
+vendor/lib64/libmisight.so	vendor 分区：/lib64/libmisight.so	21d58532e9663291602a2aca48eaa972e1d426dea99c7ec196094ef9c4876a83
+vendor/lib64/libops.so	vendor 分区：/lib64/libops.so	0b65e8686c13ece3b5d9130f23184aacac584f47e573f439cb7fe4bafc9d5f04
+vendor/lib64/libqcbor.so	vendor 分区：/lib64/libqcbor.so	880f55ba65846a288d912594ef9c8a156166f2906d0e8a68ba14d52fa3d034f7
+vendor/lib64/libqisl.so	vendor 分区：/lib64/libqisl.so	74acadc4be885d7d46f39427ba5d63e40215fb74f67d58068f8123fdf271f456
+vendor/lib64/libqtikeymaster4.so	vendor 分区：/lib64/libqtikeymaster4.so	694bfcf4d4cfdbb1cc18bfa840149063efcb315d969a17a72b5ef91aabfe8391
+vendor/lib64/libqtikeymint.so	vendor 分区：/lib64/libqtikeymint.so	b04d1b58a3c8aa1561649c0d4d904004e8e3ee9b6b7fa894cbd2417ca7a35aeb
+vendor/lib64/librecovery_updater.so	vendor 分区：/lib64/librecovery_updater.so	f15bd6dd1ad1917208676e50d9dfa3183bd327e6418c0d26800f364a6ca216dc
+vendor/lib64/librpmb.so	vendor 分区：/lib64/librpmb.so	c8e12a4abb92cb0179b04519bfe711f31bc03923322bd60c73bb058d96864bf0
+vendor/lib64/libsoc_helper.so	vendor 分区：/lib64/libsoc_helper.so	b13d1901f0e38f9fd5af6a8874a77f732f0cad7f21457177d2c5581b7648f25a
+vendor/lib64/libspcom.so	vendor 分区：/lib64/libspcom.so	3ae2444f8da2e77638f1c9eaa434325856f330579d404c504dcb9a5c2077f387
+vendor/lib64/libspl.so	vendor 分区：/lib64/libspl.so	b657ab09f2f12e0f81b514ecbbed68c1eb586bf2684ce64306e5840700670bfd
+vendor/lib64/libssd.so	vendor 分区：/lib64/libssd.so	64b060fef67880e6374ad7a2c642d66796a84f4b92623a9a21734b482cf5bd11
+vendor/lib64/libtime_genoff.so	vendor 分区：/lib64/libtime_genoff.so	150cf6f527a68b77056d3e4b75bfe94293c09072ac392fe5ad507c2ead2144dc
+vendor/lib64/libvmmem.so	vendor 分区：/lib64/libvmmem.so	0d95b87347448850731260da6c0c3279ff58ea4a95cff100813d48edce4f6dac
+vendor/lib64/vendor.display.config@2.0.so	vendor 分区：/lib64/vendor.display.config@2.0.so	f6742f1bb0d880e00e3331a85344baffef1f0579a4aa1d1cd9150eb35dad60eb
+vendor/lib64/vendor.hardware.vibratorfeature.IVibratorExt-V1-ndk_platform.so	vendor 分区：/lib64/vendor.hardware.vibratorfeature.IVibratorExt-V1-ndk_platform.so	72699d67adf997e9630a1f59c75242236d9e22d62ef97d3521a381585bae873e
+vendor/lib64/vendor.qti.hardware.qseecom@1.0.so	vendor 分区：/lib64/vendor.qti.hardware.qseecom@1.0.so	1b0139ffc61325b99b0395864108a068d65d76d347eff6e55d9501a7317d2dbf
+vendor/lib64/vendor.xiaomi.hardware.misight-V1-ndk_platform.so	vendor 分区：/lib64/vendor.xiaomi.hardware.misight-V1-ndk_platform.so	e3ec21f39f39ec2a7e0743f3f3c31dddd7a826d5a668811dddb66d4647085e09
+vendor/lib64/vndk-v32/android.hardware.security.keymint-V1-ndk_platform.so	system_ext 分区（306.3）：/lib64/vndk-32/android.hardware.security.keymint-V1-ndk_platform.so	0c8ad04e8927615094cb3e81020cda7248cde6115ae802aa9ffe59e121efc62a
+vendor/lib64/vndk-v32/android.hardware.security.secureclock-V1-ndk_platform.so	system_ext 分区（306.3）：/lib64/vndk-32/android.hardware.security.secureclock-V1-ndk_platform.so	a0dabe0f4dc4a0de4e9a0d572414c36d313ec79fe07a2165152868fbcd77d97d
+vendor/lib64/vndk-v32/android.hardware.security.sharedsecret-V1-ndk_platform.so	system_ext 分区（306.3）：/lib64/vndk-32/android.hardware.security.sharedsecret-V1-ndk_platform.so	f573d6c969ff1133108118df1c56dddfb75c43ea37876768602785553c80baac
+vendor/lib64/vndk-v32/android.hidl.memory.token@1.0.so	system_ext 分区（306.3）：/lib64/vndk-32/android.hidl.memory.token@1.0.so	5da4ddef239881b78026f0745b99b449bfb3c00c743601d1e809bce6fe19862f
+vendor/lib64/vndk-v32/android.hidl.memory@1.0.so	system_ext 分区（306.3）：/lib64/vndk-32/android.hidl.memory@1.0.so	ae410ec6912f9f9d662dd6f5dfde4f5572494ce3dde0b831581522ec1e1d78d0
+vendor/lib64/vndk-v32/libbase.so	system_ext 分区（306.3）：/lib64/vndk-32/libbase.so	6580d0165d851ad56c9ca2f59d1011700602bb7c4c1eb42a679d6b885d83a94e
+vendor/lib64/vndk-v32/libcgrouprc.so	system_ext 分区（306.3）：/lib64/vndk-32/libcgrouprc.so	925afb9db7302c2b573ca199362c5ab0c358e384a041874ed39f0c70f5c17d10
+vendor/lib64/vndk-v32/libcrypto.so	system_ext 分区（306.3）：/lib64/vndk-32/libcrypto.so	cec01c394c486cc3bcaa533b145bcb31fca968555b2af0d078b9b61460bf76cf
+vendor/lib64/vndk-v32/libcutils.so	system_ext 分区（306.3）：/lib64/vndk-32/libcutils.so	9f0d9b689afab0c331053a7c5826959e964145a6376399d01a289ea51f3ae0e8
+vendor/lib64/vndk-v32/libdmabufheap.so	system_ext 分区（306.3）：/lib64/vndk-32/libdmabufheap.so	8d71d27028cb96cadd2f2c889778977f41fcc0a03fb13aa2f958d8a784eba61a
+vendor/lib64/vndk-v32/libhardware.so	system_ext 分区（306.3）：/lib64/vndk-32/libhardware.so	c3c4b84de7b81ad9d63bf9dde8549700d4004eee284773932042633010a0ac9d
+vendor/lib64/vndk-v32/libhidlbase.so	system_ext 分区（306.3）：/lib64/vndk-32/libhidlbase.so	601b68f30df5668d3ed5f93f5d60dd2c03ec1e1b1b99a68cd0ea5e5f4df9dd5f
+vendor/lib64/vndk-v32/libhidlmemory.so	system_ext 分区（306.3）：/lib64/vndk-32/libhidlmemory.so	bad06610fe8136d6d96c9084e5f951ae2fc7d9fed75762be8629f61f3e8b1bc9
+vendor/lib64/vndk-v32/libion.so	system_ext 分区（306.3）：/lib64/vndk-32/libion.so	3ddddde9674fc23858bfdc989467ac7e4ad581e401bab542be23d1355aae8fc4
+vendor/lib64/vndk-v32/libjsoncpp.so	system_ext 分区（306.3）：/lib64/vndk-32/libjsoncpp.so	9ca2539db249d5c01bd57bf3862c7571e68b4e74a4bd98f1ba6fc954d4d8cb04
+vendor/lib64/vndk-v32/libprocessgroup.so	system_ext 分区（306.3）：/lib64/vndk-32/libprocessgroup.so	255c4ceaf678d3f08320311abefb25819f14f78aa604c8850fce13ae4c0666ad
+vendor/lib64/vndk-v32/libtinyalsa.so	system_ext 分区（306.3）：/lib64/vndk-32/libtinyalsa.so	c9ca3e849f42176122e6784469bbf84bba992120c738c1eea7c18014b09fd3a3
+vendor/lib64/vndk-v32/libxml2.so	system_ext 分区（306.3）：/lib64/vndk-32/libxml2.so	644a4c18aea639e604e094a70d300fe208db32c8dee013a5afb6929741bb9718
+vendor/lib64/vndk-v32/libz.so	system_ext 分区（306.3）：/lib64/vndk-32/libz.so	dcebf99a62897a36aa5a6e2e4c2c74140b687efc45043bb39feaf9aa966655cf
+
+## 符号链接
+# 路径	原始来源	目标
+vendor/firmware/wlan/qca_cld/WCNSS_qcom_cfg.ini	vendor 分区：/firmware/wlan/qca_cld/WCNSS_qcom_cfg.ini	-> /vendor/etc/wifi/WCNSS_qcom_cfg.ini
+vendor/firmware/wlan/qca_cld/qca6490/WCNSS_qcom_cfg.ini	vendor 分区：/firmware/wlan/qca_cld/qca6490/WCNSS_qcom_cfg.ini	-> /vendor/etc/wifi/qca6490/WCNSS_qcom_cfg.ini
+vendor/firmware/wlan/qca_cld/qca6490/wlan_mac.bin	vendor 分区：/firmware/wlan/qca_cld/qca6490/wlan_mac.bin	-> /mnt/vendor/persist/wlan/wlan_mac.bin
+vendor/firmware/wlan/qca_cld/qca6750/WCNSS_qcom_cfg.ini	vendor 分区：/firmware/wlan/qca_cld/qca6750/WCNSS_qcom_cfg.ini	-> /vendor/etc/wifi/qca6750/WCNSS_qcom_cfg.ini
+vendor/firmware/wlan/qca_cld/qca6750/wlan_mac.bin	vendor 分区：/firmware/wlan/qca_cld/qca6750/wlan_mac.bin	-> /mnt/vendor/persist/wlan/wlan_mac.bin
+vendor/firmware/wlanmdsp.otaupdate	vendor 分区：/firmware/wlanmdsp.otaupdate	-> /data/vendor/firmware/wlanmdsp.mbn
+
+## 已修改文件
+# 路径	原始来源	原厂 sha256	当前 sha256	修改内容
+vendor/bin/hw/vendor.xiaomi.hardware.vibratorfeature.service	vendor 分区：/bin/hw/vendor.xiaomi.hardware.vibratorfeature.service	d6f127217517ad99764c11c31b455e7aed17457515854b0afe067e5c7685b913	b6d9c10cd230b954bebf8d91163754ed39d3a62f6107530cfef7d3faba19ebb9	NEEDED 从 libutils.so 改为 libu32.so（v32 libutils 改名版）
+vendor/etc/charger_fstab.qti	recovery 分区 ramdisk：/vendor/etc/charger_fstab.qti	（待补）	a61037cfc258d6cead0b87551c0e8b16e26aa51a510a7ff1a44f568824d7f1d6	modem 行去掉 context=u:object_r:firmware_file:s0（recovery 策略无此类型）；原厂 recovery ramdisk 原文件待补
+vendor/etc/init/android.hardware.boot@1.2-service.rc	vendor 分区：/etc/init/android.hardware.boot@1.2-service.rc	5ea90531b8c88cb2599b846897959866cbf80d277ed5aa9f4964e979ea661fab	d13bc39ca5eebedc939299898241000347b2460c5aa29112ced96af5301e245a	加 disabled + seclabel u:r:recovery:s0；按服务需要调整 setenv/LD_LIBRARY_PATH
+vendor/etc/init/android.hardware.gatekeeper@1.0-service-qti.rc	vendor 分区：/etc/init/android.hardware.gatekeeper@1.0-service-qti.rc	7ce6d8a9f91c4493c39087950535164917b66755ed70c94446ab9533bbad1783	acc1dd2422e7b82edd8f5aaecf561a3d2b2667c75fcb76c9bb98e85e260fcba6	加 disabled + seclabel u:r:recovery:s0；按服务需要调整 setenv/LD_LIBRARY_PATH
+vendor/etc/init/android.hardware.keymaster@4.1-service-qti.rc	vendor 分区：/etc/init/android.hardware.keymaster@4.1-service-qti.rc	3da2bc55b1929b6bcfa6daeb0f472dcae34c5804ed259c5746c25a2daf9c46f1	cbc453945f178309142256892b9674af80e578354fb167563e681548dc9b2491	加 disabled + seclabel u:r:recovery:s0；按服务需要调整 setenv/LD_LIBRARY_PATH
+vendor/etc/init/android.hardware.security.keymint-service-qti.rc	vendor 分区：/etc/init/android.hardware.security.keymint-service-qti.rc	b9e599d625b4fe6573c02939dbebb1b4114762e56e898254632884d9f303b48f	ebfe2abfb933cdd7e80cefb5b0c9277e5407da5d5bcb4a6505717c01ce784555	加 disabled + seclabel u:r:recovery:s0；按服务需要调整 setenv/LD_LIBRARY_PATH
+vendor/etc/init/mi-misight.rc	vendor 分区：/etc/init/mi-misight.rc	55868c27881a7c679d75be16e120012d7cd1b82c6b40d4acca1a3be7060bfe09	dd3f008023ffda1dd96a965d00a5fe0a7b9d4fb0506bb608ceacdbf8c0b42cf0	加 disabled + seclabel u:r:recovery:s0；按服务需要调整 setenv/LD_LIBRARY_PATH
+vendor/etc/init/qseecomd.rc	vendor 分区：/etc/init/qseecomd.rc	09a1eaa5077f1ab8833676d2fc352cd9730b763da9823caba8c882a3a1d05baa	3577bd0af87ca0aad21992eb76479ceee69ec891203d3156837ace42118aa312	加 disabled + seclabel u:r:recovery:s0；按服务需要调整 setenv/LD_LIBRARY_PATH
+vendor/etc/init/vendor.qti.hardware.qseecom@1.0-service.rc	vendor 分区：/etc/init/vendor.qti.hardware.qseecom@1.0-service.rc	fe3a6b4c1fbd70e60f8688be4f580f08ab3bb7949189aabea0750db5d001db79	237da8bb928bb878f9e67015f6fe888a65b1bbff5f06d0978f54fe24f03b9d1d	加 disabled + seclabel u:r:recovery:s0；按服务需要调整 setenv/LD_LIBRARY_PATH
+vendor/etc/init/vendor.xiaomi.hardware.vibratorfeature.service.rc	vendor 分区：/etc/init/vendor.xiaomi.hardware.vibratorfeature.service.rc	111eebb7497bde26263e93abf4c7790d3f05f9f5fc722fc40006469ff7dec42b	09119d20637ac9ab3da0d661c0573b7b6dab5981237b122f327016b62aa0f77b	加 disabled + seclabel u:r:recovery:s0；按服务需要调整 setenv/LD_LIBRARY_PATH
+vendor/etc/ueventd.rc	vendor 分区：/etc/ueventd.rc	62476865da5b81f9c252fdc14441811c71e95d69b8acfbcaca5d13d866ea2c83	3223c499a528534e67f0bfef3fdf3963590de3ebfdaaaa47d23e0811e03850e6	新增 RPMB /dev/0:0:0:49476、dma_heap/qseecom/ion 等 recovery 需要的权限规则
+vendor/etc/vintf/manifest.xml	vendor 分区：/etc/vintf/manifest_cape.xml + HAL 片段（合并）	e0c247fc5cc5758bcf00661c7ab4793bfd1a05459ba1690b9eaf351fbcf06a1b	445873fcdecc03c5417cdaf58d422b6743e19a33d502db4c6c3721a69540aad0	由 manifest_cape.xml 与 boot/keymint 等 HAL 片段合并
+vendor/lib64/vndk-v32/libu32.so	system_ext 分区（306.3）VNDK 32：libutils.so（改名）	（待补）	e3a8e94c6fdcba7ca33f02ba13b78b2797435378586ef87b2efee6e1c79c2b96	由 VNDK 32 libutils.so 改名并把 SONAME 改为 libu32.so，与系统 libutils 共存
