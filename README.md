@@ -40,6 +40,7 @@ fastboot reboot recovery
 - [验证清单](docs/verification.md)
 - [更新日志](CHANGELOG.md)
 - [补丁说明](patches/README.md)
+- [参考资料](docs/references.md)
 - [开发记录](docs/notes/2026-11-05-recovery-build.md)
 
 ## 许可证
@@ -48,4 +49,4 @@ fastboot reboot recovery
 
 `recovery/root` 下的小米二进制、库和固件来自小米官方 ROM，版权归小米，不在 GPL 许可范围内。它们只用于在对应设备上运行 recovery。没有该设备或 ROM 使用权的人应删除这些文件，并按 [proprietary-files.txt](proprietary-files.txt) 从自己的官方包提取。
 
-Sarasa Mono SC 字体采用 SIL Open Font License 1.1，见 [licenses/SarasaGothic-OFL.txt](licenses/SarasaGothic-OFL.txt)。原厂内核 `prebuilt/kernel` 的版权归小米。
+Sarasa Mono SC 字体采用 SIL Open Font License 1.1，见 [licenses/SarasaGothic-OFL.txt](licenses/SarasaGothic-OFL.txt)。

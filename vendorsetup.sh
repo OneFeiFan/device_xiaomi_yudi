@@ -32,7 +32,7 @@ if [ "$1" = "$FDEVICE" -o "$FOX_BUILD_DEVICE" = "$FDEVICE" ]; then
 	# 这个值会被编进 recovery，启动时写入 keymaster_ver 属性，是实际生效的来源。
 	export OF_DEFAULT_KEYMASTER_VERSION="4.1"
 
-	# 预编译内核只用于构建，不放进镜像
+	# 预编译内核只用来满足构建检查，不进镜像（prebuilt/kernel 是 0 字节占位文件）
 	export OF_FORCE_PREBUILT_KERNEL=1
 
 	# ramdisk 用 LZ4，与原厂 recovery 一致（BoardConfig 已设 BOARD_RAMDISK_USE_LZ4）

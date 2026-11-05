@@ -51,6 +51,8 @@ GOGC=50 GOMAXPROCS=8 mka -j14 adbd recoveryimage
 - `OrangeFox-*.img`
 - `OrangeFox-*.zip`
 
+`prebuilt/kernel` 是 0 字节占位文件，不要删除。构建系统需要 `TARGET_PREBUILT_KERNEL` 来定义 recovery 镜像目标；真正让构建不需要内核内容的是 `device.mk` 里的 `PRODUCT_ENABLE_UFFD_GC := false` 和 `PRODUCT_OTA_ENFORCE_VINTF_KERNEL_REQUIREMENTS := false`。如果把内核文件删掉，构建可能显示成功，但不会产出 `recovery.img`。
+
 ## 增量构建
 
 完整构建过一次后，只改 C/C++ 或 `recovery/root` 里已有的文件，可以跳过 Soong 和 Kati，直接调 ninja：

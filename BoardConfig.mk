@@ -24,12 +24,13 @@ TARGET_NO_BOOTLOADER := true
 QCOM_BOARD_PLATFORMS += taro
 
 # 内核
-# 原厂 recovery 不带内核（REC 头部 kernel_size = 0），引导程序用 boot 分区的内核启动它，
-# 这里保持一致。预编译内核是原厂 boot 里的 5.10.236，只用来满足构建系统，不会打进镜像。
+# 原厂 recovery 不带内核（REC 头部 kernel_size = 0），引导程序用 boot 分区的内核启动它。
+# Recovery 构建通过 PRODUCT_ENABLE_UFFD_GC := false 去掉了内核版本依赖。
+# 构建系统仍要求 TARGET_PREBUILT_KERNEL 指向的文件存在；这里放 0 字节占位文件，
+# 只用来满足检查，内核不会进镜像（BOARD_EXCLUDE_KERNEL_FROM_RECOVERY_IMAGE）。
 TARGET_KERNEL_ARCH := arm64
 TARGET_KERNEL_HEADER_ARCH := arm64
 TARGET_KERNEL_VERSION := 5.10
-BOARD_KERNEL_IMAGE_NAME := Image
 BOARD_KERNEL_PAGESIZE := 4096
 TARGET_FORCE_PREBUILT_KERNEL := true
 TARGET_PREBUILT_KERNEL := $(DEVICE_PATH)/prebuilt/kernel

@@ -9,6 +9,7 @@
 - 修正：主题勾选设置在重启后丢失。
 - 修正：下拉面板里 MTP 提示的误译。
 - 修正：VNDK v31 与 v32 的重复库。
-- 修正：fastbootd 因缺少 health 服务不初始化 USB。设备端已能枚举为 18d1:4ee0，Windows 需要安装 fastboot 驱动。
+- 修正：fastbootd 因缺少 health 服务不初始化 USB。设备端已能枚举为 `18d1:4ee0`，Windows 需要安装 fastboot 驱动。
+- 精简：移除 45MB 预编译内核，`prebuilt/kernel` 改为 0 字节占位文件。关闭 UFFD GC 和 OTA 内核 VINTF 要求以支持无内核构建。
 
 验证：实机验证了启动、触摸、解密、MTP 双向传输、卡刷、备份恢复、ADB sideload、电池、ADSP 和 fastbootd。fastbootd 完成了 `getvar` 和 `reboot recovery` 验证；Windows 使用前需要安装 Google USB 驱动（`18D1:4EE0`）。

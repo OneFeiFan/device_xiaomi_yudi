@@ -8,9 +8,21 @@
 
 ## boot 控制
 
-第一版尝试编译 LineageOS 的 bootctrl 和 gpt-utils，需要内核 UAPI 头。设备使用预编译内核，树里没有内核源码，方案被撤销。
+第一版尝试编译 LineageOS 的 bootctrl 和 gpt-utils，需要内核 UAPI 头。设备由 boot 分区的内核启动，树里没有内核源码，方案被撤销。
 
 最终使用原厂 vendor 里的 HIDL 1.2 boot HAL。服务名是 `vendor.boot-hal-1-2`，实现库和依赖放在 ramdisk 的 `/vendor/lib64`。原厂 rc 缺 `seclabel u:r:recovery:s0`，直接照抄会导致所有 vendor 服务启动失败，后来统一补上 `disabled` 和 seclabel。
+
+## 内核声明
+
+目标是不在仓库里放 45MB 的原厂内核。原厂 recovery 头部 `kernel_size` 本来就是 0，引导程序用 boot 分区的内核。
+
+第一次尝试 `TARGET_NO_KERNEL := true` 并删除 `prebuilt/kernel`。构建能跑完，但 OrangeFox 打包脚本拿到的 `INSTALLED_RECOVERYIMAGE_TARGET` 是空的，不生成 `recovery.img`。
+
+Android 16 的 recovery 构建会通过 UFFD GC 的 sysprop 依赖去内核里取版本号。在 `device.mk` 设 `PRODUCT_ENABLE_UFFD_GC := false` 后，这个依赖消失。
+
+但 0 字节的 `prebuilt/kernel` 仍然在 `check_vintf_all` 的内核配置提取处失败。这个设备树只构建 recovery、不生成 OTA，于是在 `device.mk` 再设 `PRODUCT_OTA_ENFORCE_VINTF_KERNEL_REQUIREMENTS := false`，跳过这项 OTA 检查。
+
+最终方案：`prebuilt/kernel` 是 0 字节占位文件，保留 `TARGET_PREBUILT_KERNEL` 和 `TARGET_FORCE_PREBUILT_KERNEL` 让 recovery 镜像目标正常定义，`BOARD_EXCLUDE_KERNEL_FROM_RECOVERY_IMAGE` 保证空内核不进镜像。构建产物头部仍是 v4、`kernel_size=0`。和上一版相比 ramdisk 只有构建时间和 fox_id 变化，刷入后启动、health、ADSP、触摸和解密正常。
 
 ## 解密和版本号
 
