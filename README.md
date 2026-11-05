@@ -25,8 +25,7 @@
 | 触摸 | a/b 槽都正常；b 槽 vendor_dlkm 为空时由 `beforemodules.sh` 从 ramdisk 补载触摸模块 |
 | 主题与字体 | 中文等宽终端、键盘 longpress 小符号、开机进“高级”tab，用户实机确认 |
 | ADB | 首次进入 recovery 免拔插即可识别 |
-| MTP | 开机自动启用，导出 `/data/media/0` 为 Internal Storage |
-| USB Storage | 挂载菜单可用，电脑能读写 |
+| MTP | 开机自动启用，日志确认已导出 `/data/media/0` 为 Internal Storage（电脑端读写未单独记录） |
 | 电池/充电 | 状态栏显示电量，充电状态正常 |
 | CPU 温度 | 读取 `thermal_zone27`（cpuss-2），界面显示正常 |
 | FBE 解密 | 默认密码场景下 metadata + userdata 均解密成功 |
@@ -43,6 +42,8 @@
 
 - 通过 recovery 刷入卡刷包（zip/ROM）
 - 备份与恢复（boot/system/data 等）
+- USB Storage 电脑端读写（菜单和 configfs LUN 已实现，未单独复测）
+- MTP 电脑端实际文件传输（只验证了服务启动和存储导出）
 - ADB sideload
 - fastbootd（见“已知问题”，曾出现 USB 枚举消失，未复测）
 - USB OTG 接真实设备读写
