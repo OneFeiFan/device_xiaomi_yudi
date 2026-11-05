@@ -50,7 +50,6 @@ Keymaster、KeyMint 和 health 的行为依赖系统版本和安全补丁。
 
 ## 尚未验证的功能
 
-- 震动马达的实际触感
 - USB Storage 在电脑端的读写
 - USB OTG 接真实设备
 - 分区修复、调整大小、更改文件系统

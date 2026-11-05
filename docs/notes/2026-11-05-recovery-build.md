@@ -1,10 +1,14 @@
 # 2026-11-05 recovery 构建记录
 
+记录从 2026-11-05 开始，2026-11-06 补入了数据耐久性、震动确认和仓库体积清理。
+
 这份记录保留调研过程、实验结论和当时的判断，供后续维护参考。功能说明和已知问题分别写在 `docs/features.md` 和 `docs/known-issues.md`。
 
 ## 设备树来源
 
 设备树从零编写。分区大小、动态分区布局和初始设置取自官方 OS3.0.6.0.VMHCNXM 完整包。boot HAL、libdrm、VNDK v32 库和 `libu32.so` 的原始 libutils 取自第三方重打包的 OS3.0.306.3.WMHCNXM-2in1-Root.zip。没有找到官方 306.3 包，无法与官方校验值核对。
+
+编写时对照了小米平板 6 Pro（liuqin）的两棵 TWRP 树和 LineageOS 的 sm8450-common、sm8550-common、mondrian 设备树，没有直接复制。完整列表见 `docs/references.md`。
 
 ## boot 控制
 
@@ -46,7 +50,7 @@ boot 头部仍然用 `BOARD_MKBOOTIMG_ARGS` 写成 12.0.0 / 2025-09，与原厂 
 
 qseecomd、Keymaster、KeyMint 等 HIDL 服务使用 `/vendor/lib64/vndk-v32` 下的 Android 12 VNDK 库。系统里同时存在 v31 和 v32，两套重复。确认所有服务都能在 v32 找到依赖后，删除了 9 个 v31 库。
 
-震动 HAL 是 Android 12 厂商二进制。它在 Android 16 的 libutils 下会因为 `incStrongRequireStrong` 崩溃。修复方式是把 v32 libutils 的 SONAME 改成 `libu32.so`，把厂商服务的 NEEDED 改成 `libu32.so`，两份 libutils 共存。
+震动 HAL 是 Android 12 厂商二进制。它在 Android 16 的 libutils 下会因为 `incStrongRequireStrong` 崩溃。修复方式是把 v32 libutils 的 SONAME 改成 `libu32.so`，把厂商服务的 NEEDED 改成 `libu32.so`，两份 libutils 共存。后续实机点按按钮确认马达实际震动正常。
 
 ## 主题和字体
 

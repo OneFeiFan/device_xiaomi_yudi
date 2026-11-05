@@ -23,6 +23,12 @@ adb shell "dmesg | grep -c 'Direct firmware load failed'"
 
 通过标准：remoteproc 是 running，电池容量和状态能读到，`.foxs` 存在，固件加载失败次数是 0。
 
+## 震动
+
+在设置页切换一个开关，或者在“高级”页点一个按钮。
+
+通过标准：马达有实际震动。
+
 ## 触摸和温度
 
 在界面上点击四个角和中间，确认落点与手指一致。状态栏的 CPU 温度应有读数。
@@ -91,8 +97,6 @@ fastboot reboot recovery
 通过标准：`fastboot devices` 能看到设备，`current-slot` 返回当前槽位，`product` 返回 `yudi`，`fastboot reboot recovery` 能回到 recovery。设备在 fastbootd 模式下枚举为 `18d1:4ee0`。
 
 Windows 需要先为这个 USB 设备安装 Google USB 驱动（`android_winusb.inf`）。设备管理器显示代码 28 表示缺驱动。Linux 不需要额外驱动。
-
-进入 fastbootd 后不要先点界面上的 ADB 按钮，点过之后 USB 会切到 adb，fastbootd 会停止。
 
 ## 设置持久化
 

@@ -4,7 +4,7 @@
 
 ## 功能
 
-设备可以启动 OrangeFox。触摸、解密、MTP、ADB、卡刷、备份恢复、ADB sideload 和中文主题字体可用。A/B 槽位控制，以及原厂的 Keymaster、KeyMint、Gatekeeper 服务工作正常。
+设备可以启动 OrangeFox。触摸、解密、MTP、ADB、卡刷、备份恢复、ADB sideload、震动和中文主题字体可用。A/B 槽位控制、fastbootd，以及原厂的 Keymaster、KeyMint、Gatekeeper 服务工作正常。Windows 使用 fastbootd 前需要安装 Google USB 驱动，见 [功能说明](docs/features.md#fastbootd)。
 
 每个功能的行为、默认值和限制见 [docs/features.md](docs/features.md)。已知问题和尚未验证的功能见 [docs/known-issues.md](docs/known-issues.md)。
 
@@ -42,6 +42,17 @@ fastboot reboot recovery
 - [补丁说明](patches/README.md)
 - [参考资料](docs/references.md)
 - [开发记录](docs/notes/2026-11-05-recovery-build.md)
+
+## 参考
+
+本设备树建立在 OrangeFox、TWRP 和 AOSP Android 16 的源码之上：
+
+- [OrangeFox fox_16.0 manifest](https://gitlab.com/OrangeFox/Manifest/-/tree/fox_16.0)
+- [OrangeFox recovery](https://gitlab.com/OrangeFox/bootable/recovery)
+- [TWRP recovery](https://github.com/TeamWin/android_bootable_recovery)
+- [AOSP Android 16 build](https://android.googlesource.com/platform/build/+/refs/tags/android-16.0.0_r1)
+- [其他设备树（liuqin、mondrian 等）](docs/references.md#其他设备树)
+- [完整参考资料](docs/references.md)
 
 ## 许可证
 

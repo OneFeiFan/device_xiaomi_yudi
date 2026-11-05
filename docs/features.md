@@ -16,7 +16,7 @@ boot 控制使用原厂 vendor 的 HIDL 1.2 boot HAL，服务名是 `vendor.boot
 
 userdata 使用 FBE v2（`inlinecrypt_optimized` 加 `wrappedkey_v0`）和 metadata 加密。解密依赖原厂的 qseecomd、Keymaster 4.1、KeyMint 和 Gatekeeper。服务启动顺序写在 `init.recovery.qcom.rc`。
 
-recovery 的 `ro.build.version.release`、`ro.build.version.security_patch` 和 `ro.vendor.build.security_patch` 必须与当前系统一致：release 16、security patch 2026-08-01、vendor patch 2026-02-01。厂商库用这些值判断 metadata key 是否需要升级。更换 ROM 后如果不一致，解密会失败。
+recovery 的 `ro.build.version.release`、`ro.build.version.security_patch` 和 `ro.vendor.build.security_patch` 必须与当前系统一致。当前验证的 ROM 是 release 16、security patch 2026-08-01、vendor patch 2026-02-01。厂商库用这些值判断 metadata key 是否需要升级。更换 ROM 后如果不一致，解密会失败。
 
 默认密码场景已经实机验证。自定义锁屏密码和多用户解密还没有验证。
 
@@ -28,7 +28,7 @@ CPU 温度读 `/sys/class/thermal/thermal_zone27/temp`（cpuss-2）。
 
 ## 震动
 
-震动 HAL 是 ROM 自带的 AIDL 服务，实例为 `IVibrator/vibratorfeature`。服务常驻并注册成功。马达的实际触感还没有确认。
+震动 HAL 是 ROM 自带的 AIDL 服务，实例为 `IVibrator/vibratorfeature`。服务常驻并注册成功，马达的实际震动已经在实机上确认。
 
 ## ADB、MTP 和 USB Storage
 
