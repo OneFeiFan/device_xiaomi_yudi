@@ -59,9 +59,9 @@
 ### ❓ 存疑与已知问题
 
 - **开机 1–3 秒卡顿**：UI 起来后短暂卡顿，根因未定位，暂未处理。
-- **时区名无效**：`persist.sys.timezone=TAIST-8TAIDT`，ramdisk 没有 `/system/usr/share/zoneinfo`，每条命令会打 `__bionic_open_tzdata` 警告；时钟本身正确，不影响功能。
+- **时区名不是标准 IANA 名**：`persist.sys.timezone=TAIST-8TAIDT` 来自主题 `settings.xml` 的时区列表（UTC+8 写作 `TAIST-8;TAIDT`），不是错误配置；recovery 的 ramdisk 没有 `/system/usr/share/zoneinfo`，bionic 找不到对应时区数据，所以每条命令会打 `__bionic_open_tzdata` 警告。时钟本身正确，不影响功能。
 - **屏幕空闲会息屏**：TWRP 会把亮度降到 0，触碰会亮；不是故障。
-- **b 槽 super 是空的**：UI 的槽位切换只认 A/B；当前 `*_b` 逻辑分区全部 0 扇区，切到 b 后系统会落到 fastboot。不要切 b；以后要切必须先用完整 OTA/线刷包填好 b 的 super，并保持 `recovery_b` 与 `recovery_a` 相同。
+- **另一槽没有系统时切槽会落到 fastboot**：UI 的槽位切换只认 A/B。当前这台设备的 `*_b` 逻辑分区全部是 0 扇区（`recovery_b` 本身正常）；在这种“另一槽没系统”的状态下切到 b，系统会落到 fastboot。不要在这台设备上切 b；以后要切必须先用完整 OTA/线刷包填好另一槽的 super，并保持 `recovery_b` 与 `recovery_a` 相同。
 - **recovery 分区余量**：100 MiB 分区，镜像实际内容约 57 MiB（ramdisk 60.2 MB；P2 已把约 24MB ADSP 移出 ramdisk、字体子集到 12.8MB），后续加功能还有余量。
 - **fastbootd 未复测**：早期执行 `adb reboot fastboot` 后 USB 枚举消失，之后再没验证；使用前先确认能回 fastboot。
 - **Fox FIFO 的 `mtp enable` 会卡住界面**：dispatcher 写 `/system/bin/foxout` 时如果没有同时读取，会阻塞 GUI 动作线程；MTP 请走界面。
@@ -133,7 +133,7 @@ fastboot reboot recovery
 ```text
 AndroidProducts.mk       产品定义
 BoardConfig.mk           recovery 板级配置（分区、触摸、内核参数、安全补丁）
-device.mk                拷贝 ramdisk 覆盖文件
+device.mk                产品软件包与属性（fastbootd、keymaster_ver）
 vendorsetup.sh           橙狐构建变量
 twrp_yudi.mk             TWRP 产品配置
 proprietary-files.txt    专有文件清单与来源
@@ -152,6 +152,10 @@ licenses/                第三方许可证
 **屏幕方向**：面板原生是 2880x1800 横屏。原厂系统把它旋转 270 度作为自然方向，橙狐也一样，界面是 1800x2880 的竖屏。四角实测驱动坐标系和竖屏画面一致，不需要任何 `RECOVERY_TOUCHSCREEN_*` 参数。触控驱动由 TWRP 在挂载 vendor_dlkm 之后从 ramdisk 的 `/vendor/lib/modules` 加载 `xiaomi_touch.ko` 和 `nt36532_touch.ko`。如果当前槽的 vendor_dlkm 为空（比如 b 槽），TWRP 会跳过这两个模块；设备树的 `recovery/root/system/bin/beforemodules.sh` 会在 TWRP 初始化 GUI/输入设备之前检查 vendor_dlkm 的块设备大小，为空时从 `/lib/modules` 补载，所以 a/b 槽都有触摸。触控固件放在 ramdisk 的 `/lib/firmware`。
 
 **版本号和安全补丁**：厂商的 `libqtikeymint`/`libqtikeymaster4` 会读 `ro.build.version.release`、`ro.build.version.security_patch` 和 `ro.vendor.build.security_patch` 来判断 metadata key 是否需要升级。必须和当前系统一致：release 16、security_patch 2026-08-01、vendor patch 2026-02-01。boot 头部保持原厂值 12.0.0/2025-09，用 `BOARD_MKBOOTIMG_ARGS` 显式覆盖。不要把 `PLATFORM_VERSION_LAST_STABLE` 改成 12，CTS 校验会中止。
+
+**BOOT_SECURITY_PATCH 与 boot 头部**：`PLATFORM_SECURITY_PATCH`（2026-08-01）决定 recovery 属性 `ro.build.version.security_patch`，供厂商 KeyMint 判断 key 是否需要升级；`BOOT_SECURITY_PATCH` 本来会给 boot 头部写 `--os_patch_level`，但 BoardConfig 里的 `BOARD_MKBOOTIMG_ARGS += --os_version 12.0.0 --os_patch_level 2025-09` 排在后面，mkbootimg 对重复参数取最后一个，所以最终头部仍是原厂的 12.0.0/2025-09。也就是说 `BOOT_SECURITY_PATCH` 实际被覆盖，保留它只是为了和 `PLATFORM_SECURITY_PATCH` 保持一致。
+
+**Keymaster 版本的三处设置**：`TW_FORCE_KEYMASTER_VER := true`（BoardConfig）是编译开关，打开后 recovery 不再从 vendor 分区的 manifest 探测版本，只认系统属性 `keymaster_ver`；`OF_DEFAULT_KEYMASTER_VERSION="4.1"`（vendorsetup.sh）会被编进程序，`twrp.cpp` 启动时用它设置 `keymaster_ver=4.1`，这是实际生效的来源；`device.mk` 里的 `PRODUCT_PROPERTY_OVERRIDES keymaster_ver=4.1` 只是同值的构建期默认，运行时会被上面的设置覆盖，属于冗余但保留作兜底。三处应保持一致。
 
 **ADSP 和电池**：ADSP 固件（26 个 `adsp.*`）不再放进 ramdisk，而是由 `init.recovery.qcom.rc` 在 `on fs` 里把 modem 分区（已挂到 `/vendor/firmware_mnt`）的 `/image/adsp.*` 符号链接到内核固件搜索路径 `/lib/firmware`，省约 24MB。震动效果文件（187 个 `*_RTP.bin` 等）在 vendor 分区的 `/vendor/firmware`；不能把整个 modem 镜像 bind 到 `/vendor/firmware`，否则会盖住它们。ADSP 的 remoteproc 状态是 running，电池和充电正常。
 

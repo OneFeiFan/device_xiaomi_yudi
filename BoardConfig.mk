@@ -126,6 +126,8 @@ TW_INCLUDE_CRYPTO := true
 TW_INCLUDE_CRYPTO_FBE := true
 TW_INCLUDE_FBE_METADATA_DECRYPT := true
 TW_USE_FSCRYPT_POLICY := 2
+# 强制只用 keymaster_ver 属性（由 OF_DEFAULT_KEYMASTER_VERSION 启动时写入），
+# 不从 vendor manifest 探测版本；三处设置的关系见 README“设计说明”。
 TW_FORCE_KEYMASTER_VER := true
 
 # TWRP：界面
