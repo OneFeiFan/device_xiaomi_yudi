@@ -33,29 +33,46 @@ on property:sys.usb.state=sideload
     write /sys/bus/platform/devices/${ro.boot.usb.dwc3_msm:-a600000.ssusb}/mode peripheral
 
 on fs
-    # 居中后手势热区要覆盖物理屏幕边缘：用设备树里的 override 覆盖主题文件
-    copy /vendor/etc/navbar-gestures.xml /twres/pages/templates/navbar.xml
-    # 修正 TWRP 从 USB Storage 退出后 MTP 不恢复：覆盖挂载页的退出动作
-    copy /vendor/etc/mount-usb-mtp.xml /twres/pages/mount.xml
-    # 终端字体换 DroidSansMono，键盘 longpress 小符号下移/右移
-    copy /vendor/etc/images.xml /twres/resources/images.xml
-    copy /vendor/etc/keyboard.xml /twres/pages/templates/keyboard.xml
-    copy /vendor/etc/DroidSansMono.ttf /twres/fonts/DroidSansMono.ttf
-    # 中文语言包会把 fixed / keylabel-longpress 强制换成比例字体，这里用改过的语言包
-    # 指向 Sarasa Mono SC（中文等宽），终端和键盘小符号才不会被比例字体撑乱
-    copy /vendor/etc/zh_CN.xml /twres/languages/zh_CN.xml
-    copy /vendor/etc/SarasaMonoSC-Regular.ttf /twres/fonts/SarasaMonoSC-Regular.ttf
-    copy /vendor/etc/main.xml /twres/pages/main.xml
+    # 主题覆盖文件（navbar / mount / images / keyboard / zh_CN / fonts / main）
+    # 已放在 ramdisk 的 /twres 下，构建时直接覆盖主题，不再开机复制。
     wait /dev/block/platform/soc/${ro.boot.bootdevice}
     symlink /dev/block/platform/soc/${ro.boot.bootdevice} /dev/block/bootdevice
     write /proc/sys/kernel/firmware_config/force_sysfs_fallback 1
 
-    # ADSP 固件放在 ramdisk 的 /lib/firmware（内核 firmware_class 路径），
-    # 震动效果文件放在 /vendor/firmware。不能把整个 modem 镜像 bind 到
-    # /vendor/firmware：vendor 分区自带的震动效果文件会被盖住。
+    # ADSP 固件在 modem 分区的 /image 下，不再放进 ramdisk（省约 24MB）。
+    # 内核固件搜索路径是 /lib/firmware，用符号链接接过去即可。
+    # 震动效果文件在 vendor 分区的 /vendor/firmware，不能把整个 modem 镜像
+    # bind 到 /vendor/firmware，否则会盖住它们。
     mkdir /vendor/firmware_mnt
     mkdir /vendor/firmware
     mount_all /vendor/etc/charger_fstab.qti --early
+    wait /vendor/firmware_mnt/image/adsp.mdt
+    symlink /vendor/firmware_mnt/image/adsp.mdt /lib/firmware/adsp.mdt
+    symlink /vendor/firmware_mnt/image/adsp.b00 /lib/firmware/adsp.b00
+    symlink /vendor/firmware_mnt/image/adsp.b01 /lib/firmware/adsp.b01
+    symlink /vendor/firmware_mnt/image/adsp.b02 /lib/firmware/adsp.b02
+    symlink /vendor/firmware_mnt/image/adsp.b03 /lib/firmware/adsp.b03
+    symlink /vendor/firmware_mnt/image/adsp.b04 /lib/firmware/adsp.b04
+    symlink /vendor/firmware_mnt/image/adsp.b05 /lib/firmware/adsp.b05
+    symlink /vendor/firmware_mnt/image/adsp.b06 /lib/firmware/adsp.b06
+    symlink /vendor/firmware_mnt/image/adsp.b07 /lib/firmware/adsp.b07
+    symlink /vendor/firmware_mnt/image/adsp.b08 /lib/firmware/adsp.b08
+    symlink /vendor/firmware_mnt/image/adsp.b09 /lib/firmware/adsp.b09
+    symlink /vendor/firmware_mnt/image/adsp.b10 /lib/firmware/adsp.b10
+    symlink /vendor/firmware_mnt/image/adsp.b11 /lib/firmware/adsp.b11
+    symlink /vendor/firmware_mnt/image/adsp.b12 /lib/firmware/adsp.b12
+    symlink /vendor/firmware_mnt/image/adsp.b13 /lib/firmware/adsp.b13
+    symlink /vendor/firmware_mnt/image/adsp.b14 /lib/firmware/adsp.b14
+    symlink /vendor/firmware_mnt/image/adsp.b15 /lib/firmware/adsp.b15
+    symlink /vendor/firmware_mnt/image/adsp.b16 /lib/firmware/adsp.b16
+    symlink /vendor/firmware_mnt/image/adsp.b17 /lib/firmware/adsp.b17
+    symlink /vendor/firmware_mnt/image/adsp.b18 /lib/firmware/adsp.b18
+    symlink /vendor/firmware_mnt/image/adsp.b19 /lib/firmware/adsp.b19
+    symlink /vendor/firmware_mnt/image/adsp.b20 /lib/firmware/adsp.b20
+    symlink /vendor/firmware_mnt/image/adsp.b21 /lib/firmware/adsp.b21
+    symlink /vendor/firmware_mnt/image/adsp.b22 /lib/firmware/adsp.b22
+    symlink /vendor/firmware_mnt/image/adsp.b23 /lib/firmware/adsp.b23
+    symlink /vendor/firmware_mnt/image/adsp.b25 /lib/firmware/adsp.b25
     wait /sys/kernel/boot_adsp/boot
     write /sys/kernel/boot_adsp/boot 1
     wait /sys/class/power_supply/battery

@@ -62,7 +62,7 @@
 - **时区名无效**：`persist.sys.timezone=TAIST-8TAIDT`，ramdisk 没有 `/system/usr/share/zoneinfo`，每条命令会打 `__bionic_open_tzdata` 警告；时钟本身正确，不影响功能。
 - **屏幕空闲会息屏**：TWRP 会把亮度降到 0，触碰会亮；不是故障。
 - **b 槽 super 是空的**：UI 的槽位切换只认 A/B；当前 `*_b` 逻辑分区全部 0 扇区，切到 b 后系统会落到 fastboot。不要切 b；以后要切必须先用完整 OTA/线刷包填好 b 的 super，并保持 `recovery_b` 与 `recovery_a` 相同。
-- **recovery 分区余量小**：100 MiB 分区，镜像约 93 MiB（含 25.6 MB Sarasa 字体），后续加功能要留意大小。
+- **recovery 分区余量**：100 MiB 分区，镜像实际内容约 57 MiB（ramdisk 60.2 MB；P2 已把约 24MB ADSP 移出 ramdisk、字体子集到 12.8MB），后续加功能还有余量。
 - **fastbootd 未复测**：早期执行 `adb reboot fastboot` 后 USB 枚举消失，之后再没验证；使用前先确认能回 fastboot。
 - **Fox FIFO 的 `mtp enable` 会卡住界面**：dispatcher 写 `/system/bin/foxout` 时如果没有同时读取，会阻塞 GUI 动作线程；MTP 请走界面。
 - **依赖 ROM 版本**：Keymaster/KeyMint 的版本和安全补丁必须与当前系统一致（见“设计说明”），换 ROM 后可能需要调整。
@@ -153,15 +153,15 @@ licenses/                第三方许可证
 
 **版本号和安全补丁**：厂商的 `libqtikeymint`/`libqtikeymaster4` 会读 `ro.build.version.release`、`ro.build.version.security_patch` 和 `ro.vendor.build.security_patch` 来判断 metadata key 是否需要升级。必须和当前系统一致：release 16、security_patch 2026-08-01、vendor patch 2026-02-01。boot 头部保持原厂值 12.0.0/2025-09，用 `BOARD_MKBOOTIMG_ARGS` 显式覆盖。不要把 `PLATFORM_VERSION_LAST_STABLE` 改成 12，CTS 校验会中止。
 
-**ADSP 和电池**：ADSP 固件（`adsp.*`）放在 ramdisk 的 `/lib/firmware`，因为内核的 `firmware_class.path` 指向那里；震动效果文件（187 个 `*_RTP.bin` 等）放在 `/vendor/firmware`。不能把整个 modem 镜像 bind 到 `/vendor/firmware`，否则会盖住 vendor 分区的效果文件。ADSP 的 remoteproc 状态是 running，电池和充电正常。
+**ADSP 和电池**：ADSP 固件（26 个 `adsp.*`）不再放进 ramdisk，而是由 `init.recovery.qcom.rc` 在 `on fs` 里把 modem 分区（已挂到 `/vendor/firmware_mnt`）的 `/image/adsp.*` 符号链接到内核固件搜索路径 `/lib/firmware`，省约 24MB。震动效果文件（187 个 `*_RTP.bin` 等）在 vendor 分区的 `/vendor/firmware`；不能把整个 modem 镜像 bind 到 `/vendor/firmware`，否则会盖住它们。ADSP 的 remoteproc 状态是 running，电池和充电正常。
 
 **USB OTG**：`twrp.flags` 里的 `/usb_otg` 条目负责真正的 OTG。`recovery.fstab` 里原厂的 `/devices/... voldmanaged=usbotg:auto` 行会让 TWRP 把 `/dev/block/*` 展开成大量假卷，已注释掉。
 
 **MTP 与 USB Storage**：recovery 的通用 init 只创建 `ffs.adb` 和 `ffs.fastboot`，没有 MTP。`init.recovery.qcom.rc` 在 `on boot` 里先创建 configfs 的 `ffs.mtp` 和 `mass_storage.0`，再 mount FunctionFS 到 `/dev/usb-ffs/mtp`，并在 `sys.usb.config=mtp,adb` / `mass_storage,adb` 时绑定 `f1`/`f2`。USB Storage 使用 `mass_storage.0` 的 configfs LUN 路径，不依赖 MTP。`tw_mtp_enabled` 的默认值是 1（`data.cpp`），开机时由 `twrp.cpp` 自动启动 MTP；设置只保存在 `/sdcard/Fox/.foxs`，不从镜像里写死。
 
-**USB Storage 退出后 MTP 不恢复**是 TWRP 自身的问题：切换 USB 配置时 MTP 子进程会收到 FunctionFS 的 DISABLE（`errno 108`）退出，但父进程的 `mtppid` 没有清掉，`usb_storage_disable()` 再调用 `Enable_MTP()` 时直接返回“MTP already enabled”，于是按钮还亮着但 MTP 已经没了。设备树用主题覆盖修：`recovery/root/vendor/etc/mount-usb-mtp.xml` 在 USB 页的三个退出动作里，于 `unmount usb` 后加 `stopmtp`、等 500 ms、再 `startmtp`，由 `init.recovery.qcom.rc` 的 `on fs` 复制到 `/twres/pages/mount.xml`。代价是退出 USB Storage 一定会把 MTP 打开（即使进去前是关的）。**不要用 Fox FIFO 的 `mtp enable`（`/system/bin/foxin`）做测试**：dispatcher 会打开 `/system/bin/foxout` 写结果，如果不同时读取，写 FIFO 会阻塞 GUI 动作线程，屏幕看起来卡死；MTP 请走界面。
+**USB Storage 退出后 MTP 不恢复**是 TWRP 自身的问题：切换 USB 配置时 MTP 子进程会收到 FunctionFS 的 DISABLE（`errno 108`）退出，但父进程的 `mtppid` 没有清掉，`usb_storage_disable()` 再调用 `Enable_MTP()` 时直接返回“MTP already enabled”，于是按钮还亮着但 MTP 已经没了。设备树用主题覆盖修：`recovery/root/twres/pages/mount.xml` 在 USB 页的三个退出动作里，于 `unmount usb` 后加 `stopmtp`、等 500 ms、再 `startmtp`；该文件在构建时直接覆盖主题的 `/twres/pages/mount.xml`，不再开机复制。代价是退出 USB Storage 一定会把 MTP 打开（即使进去前是关的）。**不要用 Fox FIFO 的 `mtp enable`（`/system/bin/foxin`）做测试**：dispatcher 会打开 `/system/bin/foxout` 写结果，如果不同时读取，写 FIFO 会阻塞 GUI 动作线程，屏幕看起来卡死；MTP 请走界面。
 
-**主题字体与启动页**：橙狐主题在 ramdisk 的 `/twres`。中文语言包 `zh_CN.xml` 会把 `fixed`、`keylabel-longpress` 等几乎所有字体资源强制替换成 `wqy-microhei.ttf`（比例字体），主题里换字体不会生效。TWRP 的终端按固定格宽逐格绘制（格宽取 `measureEx("N")`），键盘 longpress 小符号按字宽右对齐，遇到比例字体就会出现字母挨太近/错位、小符号位置不齐。设备树自带一份改过的 `zh_CN.xml`（只把 `keylabel-longpress` 和 `fixed` 指向 `SarasaMonoSC-Regular.ttf`），并带上 Sarasa Mono SC Regular（中文等宽，25.6MB）；`init.recovery.qcom.rc` 在 `on fs` 把两者复制到 `/twres/languages/` 和 `/twres/fonts/`。代价是 ramdisk 增加约 25.6MB，镜像内容约 93MB（分区 100MB）。启动页由 `main.xml` 的 `tw_clear_destination` 决定：主题里的 `menu` 实际是文件管理的选项弹层，不是主菜单；本设备改为 `advanced`，开机进“高级”tab。中文语言包还把 `mtp_enabled` 误翻成“找不到 Media 存储。”，设备树里的 `zh_CN.xml` 已改成“MTP 已启用”。
+**主题字体与启动页**：橙狐主题在 ramdisk 的 `/twres`。中文语言包 `zh_CN.xml` 会把 `fixed`、`keylabel-longpress` 等几乎所有字体资源强制替换成 `wqy-microhei.ttf`（比例字体），主题里换字体不会生效。TWRP 的终端按固定格宽逐格绘制（格宽取 `measureEx("N")`），键盘 longpress 小符号按字宽右对齐，遇到比例字体就会出现字母挨太近/错位、小符号位置不齐。设备树自带一份改过的 `zh_CN.xml`（只把 `keylabel-longpress` 和 `fixed` 指向 `SarasaMonoSC-Regular.ttf`）。所有主题覆盖文件（`zh_CN.xml`、字体、`main.xml`、navbar、mount、images、keyboard）都直接放在 `recovery/root/twres/` 的对应路径，构建时覆盖主题，不再在 `on fs` 里复制。Sarasa Mono SC Regular 做了 GBK 字符子集（约 2.2 万字符，25.6MB → 12.8MB）；超出 GBK 范围的生僻字在文件名里会显示成方块。启动页由 `main.xml` 的 `tw_clear_destination` 决定：主题里的 `menu` 实际是文件管理的选项弹层，不是主菜单；本设备改为 `advanced`，开机进“高级”tab。中文语言包还把 `mtp_enabled` 误翻成“找不到 Media 存储。”，设备树里的 `zh_CN.xml` 已改成“MTP 已启用”。
 
 **设置持久化**：橙狐把设置保存在 `/sdcard/Fox/.foxs`，并在 `/persist/.foxs` 留一份备份。本机 `/data` 是 f2fs；fstab 里的 `checkpoint=fs` 是 fs_mgr 的 OTA checkpoint 标志，init 可能在开机早期用 `checkpoint=disable` 挂载 `/data`，这种挂载下写入不提交检查点，重启时会被文件系统回滚，表现为“设置重启后全部丢失”。设备树从主 `recovery.fstab` 的 `/data` 行去掉了 `checkpoint=fs`（同时去掉了 `fsync_mode=nobarrier`），让 recovery 用正常的 checkpoint 策略挂载；实测“改设置 / 写文件后重启”都能保留，不再需要额外改 `tw_reboot()`。注意 TWRP 还会解析 vendor 分区里的 fstab（开机复制为 `additional.fstab`），它仍带 `nobarrier`，但当前配置下耐久性测试通过。源码侧只剩一处：主题勾选写值改为 `persist=1`，因为部分设置变量（如 `fox_boot_*`）既不在 `vars.xml` 也不在默认持久化表里，原写法只写内存。补丁见 `patches/0001-fox-settings-persistence.patch`。设置页的勾选状态在进入页面时由 `SetPageFocus()` 从 `DataManager` 重新读取，不需要额外改列表刷新。
 
@@ -182,12 +182,12 @@ licenses/                第三方许可证
 - 306.3 包没有 payload，`super.zst` 解压得到 `super.img`，用 `lpunpack -p vendor_a -p system_ext_a super.img <目录>` 取出逻辑分区；
 - erofs 分区可以用 `dump.erofs --path=<路径> --ls` 查看目录，用 `fsck.erofs --extract=<目录>` 整体解开；
 - vendor 服务的依赖用 `readelf -d` 逐层查找；`qseecomd` 运行时用 dlopen 加载的监听器库，在二进制里搜索 `.so` 字符串找出；
-- 震动效果文件来自 vendor 分区的 `/firmware`（187 个文件），ADSP 固件来自 modem 分区的 `/image/adsp.*`（26 个文件）。
+- 震动效果文件来自 vendor 分区的 `/firmware`（187 个文件）；ADSP 固件来自 modem 分区的 `/image/adsp.*`（26 个文件），运行时由 init 符号链接到 `/lib/firmware`，仓库不再包含这些文件。
 
 ## 许可证与第三方
 
 - 本仓库的代码（设备树配置、ramdisk 覆盖、主题覆盖、补丁）采用 **GNU GPL v3.0**，见 `LICENSE`。OrangeFox/TWRP 本体同样是 GPL-3.0，本仓库不声称拥有它们的版权。
-- `recovery/root/vendor/etc/SarasaMonoSC-Regular.ttf` 是 Sarasa Gothic（Sarasa Mono SC），版权归 Renzhi Li（Belleve Invis）等，采用 **SIL Open Font License 1.1**，许可证全文见 `licenses/SarasaGothic-OFL.txt`。
+- `recovery/root/twres/fonts/SarasaMonoSC-Regular.ttf` 是 Sarasa Gothic（Sarasa Mono SC）的 GBK 子集，版权归 Renzhi Li（Belleve Invis）等，采用 **SIL Open Font License 1.1**，许可证全文见 `licenses/SarasaGothic-OFL.txt`。
 - `recovery/root` 下的小米厂商二进制、库和固件来自小米官方 ROM，版权归小米，**不在 GPL 许可范围内**。它们仅用于在对应设备上运行 recovery；如果你没有该设备/ROM 的使用权，请从本仓库删除这些文件，并按 `proprietary-files.txt` 从你自己的官方包中提取。
 - `prebuilt/kernel` 是原厂 boot 镜像里的内核，版权归小米。
 

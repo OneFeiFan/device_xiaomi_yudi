@@ -175,7 +175,9 @@ TW_INCLUDE_RESETPROP := true
 TW_INCLUDE_LIBRESETPROP := true
 TW_INCLUDE_LPTOOLS := true
 TW_INCLUDE_LPDUMP := true
-# recovery 主程序和 libtar 链接 libsysutils；打开 logcat/logd 才会把它打进 ramdisk
+# recovery 主程序和 libtar 链接 libsysutils；打开 logcat/logd 会顺带把它打进 ramdisk。
+# 保留 logcat 是为了 adb 抓 vendor 服务日志（约 2–3MB）；libsysutils 依赖很简单，
+# 单独拆出来收益不大，所以维持现状。
 TWRP_INCLUDE_LOGCAT := true
 TARGET_USES_LOGD := true
 TW_INCLUDE_NTFS_3G := true
