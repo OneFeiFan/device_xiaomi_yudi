@@ -68,7 +68,9 @@ Windows 需要为这个 USB 设备安装 Google USB 驱动（`android_winusb.inf
 
 设置保存在 `/sdcard/Fox/.foxs`，并在 `/persist/.foxs` 留一份备份。部分设置变量不在默认持久化表里，主题勾选写值需要 `persist=1`。补丁见 [patches/README.md](../patches/README.md)。
 
-`/data` 的实际挂载参数来自 vendor 分区的 fstab（`additional.fstab`），仍带 `checkpoint=disable:0` 和 `fsync_mode=nobarrier`。改主 `recovery.fstab` 不会改变实际挂载。改设置、写文件后重启的耐久性测试都通过。
+`/data` 的实际挂载参数来自 vendor 分区的 fstab（`additional.fstab`）。当前 `/proc/mounts` 里是 `checkpoint_merge` 和 `fsync_mode=nobarrier`，没有 `checkpoint=disable`。改主 `recovery.fstab` 不会改变 `nobarrier` 这类选项。
+
+写入耐久性在正常重启和异常重启下都测过：写文件并 `sync` 后用 SysRq 强制重启，文件仍然存在。vendor fstab 的 `/data` 行带 `checkpoint=fs`，但 TWRP 实际挂载后没有禁用检查点。
 
 ## AVB2.0 菜单
 

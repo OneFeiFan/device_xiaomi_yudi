@@ -38,7 +38,9 @@ boot 头部仍然用 `BOARD_MKBOOTIMG_ARGS` 写成 12.0.0 / 2025-09，与原厂 
 
 真正关键的是 `gui/listbox.cpp` 的 `persist=1`。部分主题勾选变量不在 `vars.xml` 或默认持久化表里，原来的写法只写内存。
 
-主 `recovery.fstab` 的 `/data` 行去掉了 `checkpoint=fs` 和 `fsync_mode=nobarrier`，但 TWRP 会解析 vendor 分区的 fstab 作为 `additional.fstab`，它的 /data 行覆盖主 fstab。实测 `/proc/mounts` 里仍然有 `checkpoint=disable:0` 和 `fsync_mode=nobarrier`，耐久性测试照样通过。如果以后出现设置丢失，先检查 `additional.fstab` 和实际挂载参数。
+主 `recovery.fstab` 的 `/data` 行去掉了 `checkpoint=fs` 和 `fsync_mode=nobarrier`，但 TWRP 会解析 vendor 分区的 fstab 作为 `additional.fstab`，它的 /data 行覆盖主 fstab。vendor fstab 的 /data 行以 `checkpoint=fs` 和 `fsync_mode=nobarrier` 结尾；当前 `/proc/mounts` 里是 `checkpoint_merge` 和 `fsync_mode=nobarrier`，没有 `checkpoint=disable`。
+
+正常重启会卸载 `/data`，f2fs 在卸载时补写检查点。为了覆盖异常重启，用 SysRq 强制重启做了测试：`echo test > /sdcard/durability-test && sync`，然后 `echo b > /proc/sysrq-trigger`；重新进入 recovery 后文件仍然存在。如果以后 `/proc/mounts` 出现 `checkpoint=disable`，需要再处理。
 
 ## VNDK 和震动
 

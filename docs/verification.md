@@ -102,6 +102,17 @@ Windows 需要先为这个 USB 设备安装 Google USB 驱动（`android_winusb.
 
 通过标准：重启前后的值一致，`/sdcard/Fox/.foxs` 的修改时间会更新。
 
+## 异常重启后的写入
+
+```sh
+adb shell "echo durability-test > /sdcard/durability-test; sync"
+adb shell "echo b > /proc/sysrq-trigger"
+# 重启后重新进入 recovery
+adb shell "cat /sdcard/durability-test"
+```
+
+通过标准：文件仍然存在。`/proc/mounts` 的 `/data` 行不应出现 `checkpoint=disable`。
+
 ## 槽位
 
 ```sh
