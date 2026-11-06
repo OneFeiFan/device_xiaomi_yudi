@@ -127,6 +127,9 @@ TW_INCLUDE_CRYPTO := true
 TW_INCLUDE_CRYPTO_FBE := true
 TW_INCLUDE_FBE_METADATA_DECRYPT := true
 TW_USE_FSCRYPT_POLICY := 2
+# 格式化 data 前用 dmctl 解除 metadata 加密映射，否则 make_f2fs 报
+# “In use by the system!”（物理 userdata 仍被 dm-7 占用）。
+OF_USE_DMCTL := 1
 # 强制只用 keymaster_ver 属性（由 OF_DEFAULT_KEYMASTER_VERSION 启动时写入），
 # 不从 vendor manifest 探测版本；三处设置的关系见 README“设计说明”。
 TW_FORCE_KEYMASTER_VER := true
