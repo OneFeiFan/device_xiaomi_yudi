@@ -12,9 +12,11 @@
 
 KeyMint 要求 recovery 的安全补丁级别和 vendor 安全补丁与系统一致，版本属性也要检查。这些值目前写在 `BoardConfig.mk` 里。系统更新后，需要按 [功能说明](features.md#解密) 对照新系统的值，必要时重新构建。
 
-## Format Data 后恢复 data 需要重设锁屏
+## 普通双清不会清掉 user 0 锁屏
 
-user 0 的 Gatekeeper/Keystore、`locksettings.db`、`spblob` 被 TWRP 的 `ExcludeAll()` 排除，不进入 data 备份。只做普通双清再恢复时，当前 user 0 的凭据不会被清除，不需要重设；如果备份和恢复之间做过 Format Data 或换机，凭据和密钥已经没了，备份里也不包含，**才需要重设锁屏**，依赖 keystore 的应用可能需要重新登录。
+user 0 的 Gatekeeper/Keystore、`locksettings.db`、`spblob` 被 TWRP 的 `ExcludeAll()` 放进 wipe 排除表，普通双清不会主动删除这些文件。因此 TWRP 的普通双清**不能保证清除锁屏**，这和 Android 原厂“恢复出厂设置会清掉锁屏”的逻辑不同；想得到原厂那种效果，必须用 Format Data。
+
+做过 Format Data 或换机后再恢复 data，user 0 的凭据和密钥已经没了，备份里也不包含，**才需要重设锁屏**；依赖 keystore 的应用可能需要重新登录。
 
 非 0 用户（独立密码、clone profile）的凭据在正常解密路径下不会被排除：普通双清会删掉，恢复时写回备份里的版本；备份之后改过密码会与备份对不上，需要重设。
 

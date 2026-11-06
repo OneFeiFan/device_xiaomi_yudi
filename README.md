@@ -16,13 +16,13 @@
 | 异常重启后写入不丢失 | 已验证 | 用 SysRq 强制重启测试 |
 | 解密 data | 已验证 | 无锁屏、图案、4 位 PIN、文本密码和多用户都已验证 |
 | 刷入 zip | 部分验证 | 只用测试 zip 验证过脚本会执行；刷入完整 ROM 未验证 |
-| 备份和恢复 | 部分验证 | boot、data 恢复通过；super 备份和 digest 校验通过，super 恢复未验证。data 备份不含内部存储；普通双清+恢复保留 user 0 凭据，Format Data 后恢复需要重设锁屏，非 0 用户凭据随备份恢复 |
+| 备份和恢复 | 部分验证 | boot、data 恢复通过；super 备份和 digest 校验通过，super 恢复未验证。data 备份不含内部存储；TWRP 普通双清不会主动删除 user 0 凭据，想清锁屏用 Format Data；非 0 用户凭据随备份恢复 |
 | ADB sideload | 部分验证 | 测试 zip 通过；退出后 ADB 恢复 |
 | fastbootd | 部分验证 | `getvar`、`reboot` 正常；已通过 fastbootd 刷写 `recovery_a`，逻辑分区刷写未验证 |
 | 读取和切换槽位 | 部分验证 | 切换生效；目标槽没有系统时会停在 fastboot，见[已知问题](docs/known-issues.md#另一槽没有系统时切槽会停在-fastboot) |
 | USB Storage | 已关闭 | 设备只有一个 USB-C 口，无法同时接 OTG 和电脑；文件传输用 MTP |
 | USB OTG | 已验证 | VIA 扩展坞/NTFS 挂载和读取通过；拔掉硬盘后 ADB/MTP 恢复；写入未单独验证 |
-| 格式化 data / 双清 | 已验证 | 普通双清保留 `/data/media`；含 metadata 的整分区格式化后系统能重新加密并开机 |
+| 格式化 data / 双清 | 已验证 | 普通双清保留 `/data/media`，TWRP 也不主动删除 user 0 凭据文件；要清锁屏和内部存储用 Format Data。含 metadata 的整分区格式化后系统能重新加密并开机 |
 | 分区修复和调整 | 未验证 | 属于破坏性操作 |
 | 禁用 vbmeta AVB2.0 | 未验证 | 菜单存在，未实际执行 |
 

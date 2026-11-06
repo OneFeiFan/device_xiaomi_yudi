@@ -34,7 +34,7 @@ recovery 按用户解密，不是只处理 user 0：
 
 凭据的处理要分情况：
 
-- **user 0** 的 Gatekeeper/Keystore、`locksettings.db`、`spblob` 始终被 `ExcludeAll()` 排除。只做普通双清再恢复，不会动当前 user 0 的锁屏凭据，**不需要重设**；只有备份和恢复之间做过 Format Data 或换机，才需要重设。
+- **user 0** 的 Gatekeeper/Keystore、`locksettings.db`、`spblob` 始终被 `ExcludeAll()` 排除。TWRP 的普通双清**不会主动删除这些凭据文件**，所以不能保证旧锁屏被清除；这和 Android 原厂“恢复出厂设置会清掉锁屏”的逻辑不同。想得到原厂那种效果，必须用 Format Data。只有 Format Data 或换机后恢复，才需要重设 user 0 锁屏。
 - **非 0 用户**（独立密码用户、clone profile）的凭据在正常解密路径下不会被排除。普通双清会删掉它们，恢复时如果有备份就写回备份里的版本；备份之后改过密码会导致恢复后的凭据对不上，需要重设。
 - 依赖 keystore 的应用在凭据丢失后可能需要重新登录。
 
