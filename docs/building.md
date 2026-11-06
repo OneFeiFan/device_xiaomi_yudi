@@ -26,15 +26,20 @@ git clone https://github.com/OneFeiFan/device_xiaomi_yudi device/xiaomi/yudi
 
 ## 打补丁
 
-`bootable/recovery/gui/listbox.cpp` 需要加一条 `persist=1`，否则部分主题勾选项只写内存。补丁在 `patches/0001-fox-settings-persistence.patch`。
+设备树依赖一组 OrangeFox 源码修改：设置持久化、wipe/metadata 保护、OTG host 模式、data 格式化前停 MTP、GUI 语言刷新，以及 `system/vold` 的 clone profile 解密。补丁在 `patches/`，每一项的作用见 [补丁说明](../patches/README.md)。
 
 ```sh
 cd bootable/recovery
-git apply ../../device/xiaomi/yudi/patches/0001-fox-settings-persistence.patch
+for p in ../../device/xiaomi/yudi/patches/000[1-5]-*.patch; do
+    git apply "$p"
+done
+
+cd ../../system/vold
+git apply ../../device/xiaomi/yudi/patches/0006-*.patch
 cd ../..
 ```
 
-每次 `repo sync` 覆盖 `bootable/recovery` 后都要重新打一次。
+每次 `repo sync` 覆盖 `bootable/recovery` 或 `system/vold` 后都要重新打一次。应用前确认工作区干净；如果上游已经合入某个修改，跳过对应补丁。
 
 ## 编译
 

@@ -12,6 +12,10 @@
 
 KeyMint 要求 recovery 的安全补丁级别和 vendor 安全补丁与系统一致，版本属性也要检查。这些值目前写在 `BoardConfig.mk` 里。系统更新后，需要按 [功能说明](features.md#解密) 对照新系统的值，必要时重新构建。
 
+## 恢复 data 后锁屏和独立用户密码不会恢复
+
+TWRP 的 data 备份和恢复会排除 `/data/misc/gatekeeper`、`/data/misc/keystore`、`locksettings.db`、`spblob` 等凭据文件。恢复后普通文件和应用数据可以读回，但锁屏密码、独立用户密码和 keystore 凭据需要重新设置；依赖 keystore 的应用可能需要重新登录。这是设计行为，不是恢复失败。
+
 ## sideload 后 MTP 不会自动恢复
 
 进入 ADB sideload 再退出后，MTP 处于关闭状态，电脑上看不到 Internal Storage。这是因为 sideload 会切换 USB 配置，而 TWRP 退出时不会重新启用 MTP。
@@ -23,6 +27,10 @@ KeyMint 要求 recovery 的安全补丁级别和 vendor 安全补丁与系统一
 直接向 Fox 的 FIFO 写入 `mtp enable`，而没有同时读取 `foxout` 时，界面的动作线程会被阻塞，看起来像卡死。
 
 处理办法：用 `fox mtp enable` 命令，或者在界面上操作。
+
+## MTP 自启后 Windows 可能不立即显示
+
+`tw_mtp_enabled` 默认为 1，启动日志里能看到 `[MTP] Starting MTP`，但 Windows 有时不会马上刷新出便携设备。这不影响手动使用：在“挂载”页关闭再打开 MTP，或者拔插一次 USB 线即可。
 
 ## 开机后有 1 到 3 秒的卡顿
 

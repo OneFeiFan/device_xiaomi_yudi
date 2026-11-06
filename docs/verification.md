@@ -62,9 +62,10 @@ adb shell "ls /sdcard"
 - 图案；
 - 4 位数字 PIN；
 - 文本密码；
-- 多用户。
+- 多用户（同密码用户会自动解密，独立密码用户需要输入自己的密码）；
+- 统一锁屏的 clone/managed profile（例如 XSpace、平行空间）。
 
-前三类已经实测通过，多用户还没测。
+以上情况都已实测通过。统一锁屏 profile 的通过标准是：父用户解密成功后，日志里能看到该 profile 用户也被解密；父用户没有解密时不会尝试。
 
 输入图案、PIN 或文本密码后需要约 2–3 秒完成 scrypt 和 Gatekeeper 验证，这段时间界面看起来像卡住，是正常开销。默认密码不经过这两步，几乎立即解密。
 
@@ -101,11 +102,20 @@ adb shell "cat /sdcard/durability-test; grep ' /data ' /proc/mounts"
 
 ### USB Storage
 
-先接一个 USB OTG 盘或 SD 卡，再在“挂载”页启用 USB Storage。
+不适用：已在设备树关闭。设备只有一个 USB-C 口，无法同时接 OTG 存储和电脑；文件传输用 MTP。
 
-通过标准：电脑能读写这个磁盘；退出后 MTP 的 Internal Storage 重新出现。
+### USB OTG
 
-没有可移动存储时，设备会提示“无法定位存储设备”，这是预期结果；内部 `/data/media` 不会被导出。
+准备一个 USB-C 扩展坞或 OTG 盘，分区可以是 FAT32、exFAT 或 NTFS。
+
+1. 拔掉电脑线，插上扩展坞/OTG 盘；
+2. 在“挂载”页打开 USB 外置存储，或在终端执行 `ls /usb_otg`；
+3. 读取一个文件，有条件的话再写入一个测试文件；
+4. 拔掉扩展坞，把电脑线插回平板。
+
+通过标准：`/usb_otg` 能挂载并读到文件，NTFS 分区由 `mount.ntfs` 正常处理；拔掉扩展坞后 `adb devices` 和 MTP 能恢复，不需要重启恢复。
+
+如果实际设备节点不是 `sdg`/`sdg1`，看 `/tmp/recovery.log` 确认节点名，并同时修改 `twrp.flags` 和 `Check_UsbOtg_Status()` 的检查路径。
 
 ### 刷入 zip 和 ADB sideload
 
@@ -123,6 +133,8 @@ adb shell "cat /sdcard/Fox/zip-test.txt"
 ```
 
 通过标准：两种方式下测试文件都被写出；sideload 退出后 `adb devices` 能重新看到设备。
+
+界面上的“正在启动侧载”是在等电脑执行 `adb sideload`，不是卡死；电脑开始发送后页面会继续显示进度。退出 sideload 后 MTP 不会自动恢复，见[已知问题](known-issues.md#sideload-后-mtp-不会自动恢复)。
 
 ### fastbootd
 
@@ -151,11 +163,49 @@ adb shell 'sha256sum /dev/block/bootdevice/by-name/boot$(getprop ro.boot.slot_su
 
 通过标准：两次 sha256 一致。
 
-### data 的备份和恢复
+### data 的备份
 
-先备份 data，再在内部存储新建一个测试文件，然后恢复刚才的备份。
+```sh
+adb shell "fox backup data --name data-test --storage internal"
+```
 
-通过标准：恢复后测试文件消失，其余文件完好；重启进入系统后，应用和数据正常。
+通过标准：备份目录里有 `data.f2fs.win000` 等分片、`.sha2` 和 `data.info`；任选一个分片，`sha256sum` 与 `.sha2` 内容一致。
+
+### super 的备份
+
+```sh
+adb shell "fox backup super --name super-test --storage internal"
+```
+
+通过标准：备份目录里有 `super.emmc.win` 和 `.sha2`；`sha256sum super.emmc.win` 与 `.sha2` 内容一致。
+
+### data 的恢复
+
+这是破坏性测试。先备份 data，再在 `/data` 根目录新建一个测试文件（不要放 `/sdcard`，因为 `/data/media` 不会被清除），然后恢复刚才的备份。data 备份不包含 `/data/media`，要保留照片/下载需要另外备份 Internal Storage。
+
+通过标准：恢复后测试文件消失，其余文件完好；重启进入系统后，应用数据可以正常读取。锁屏密码、独立用户密码和 keystore 凭据不会恢复，需要重新设置；依赖 keystore 的应用可能需要重新登录。
+
+### 双清和 Format Data
+
+这是破坏性测试，先在电脑或 OTG 上保留需要的备份。
+
+普通双清：
+
+```sh
+adb shell "mkdir -p /data/media/0; echo keep > /data/media/0/wipe-keep-test.txt; echo delete > /data/wipe-delete-test.txt"
+adb shell "fox wipe cache data"
+adb shell "ls -l /data/media/0/wipe-keep-test.txt /data/wipe-delete-test.txt"
+```
+
+通过标准：`/data/media/0/wipe-keep-test.txt` 还在，`/data/wipe-delete-test.txt` 不存在；重启能进入系统。
+
+含 metadata 的整分区清除：
+
+```sh
+adb shell "fox wipe cache metadata data"
+```
+
+通过标准：日志里有 `format successful` 和（整分区已格式化时）`metadata was already formatted while clearing the data key`；没有 `In use by the system`；`Wiped /metadata`、`Wiped /data`；重启能进入系统，再次进入 recovery 能正常解密。这个路径会清空 `/data/media`。
 
 ### 通过 fastbootd 刷写分区
 

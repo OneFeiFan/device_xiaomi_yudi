@@ -84,16 +84,28 @@ ADSP 固件原本 26 个文件放在 ramdisk 的 `/lib/firmware`。后来改成�
 
 用户随后把锁屏改成 4 位数字密码。recovery 日志显示 `password type: PIN`，`GateKeeper status ok`，`User 0 Decrypted Successfully!`。纯数字密码在 Android 里就是 PIN，和文本密码、图案走同一条 synthetic password + Gatekeeper 路径。之后用户又实测了文本密码，也能正常解密。
 
+多用户也测了：在系统里临时创建用户 10，启动后回 recovery，用用户 0 的文本密码解密，日志显示 `User 0 Decrypted Successfully` 后自动继续 `User 10 Decrypted Successfully`，两个 `twrp.user.*.decrypt` 都是 1。测完已在系统里删除用户 10。对应源码是 `Decrypt_Device()` 在用户 0 解密成功后遍历其他未解密用户（`partitionmanager.cpp:2385-2401`）。
+
+data 备份也做了：`fox backup data --name data-test --storage internal`，10007MB 数据、8 个分片、总计约 10070MB，45 秒完成；`data.f2fs.win000.sha2` 与实际 `sha256sum` 一致。
+
+super 备份同样做了：`fox backup super --name super-test --storage internal`，11264MB，26 秒完成，生成 `super.emmc.win` 和 `.sha2`；`sha256sum super.emmc.win` 与 `.sha2` 一致。data 和 super 都只验证了备份与 digest，没有做恢复。
+
 用 `twrp decrypt` 命令行测了一次，从执行到 `Data successfully decrypted` 约 2.8 秒。当前 PIN 凭据的 scrypt 参数是 N=2048、r=8、p=2；scrypt 和 Gatekeeper 验证是正常开销。默认密码跳过这两步，所以几乎是立即解密。
 
 另外发现 recovery 的 `ro.build.version.release` 实际是 12，`release_or_codename` 是 16；系统侧两个值都是 16。当前这组值可以正常解密，文档已按实际 `getprop` 结果改写，不再声称 `release` 必须等于系统。
 
 RPMB 节点 `/dev/0:0:0:49476` 原来在 `ueventd.rc` 设为 `0600 system system`，init 里又 `chown/chmod 0660`。ueventd 在 early-init 冷启动时就加载 `/vendor/etc/ueventd.rc`，早于 `on fs`，所以把规则改成 `0660 system system`，删掉 init 里的 `wait/chown/chmod` 三行。实机验证节点权限是 `crw-rw---- system system`。
 
-之后用 fastbootd 把同一个 recovery 镜像刷入 `recovery_a`，重启回 recovery 正常，说明 fastbootd 的刷写路径可用。USB Storage 在没有外接存储时点击启用会提示“无法定位存储设备”；TWRP 的实现只导出可移动存储，不导出内部 `/data/media`，所以这项需要 OTG 盘或 SD 卡才能测。
+之后用 fastbootd 把同一个 recovery 镜像刷入 `recovery_a`，重启回 recovery 正常，说明 fastbootd 的刷写路径可用。
+
+USB Storage 在没有外接存储时点击启用会提示“无法定位存储设备”。源码里 `usb_storage_enable()` 先 `Toggle_MTP(false)`，再 `Find_Next_Storage("", true)`；后者会跳过带 `Has_Data_Media` 的 `/data`，只找可移动存储。失败后错误处理又调用 `Enable_MTP()`，所以电脑会断联一次再以 MTP 重连。UPSTREAM 的 `usb_storage_disable()` 里本来就有 `Enable_MTP()`，但因为 MTP 子进程的 `mtppid` 没清掉，实际会返回“MTP already enabled”，所以之前退出 USB Storage 后 MTP 不恢复；设备树的 `twres/pages/mount.xml` 覆盖用 `stopmtp` + 500ms + `startmtp` 修过这个问题。
+
+这台设备只有一个 USB-C 口，无法同时接 OTG 存储和电脑，且 TWRP 不导出内部 `/data/media`，所以 USB Storage 实际不可用。最终把 `OF_ENABLE_USB_STORAGE` 设为 0，并从设备树删除 `twres/pages/mount.xml` 覆盖；关闭后 UI 不再显示 USB Storage，源码里的 MTP 重开逻辑也不会被调用。
 
 ## 测试结论
 
 卡刷、备份恢复、ADB sideload 和 MTP 双向传输都在实机上验证通过。备份恢复用 boot 分区做了 sha256 对比。sideload 退出后 adb 能自动恢复，但 MTP 需要手动打开。
+
+后续的 data 恢复、普通双清/含 metadata 的整分区格式化、USB OTG 和 USB 清理见 [2026-11-07 的笔记](2026-11-07-usb-otg-and-wipe.md)。
 
 Fox RPC 的截图只能截到起始页，终端和其他页面的显示只能靠肉眼在设备上确认。
