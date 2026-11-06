@@ -21,22 +21,31 @@ service link-adsp /system/bin/sh /system/bin/link-adsp.sh
 
 on init
     setprop sys.usb.configfs 1
+    # 第一次进入 device 模式时写一次 peripheral 的标记，见下面的 USB 规则
+    setprop sys.usb.mode_ready 0
     # 触控固件放在 ramdisk 的 /lib/firmware：/vendor/firmware 之后会被 ADSP 固件覆盖
     write /sys/module/firmware_class/parameters/path /lib/firmware
 
 on property:ro.boot.usbcontroller=*
     setprop sys.usb.controller ${ro.boot.usbcontroller}
     wait /sys/bus/platform/devices/${ro.boot.usb.dwc3_msm:-a600000.ssusb}/mode
-    # 先保持 idle：configfs 会在 gadget 配置好后再绑定 UDC，
-    # 这时才写 peripheral，保证主机第一次 attach 看到的就是完整设备。
+    # 先保持 idle：configfs 会在 gadget 配置好后再绑定 UDC。
     write /sys/bus/platform/devices/${ro.boot.usb.dwc3_msm:-a600000.ssusb}/mode idle
 
-on property:sys.usb.state=adb
+# 只在第一次进入 device 状态时写 peripheral。
+# OTG 自动挂载会先关闭 MTP（sys.usb.config mtp,adb -> adb），这个属性变化
+# 会再次触发 sys.usb.state=adb；如果无条件重写 peripheral，就会把已经切到
+# host 的 USB 模式踢回 device，导致 mount.ntfs 报 13/11。
+# mode_ready=1 后不再写，开机时的第一次枚举仍然正常。
+on property:sys.usb.state=adb && property:sys.usb.mode_ready=0
     write /sys/bus/platform/devices/${ro.boot.usb.dwc3_msm:-a600000.ssusb}/mode peripheral
-on property:sys.usb.state=fastboot
+    setprop sys.usb.mode_ready 1
+on property:sys.usb.state=fastboot && property:sys.usb.mode_ready=0
     write /sys/bus/platform/devices/${ro.boot.usb.dwc3_msm:-a600000.ssusb}/mode peripheral
-on property:sys.usb.state=sideload
+    setprop sys.usb.mode_ready 1
+on property:sys.usb.state=sideload && property:sys.usb.mode_ready=0
     write /sys/bus/platform/devices/${ro.boot.usb.dwc3_msm:-a600000.ssusb}/mode peripheral
+    setprop sys.usb.mode_ready 1
 
 on fs
     # 主题覆盖文件（navbar / mount / images / keyboard / zh_CN / fonts / main）
