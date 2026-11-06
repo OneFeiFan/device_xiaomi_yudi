@@ -1,0 +1,53 @@
+From 0e806b92a854d3ba4da26b18176c0939740ab02b Mon Sep 17 00:00:00 2001
+From: OneFeiFan <3022504358@qq.com>
+Date: Sat, 7 Nov 2026 03:54:29 +0800
+Subject: [PATCH 4/5] wipe: stop MTP before formatting data
+
+MTP keeps /data/media open, which keeps dm-userdata busy and makes dmctl delete userdata fail; make_f2fs then aborts with In use by the system (exit 255). Disable MTP at the start of Wipe_Encryption and restore it on exit, so metadata protection and Format Data work with MTP enabled.
+
+Co-Authored-By: Claude Code <noreply@anthropic.com>
+---
+ partition.cpp | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/partition.cpp b/partition.cpp
+index 5a6139d..d022c73 100644
+--- a/partition.cpp
++++ b/partition.cpp
+@@ -2281,6 +2281,10 @@ bool TWPartition::Wipe_Encryption() {
+ 	if (TWFunc::Block_Operations_Until_Reboot())
+ 		return false;
+ 
++	// MTP keeps /data/media (and therefore the dm-userdata device) open.
++	// Stop it before dmctl/make_f2fs, then restore it on the way out.
++	bool mtp_was_enabled = TWFunc::Toggle_MTP(false);
++
+ #if defined(OF_FORCE_DATA_FORMAT_F2FS)
+ 	the_wipe_fs = "f2fs";
+ #elif defined(OF_FORCE_DATA_FORMAT_EXT4)
+@@ -2297,12 +2301,12 @@ bool TWPartition::Wipe_Encryption() {
+ 	if (!Is_Present) {
+ 		LOGINFO("Block device not present, cannot format %s.\n", Display_Name.c_str());
+ 		gui_msg(Msg(msg::kError, "unable_to_wipe=Unable to wipe {1}.")(Display_Name));
+-		return false;
++		goto exit;
+ 	}
+ 
+ #ifdef TW_INCLUDE_CRYPTO
+ 	if (!UnMount(true))
+-		return false;
++		goto exit;
+ 	if (Is_Decrypted && !Decrypted_Block_Device.empty()) {
+ //		if (delete_crypto_blk_dev((char*)("userdata")) != 0) {
+ //			LOGERR("Error deleting crypto block device, continuing anyway.\n");
+@@ -2352,6 +2356,7 @@ bool TWPartition::Wipe_Encryption() {
+ 		goto exit;
+ 	}
+ exit:
++	TWFunc::Toggle_MTP(mtp_was_enabled);
+ 	delete base_partition;
+ 	return ret;
+ }
+-- 
+2.34.1
+

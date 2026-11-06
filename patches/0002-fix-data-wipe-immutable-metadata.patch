@@ -1,0 +1,165 @@
+From e825a72fd56d2916ad932399d543c006bd6b34d5 Mon Sep 17 00:00:00 2001
+From: OneFeiFan <3022504358@qq.com>
+Date: Sat, 7 Nov 2026 01:02:53 +0800
+Subject: [PATCH 2/5] Fix data wipe of immutable files and protect metadata
+ wipe
+
+- Clear immutable/append flags before unlink/rmdir and fail on real errors
+- Treat wipe exclusions and busy CE mounts as expected
+- Format /data before wiping /metadata to avoid destroying the metadata key
+- Skip the second metadata format when Wipe_Encryption already did it
+
+Co-Authored-By: Claude Code <noreply@anthropic.com>
+---
+ partition.cpp | 106 ++++++++++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 103 insertions(+), 3 deletions(-)
+
+diff --git a/partition.cpp b/partition.cpp
+index 1914cf4..5a6139d 100644
+--- a/partition.cpp
++++ b/partition.cpp
+@@ -30,6 +30,8 @@
+ #include <unistd.h>
+ #include <dirent.h>
+ #include <fcntl.h>
++#include <sys/ioctl.h>
++#include <linux/fs.h>
+ #include <grp.h>
+ #include <iostream>
+ #include <libgen.h>
+@@ -1871,6 +1873,33 @@ bool TWPartition::Wipe(string New_File_System) {
+ 	bool wiped = false, update_crypt = false, recreate_media = true;
+ 	int check;
+ 
++	/*
++	 * metadata 加密的密钥就放在 /metadata 里。只擦 /metadata 而不重新格式化
++	 * /data，会留下一个没有密钥的密文 data 分区；重启后 dm-7 无法建立，
++	 * 原始分区看起来就是 Magic Mismatch（既不能挂载，系统也起不来）。
++	 * 因此擦 metadata 前先把 data 真正格式化掉。Wipe_Encryption() 会先把
++	 * Is_Encrypted 置 false，所以它内部再擦 metadata 时不会递归到这里。
++	 */
++	if (Mount_Point == "/metadata") {
++		TWPartition* dat = PartitionManager.Find_Partition_By_Path("/data");
++		if (dat != nullptr && dat->Is_Encrypted && !dat->Key_Directory.empty()) {
++			LOGINFO("OrangeFox: wiping metadata would destroy the metadata key; formatting /data first...\n");
++			if (!dat->Wipe_Encryption()) {
++				LOGERR("Unable to format /data before wiping metadata; aborting metadata wipe.\n");
++				return false;
++			}
++			/*
++			 * Wipe_Encryption() 在格式化 data 后会通过 Key_Directory 擦掉
++			 * metadata 分区（本机就是 /metadata）。如果它已经完成了这次擦除，
++			 * 外层请求的 metadata wipe 就不用再做一遍。
++			 */
++			if (TWFunc::Get_Root_Path(dat->Key_Directory) == Mount_Point) {
++				LOGINFO("OrangeFox: metadata was already formatted while clearing the data key; skipping the second wipe.\n");
++				return true;
++			}
++		}
++	}
++
+ 	if (!Can_Be_Wiped) {
+ 		gui_msg(Msg(msg::kError, "cannot_wipe=Partition {1} cannot be wiped.")(Display_Name));
+ 		return false;
+@@ -2769,6 +2798,41 @@ bool TWPartition::Wipe_NTFS() {
+ 	return false;
+ }
+ 
++/* immutable/append flags make unlink() and rmdir() fail even for root.
++ * Clear only the flags that block deletion; other inode flags are preserved. */
++static bool Clear_Deletion_Blocking_Flags(const string& path) {
++	struct stat st;
++	if (lstat(path.c_str(), &st) == 0) {
++		if (S_ISLNK(st.st_mode))
++			return true; // unlinking a symlink is not blocked by its target flags
++		if (!S_ISREG(st.st_mode) && !S_ISDIR(st.st_mode))
++			return true; // FIFOs/sockets are not opened here; unlink is not blocked by inode flags
++	}
++
++	int fd = open(path.c_str(), O_RDONLY | O_CLOEXEC | O_NOFOLLOW);
++	if (fd < 0) {
++		LOGINFO("Unable to open '%s' to clear deletion flags: %s\n",
++			path.c_str(), strerror(errno));
++		return false;
++	}
++
++	int flags = 0;
++	if (ioctl(fd, FS_IOC_GETFLAGS, &flags) != 0) {
++		LOGINFO("Unable to read flags for '%s': %s\n", path.c_str(), strerror(errno));
++		close(fd);
++		return false;
++	}
++	int new_flags = flags & ~(FS_IMMUTABLE_FL | FS_APPEND_FL);
++	if (new_flags != flags && ioctl(fd, FS_IOC_SETFLAGS, &new_flags) != 0) {
++		LOGINFO("Unable to clear immutable/append flags for '%s': %s\n",
++			path.c_str(), strerror(errno));
++		close(fd);
++		return false;
++	}
++	close(fd);
++	return true;
++}
++
+ bool TWPartition::Wipe_Data_Without_Wiping_Media() {
+ #ifdef TW_OEM_BUILD
+ 	// In an OEM Build we want to do a full format
+@@ -2790,6 +2854,9 @@ bool TWPartition::Wipe_Data_Without_Wiping_Media() {
+ bool TWPartition::Wipe_Data_Without_Wiping_Media_Func(const string& parent __unused) {
+ 	string dir;
+ 
++	/* A directory can itself be immutable, which prevents deleting its entries. */
++	Clear_Deletion_Blocking_Flags(parent);
++
+ 	DIR* d;
+ 	d = opendir(parent.c_str());
+ 	if (d != NULL) {
+@@ -2814,10 +2881,43 @@ bool TWPartition::Wipe_Data_Without_Wiping_Media_Func(const string& parent __unu
+ 					LOGINFO("DEBUG: OrangeFox: skipped /data/data/\n");
+ 				else
+ 				#endif
+-				rmdir(dir.c_str());
++				{
++					if (rmdir(dir.c_str()) != 0) {
++						int rmdir_errno = errno;
++						if (rmdir_errno == ENOTEMPTY || rmdir_errno == EEXIST || rmdir_errno == EBUSY) {
++							/* Wipe exclusions such as /data/misc/keystore intentionally
++							 * remain, and /data/user/0 is a busy CE mount point; both
++							 * are expected and must not abort the whole data wipe. */
++							LOGINFO("Directory '%s' is non-empty or busy after wipe (expected exclusions/mount point); leaving it\n",
++								dir.c_str());
++							continue;
++						}
++						LOGINFO("Unable to remove directory '%s': %s; clearing attributes and retrying\n",
++							dir.c_str(), strerror(rmdir_errno));
++						if (!Clear_Deletion_Blocking_Flags(dir) || rmdir(dir.c_str()) != 0) {
++							rmdir_errno = errno;
++							if (rmdir_errno == ENOTEMPTY || rmdir_errno == EEXIST || rmdir_errno == EBUSY) {
++								LOGINFO("Directory '%s' is non-empty or busy after wipe (expected exclusions/mount point); leaving it\n",
++									dir.c_str());
++								continue;
++							}
++							LOGERR("Unable to remove directory '%s': %s\n",
++								dir.c_str(), strerror(rmdir_errno));
++							closedir(d);
++							return false;
++						}
++					}
++				}
+ 			} else if (de->d_type == DT_REG || de->d_type == DT_LNK || de->d_type == DT_FIFO || de->d_type == DT_SOCK) {
+-				if (unlink(dir.c_str()) != 0)
+-					LOGINFO("Unable to unlink '%s': %s\n", dir.c_str(), strerror(errno));
++				if (unlink(dir.c_str()) != 0) {
++					LOGINFO("Unable to unlink '%s': %s; clearing attributes and retrying\n",
++						dir.c_str(), strerror(errno));
++					if (!Clear_Deletion_Blocking_Flags(dir) || unlink(dir.c_str()) != 0) {
++						LOGERR("Unable to unlink '%s': %s\n", dir.c_str(), strerror(errno));
++						closedir(d);
++						return false;
++					}
++				}
+ 			}
+ 		}
+ 		closedir(d);
+-- 
+2.34.1
+

@@ -1,0 +1,101 @@
+From 5a32417a6b30be46ca14831ea66146aaa38f16e4 Mon Sep 17 00:00:00 2001
+From: OneFeiFan <3022504358@qq.com>
+Date: Sat, 7 Nov 2026 04:02:14 +0800
+Subject: [PATCH 5/5] gui: keep listbox labels translated across page focus
+
+Pages can be focused before the active language file is loaded, so listbox items cached their base English names forever. Keep the original name and re-parse it on every page focus; reload the current language after a wipe/format as well.
+
+Co-Authored-By: Claude Code <noreply@anthropic.com>
+---
+ gui/action.cpp  | 10 ++++++++++
+ gui/listbox.cpp | 25 +++++++++++++++----------
+ gui/pages.cpp   |  2 ++
+ 3 files changed, 27 insertions(+), 10 deletions(-)
+
+diff --git a/gui/action.cpp b/gui/action.cpp
+index bd5da25..35303aa 100644
+--- a/gui/action.cpp
++++ b/gui/action.cpp
+@@ -1730,11 +1730,21 @@ int GUIAction::wipe(std::string arg)
+ #endif
+     }
+   PartitionManager.Update_System_Details();
++
++  /*
++   * A data wipe/format can leave the GUI's language resources in the base
++   * (English) state while the rest of the page set is still translated.
++   * Reload the current language before the action page returns, so the main
++   * menu does not stay English until the next recovery reboot.
++   */
++  PageManager::LoadLanguage(DataManager::GetStrValue("tw_language"));
++
+   if (ret_val)
+     ret_val = 0;		// 0 is success
+   else
+     ret_val = 1;		// 1 is failure
+   operation_end(ret_val);
++  gui_forceRender();
+   return 0;
+ }
+ 
+diff --git a/gui/listbox.cpp b/gui/listbox.cpp
+index 066c41b..3490454 100644
+--- a/gui/listbox.cpp
++++ b/gui/listbox.cpp
+@@ -187,11 +187,10 @@ GUIListBox::GUIListBox(xml_node<>* node) : GUIScrollList(node)
+ 		if (!attr)
+ 			continue;
+ 
+-		// We will parse display names when we get page focus to ensure that translating takes place
++		// Keep the original name so page focus can re-parse it after the
++		// language resources have been loaded or changed.
+ 		item.displayName = attr->value();
+-
+-		if (requireReload)
+-			item.unparsedName = attr->value();
++		item.unparsedName = attr->value();
+ 
+ 		item.variableValue = gui_parse_text(child->value());
+ 		item.selected = (child->value() == currentValue);
+@@ -471,13 +470,19 @@ void GUIListBox::SetPageFocus(int inFocus)
+ 	GUIScrollList::SetPageFocus(inFocus);
+ 
+ 	if (inFocus) {
+-		if (!isTextParsed) {
+-			isTextParsed = true;
+-
+-			for (size_t i = 0; i < mListItems.size(); i++) {
+-				ListItem& item = mListItems[i];
++		/*
++		 * Pages can be focused during package loading, before the active
++		 * language file is loaded. Re-parse from the original (untranslated)
++		 * names every time the page gains focus so listbox items do not stay
++		 * in the base English language while the surrounding text is Chinese.
++		 */
++		isTextParsed = true;
++		for (size_t i = 0; i < mListItems.size(); i++) {
++			ListItem& item = mListItems[i];
++			if (!item.unparsedName.empty())
++				item.displayName = gui_parse_text(item.unparsedName);
++			else
+ 				item.displayName = gui_parse_text(item.displayName);
+-			}
+ 		}
+ 
+ 		DataManager::GetValue(mVariable, currentValue);
+diff --git a/gui/pages.cpp b/gui/pages.cpp
+index 1b0444b..18c30f6 100755
+--- a/gui/pages.cpp
++++ b/gui/pages.cpp
+@@ -1851,6 +1851,8 @@ void PageManager::LoadLanguageList(ZipArchiveHandle package) {
+ 
+ void PageManager::LoadLanguage(string filename) {
+ 	string actual_filename;
++	if (filename.empty())
++		filename = EXPAND(TW_DEFAULT_LANGUAGE);
+ 	if (TWFunc::Path_Exists(TWRES "customlanguages/" + filename + ".xml"))
+ 		actual_filename = TWRES "customlanguages/" + filename + ".xml";
+ 	else
+-- 
+2.34.1
+

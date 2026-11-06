@@ -1,0 +1,40 @@
+From 7ccfcffca5a717e201f26af081773a8beff02935 Mon Sep 17 00:00:00 2001
+From: OneFeiFan <3022504358@qq.com>
+Date: Sat, 7 Nov 2026 03:15:31 +0800
+Subject: [PATCH 3/5] usb_otg: restore device mode after auto-unmount
+
+Set sys.usb.otg_active before disabling MTP so the init rule does not rewrite mode=peripheral while the OTG host is active. Clear it on unmount; init then restores device mode immediately, so ADB comes back as soon as the disk is removed instead of waiting for UCSI.
+
+Co-Authored-By: Claude Code <noreply@anthropic.com>
+---
+ partitionmanager.cpp | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/partitionmanager.cpp b/partitionmanager.cpp
+index 2fe6694..bae39cd 100755
+--- a/partitionmanager.cpp
++++ b/partitionmanager.cpp
+@@ -4934,6 +4934,10 @@ void TWPartitionManager::Check_UsbOtg_Status() {
+ 	return;
+ 
+ mount:
++	// Mark OTG active before disabling MTP.  Disable_MTP may change
++	// sys.usb.config and trigger the init rule that writes mode=peripheral;
++	// with this flag set, that rule leaves the active host mode alone.
++	property_set("sys.usb.otg_active", "1");
+ 	mtp_was_enabled = TWFunc::Toggle_MTP(false);
+ 	usbotg->Mount(true);
+ 	usbotg_mounted = true;
+@@ -4950,6 +4954,9 @@ unmount:
+ 	usbotg_mounted = false;
+ 	if (PageManager::GetCurrentPage() == "filemanagerlist" && DataManager::GetStrValue("tw_file_location1") == "/usb_otg")
+ 		gui_changePage("filemanagerlist");
++	// Restore device mode immediately when the OTG disk disappears, so ADB
++	// comes back without waiting for the Type-C/UCSI role to settle.
++	property_set("sys.usb.otg_active", "0");
+ 	TWFunc::Toggle_MTP(mtp_was_enabled);
+ }
+ 
+-- 
+2.34.1
+
