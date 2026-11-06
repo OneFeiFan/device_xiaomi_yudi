@@ -55,8 +55,9 @@ if [ "$1" = "$FDEVICE" -o "$FOX_BUILD_DEVICE" = "$FDEVICE" ]; then
 	# 只增加开关；默认不会在启动时自动改 vbmeta，刷 ROM 后的自动处理也默认关闭。
 	export OF_SUPPORT_VBMETA_AVB2_PATCHING=1
 
-	# Mount 菜单显示 USB Storage（大容量存储），不依赖 MTP。
-	export OF_ENABLE_USB_STORAGE=1
+	# 设备只有一个 USB-C 口，无法同时接 OTG 存储和电脑；关闭 USB Storage。
+	# 文件传输用 MTP；关闭后 Mount 菜单不再显示该入口。
+	export OF_ENABLE_USB_STORAGE=0
 
 	# 快速备份默认勾选的分区
 	export OF_QUICK_BACKUP_LIST="/boot;/vendor_boot;/dtbo;/data;"
