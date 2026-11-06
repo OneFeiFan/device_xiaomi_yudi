@@ -32,6 +32,8 @@ git apply ../../device/xiaomi/yudi/patches/0006-*.patch
 - 在擦 `/metadata` 前先真正格式化 `/data`，避免留下没有 metadata 密钥的密文 userdata（表现为 `Magic Mismatch`、系统无法开机）；
 - 如果 `Wipe_Encryption()` 已经顺带擦掉同一个 metadata 分区，外层 wipe 不再重复格式化。
 
+`extractTarFork() 255` 的常见来源是部分 root 模块给 `/data/system/cloudFeature_*.xml` 加了 immutable 标志。补丁会先清标志再重试；如果仍然无法删除，普通双清会中止而不是悄悄跳过，此时 data 可能只清了一部分，应该改用 Format Data。
+
 修改文件：`bootable/recovery/partition.cpp`。
 
 ## 0003-usb-otg-host-mode.patch

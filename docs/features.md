@@ -32,7 +32,13 @@ recovery 按用户解密，不是只处理 user 0：
 - **独立密码用户**：不会用 user 0 的密码自动解开；需要提供该用户自己的密码。
 - **统一锁屏的 profile**（clone profile、managed profile，例如 XSpace、平行空间）：没有自己的锁屏凭据，只有 `gatekeeper.profile.key`。父用户认证通过后，recovery 用 keystore2 解出 profile key 派生的随机密码，再按普通 synthetic password 流程解密该用户；父用户没有解密时不会尝试。
 
-Gatekeeper、Keystore、`spblob`、`locksettings.db` 等凭据文件被 TWRP 的 `ExcludeAll()` 排除，不进入 data 备份，也不会在恢复时写回。**恢复 data 后锁屏密码和独立用户密码需要重新设置**，这是设计行为，不是恢复失败；依赖 keystore 的应用可能需要重新登录。
+凭据的处理要分情况：
+
+- **user 0** 的 Gatekeeper/Keystore、`locksettings.db`、`spblob` 始终被 `ExcludeAll()` 排除。只做普通双清再恢复，不会动当前 user 0 的锁屏凭据，**不需要重设**；只有备份和恢复之间做过 Format Data 或换机，才需要重设。
+- **非 0 用户**（独立密码用户、clone profile）的凭据在正常解密路径下不会被排除。普通双清会删掉它们，恢复时如果有备份就写回备份里的版本；备份之后改过密码会导致恢复后的凭据对不上，需要重设。
+- 依赖 keystore 的应用在凭据丢失后可能需要重新登录。
+
+这些行为来自 TWRP 的 `ExcludeAll()` 设计，不是恢复失败。
 
 recovery 没有 SPU，高通 Gatekeeper 默认会先尝试 SPU，`verify_legacy` 返回 `-45`，图案、PIN 和文本密码都会验证失败。没有锁屏密码时不受影响，因为默认密码不经过 Gatekeeper。`init.recovery.qcom.rc` 在启动时设置 `vendor.gatekeeper.disable_spu true`，让 Gatekeeper 走普通 TEE；不要删除这一行。
 
@@ -77,11 +83,23 @@ USB Storage 已在设备树里关闭（`vendorsetup.sh` 的 `OF_ENABLE_USB_STORA
 
 data 备份排除 `/data/media`（内部存储/照片/下载）。要备份这些内容，需要单独选择 Internal Storage，并把备份文件另外保存到电脑或 OTG 硬盘，因为 Format Data 会清空内部存储。
 
-data 备份是解密后的文件。恢复后普通文件和应用数据可以读回，但 Gatekeeper/Keystore 凭据被排除，锁屏和独立用户密码需要在系统里重新设置；依赖 keystore 的应用可能需要重新登录。
+data 备份是解密后的文件。恢复后普通文件和应用数据可以读回；凭据是否保留见前面的“用户和凭据”。
+
+OrangeFox 的 `OF_WORKAROUND_BACKUP_BUG` 会排除 `/data/data`，但应用数据在 recovery 里的路径是 `/data/user/0/<包名>/`，备份会从这条路径遍历，所以应用数据并没有丢。检查备份时不要只看 `/data/data`，可以用下面的命令确认：
+
+```sh
+for f in /sdcard/Fox/BACKUPS/<serialno>/<备份名>/data.f2fs.win[0-9]*; do
+    tar -tf "$f"
+done | grep '^/data/user/0/' | head
+```
+
+之前 restore 报 `extractTarFork() 255`，常见原因是部分 root 模块给 `/data/system/cloudFeature_*.xml` 之类的文件加了 immutable/append 标志，恢复时无法覆盖。补丁 0002 会先清掉这些标志再删除/覆盖；如果仍失败，改用 Format Data。
 
 ## 双清和 Format Data
 
 普通双清（Data + Cache/Dalvik）使用 `Wipe_Data_Without_Wiping_Media`，会递归删除 `/data` 下除 `/data/media` 之外的内容，**不会删除照片、下载等内部存储文件**。
+
+普通双清是逐个文件删除。补丁 0002 会先清掉 immutable/append 标志再重试；如果仍然无法 `unlink()`/`rmdir()`（不是 `/data/user/0` 这类挂载点，也不是预期的排除目录），recovery 会**中止并报错**，此时 `/data` 可能只清了一部分。遇到这种情况不要继续普通双清，改用 Format Data 整分区格式化。
 
 Format Data，或者在高级清除里同时勾选 metadata，会走整分区格式化（`make_f2fs /dev/block/sda35`），`/data/media` 也会被清空。metadata 是 data 的加密密钥：只擦 metadata 而不格式化 data 会留下没有密钥的密文 userdata，重启后表现为 `Magic Mismatch`、系统无法开机；recovery 已改为在擦 metadata 前先格式化 data，并在格式化前停 MTP。格式化完成后需要重启系统，让系统重新建立加密。
 

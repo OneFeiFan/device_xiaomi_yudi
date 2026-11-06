@@ -16,7 +16,7 @@
 | 异常重启后写入不丢失 | 已验证 | 用 SysRq 强制重启测试 |
 | 解密 data | 已验证 | 无锁屏、图案、4 位 PIN、文本密码和多用户都已验证 |
 | 刷入 zip | 部分验证 | 只用测试 zip 验证过脚本会执行；刷入完整 ROM 未验证 |
-| 备份和恢复 | 部分验证 | boot、data 恢复通过；super 备份和 digest 校验通过，super 恢复未验证。data 备份不含内部存储；恢复后锁屏/独立用户密码需要重设 |
+| 备份和恢复 | 部分验证 | boot、data 恢复通过；super 备份和 digest 校验通过，super 恢复未验证。data 备份不含内部存储；普通双清+恢复保留 user 0 凭据，Format Data 后恢复需要重设锁屏，非 0 用户凭据随备份恢复 |
 | ADB sideload | 部分验证 | 测试 zip 通过；退出后 ADB 恢复 |
 | fastbootd | 部分验证 | `getvar`、`reboot` 正常；已通过 fastbootd 刷写 `recovery_a`，逻辑分区刷写未验证 |
 | 读取和切换槽位 | 部分验证 | 切换生效；目标槽没有系统时会停在 fastboot，见[已知问题](docs/known-issues.md#另一槽没有系统时切槽会停在-fastboot) |

@@ -171,6 +171,14 @@ adb shell "fox backup data --name data-test --storage internal"
 
 通过标准：备份目录里有 `data.f2fs.win000` 等分片、`.sha2` 和 `data.info`；任选一个分片，`sha256sum` 与 `.sha2` 内容一致。
 
+应用数据不在 `/data/data`（橙狐的 `OF_WORKAROUND_BACKUP_BUG` 会排除它），而是在 `/data/user/0/<包名>/` 路径下。用下面的命令确认备份里确实有应用数据，而不是只看 `/data/data`：
+
+```sh
+for f in /sdcard/Fox/BACKUPS/<serialno>/<备份名>/data.f2fs.win[0-9]*; do
+    tar -tf "$f"
+done | grep '^/data/user/0/' | head
+```
+
 ### super 的备份
 
 ```sh
@@ -183,7 +191,15 @@ adb shell "fox backup super --name super-test --storage internal"
 
 这是破坏性测试。先备份 data，再在 `/data` 根目录新建一个测试文件（不要放 `/sdcard`，因为 `/data/media` 不会被清除），然后恢复刚才的备份。data 备份不包含 `/data/media`，要保留照片/下载需要另外备份 Internal Storage。
 
-通过标准：恢复后测试文件消失，其余文件完好；重启进入系统后，应用数据可以正常读取。锁屏密码、独立用户密码和 keystore 凭据不会恢复，需要重新设置；依赖 keystore 的应用可能需要重新登录。
+为了确认应用数据确实在备份里，再在一个已安装应用的数据目录放一个标记文件，例如 `/data/user/0/<包名>/fox-restore-marker.txt`，用上面的 `tar -tf` 命令确认它出现在备份分卷里；然后做一次普通双清（`fox wipe cache data`）再恢复，检查这个标记文件是否回来。
+
+通过标准：恢复后 `/data/...` 测试文件消失（如果它不在备份里），应用数据标记文件恢复；重启进入系统后应用数据可以正常读取。
+
+凭据是否保留取决于恢复前做过什么：
+
+- 只做普通双清再恢复：user 0 的锁屏凭据不会被清除，**不需要重设**；
+- 备份和恢复之间做过 Format Data 或换机：user 0 的凭据和密钥已经没了，备份里也不包含，需要重设锁屏；依赖 keystore 的应用可能需要重新登录；
+- 非 0 用户（独立密码、clone profile）：普通双清会删掉它们的凭据，恢复时写回备份里的版本；如果备份之后改过密码，恢复后会对不上，需要重设。
 
 ### 双清和 Format Data
 
@@ -198,6 +214,8 @@ adb shell "ls -l /data/media/0/wipe-keep-test.txt /data/wipe-delete-test.txt"
 ```
 
 通过标准：`/data/media/0/wipe-keep-test.txt` 还在，`/data/wipe-delete-test.txt` 不存在；重启能进入系统。
+
+如果普通双清报 `Unable to wipe /data` 或在某个文件处停止，说明该文件在清除 immutable/append 后仍删不掉，`/data` 可能只清了一部分。这种情况改用 Format Data，不要继续重复普通双清。
 
 含 metadata 的整分区清除：
 

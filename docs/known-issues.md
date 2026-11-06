@@ -12,9 +12,11 @@
 
 KeyMint 要求 recovery 的安全补丁级别和 vendor 安全补丁与系统一致，版本属性也要检查。这些值目前写在 `BoardConfig.mk` 里。系统更新后，需要按 [功能说明](features.md#解密) 对照新系统的值，必要时重新构建。
 
-## 恢复 data 后锁屏和独立用户密码不会恢复
+## Format Data 后恢复 data 需要重设锁屏
 
-TWRP 的 data 备份和恢复会排除 `/data/misc/gatekeeper`、`/data/misc/keystore`、`locksettings.db`、`spblob` 等凭据文件。恢复后普通文件和应用数据可以读回，但锁屏密码、独立用户密码和 keystore 凭据需要重新设置；依赖 keystore 的应用可能需要重新登录。这是设计行为，不是恢复失败。
+user 0 的 Gatekeeper/Keystore、`locksettings.db`、`spblob` 被 TWRP 的 `ExcludeAll()` 排除，不进入 data 备份。只做普通双清再恢复时，当前 user 0 的凭据不会被清除，不需要重设；如果备份和恢复之间做过 Format Data 或换机，凭据和密钥已经没了，备份里也不包含，**才需要重设锁屏**，依赖 keystore 的应用可能需要重新登录。
+
+非 0 用户（独立密码、clone profile）的凭据在正常解密路径下不会被排除：普通双清会删掉，恢复时写回备份里的版本；备份之后改过密码会与备份对不上，需要重设。
 
 ## sideload 后 MTP 不会自动恢复
 
@@ -31,6 +33,12 @@ TWRP 的 data 备份和恢复会排除 `/data/misc/gatekeeper`、`/data/misc/key
 ## MTP 自启后 Windows 可能不立即显示
 
 `tw_mtp_enabled` 默认为 1，启动日志里能看到 `[MTP] Starting MTP`，但 Windows 有时不会马上刷新出便携设备。这不影响手动使用：在“挂载”页关闭再打开 MTP，或者拔插一次 USB 线即可。
+
+## 普通双清遇到无法删除的文件会中止
+
+普通双清是逐个文件删除。recovery 会先清除 immutable/append 标志再重试；如果仍然无法删除（不是 `/data/user/0` 这类挂载点或预期的排除目录），会中止并报 `Unable to wipe /data`，此时 data 可能只清了一部分。
+
+处理办法：改用 Format Data 整分区格式化。部分 root 模块会给 `/data/system/cloudFeature_*.xml` 加 immutable 标志，是常见原因之一。
 
 ## 开机后有 1 到 3 秒的卡顿
 
