@@ -23,6 +23,8 @@ on init
     setprop sys.usb.configfs 1
     # 第一次进入 device 模式时写一次 peripheral 的标记，见下面的 USB 规则
     setprop sys.usb.mode_ready 0
+    # 当前是否正在使用 OTG host；恢复脚本在挂载/卸载时改这个值
+    setprop sys.usb.otg_active 0
     # 触控固件放在 ramdisk 的 /lib/firmware：/vendor/firmware 之后会被 ADSP 固件覆盖
     write /sys/module/firmware_class/parameters/path /lib/firmware
 
@@ -37,15 +39,20 @@ on property:ro.boot.usbcontroller=*
 # 会再次触发 sys.usb.state=adb；如果无条件重写 peripheral，就会把已经切到
 # host 的 USB 模式踢回 device，导致 mount.ntfs 报 13/11。
 # mode_ready=1 后不再写，开机时的第一次枚举仍然正常。
-on property:sys.usb.state=adb && property:sys.usb.mode_ready=0
+on property:sys.usb.state=adb && property:sys.usb.mode_ready=0 && property:sys.usb.otg_active=0
     write /sys/bus/platform/devices/${ro.boot.usb.dwc3_msm:-a600000.ssusb}/mode peripheral
     setprop sys.usb.mode_ready 1
-on property:sys.usb.state=fastboot && property:sys.usb.mode_ready=0
+on property:sys.usb.state=fastboot && property:sys.usb.mode_ready=0 && property:sys.usb.otg_active=0
     write /sys/bus/platform/devices/${ro.boot.usb.dwc3_msm:-a600000.ssusb}/mode peripheral
     setprop sys.usb.mode_ready 1
-on property:sys.usb.state=sideload && property:sys.usb.mode_ready=0
+on property:sys.usb.state=sideload && property:sys.usb.mode_ready=0 && property:sys.usb.otg_active=0
     write /sys/bus/platform/devices/${ro.boot.usb.dwc3_msm:-a600000.ssusb}/mode peripheral
     setprop sys.usb.mode_ready 1
+
+# OTG 退出（otg_active 1 -> 0）时恢复 device 模式，否则拔掉硬盘后
+# 再插电脑线，USB 还停在 host，ADB 不会自己回来。
+on property:sys.usb.otg_active=0 && property:sys.usb.mode_ready=1
+    write /sys/bus/platform/devices/${ro.boot.usb.dwc3_msm:-a600000.ssusb}/mode peripheral
 
 on fs
     # 主题覆盖文件（navbar / mount / images / keyboard / zh_CN / fonts / main）
