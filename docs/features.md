@@ -22,7 +22,7 @@ recovery 镜像不带内核，由引导程序用 boot 分区的内核启动，�
 
 userdata 使用 FBE v2（`inlinecrypt_optimized` 加 `wrappedkey_v0` 硬件包装密钥），并开启了 metadata 加密。解密依赖原厂的 qseecomd、Keymaster 4.1、KeyMint 和 Gatekeeper，启动顺序写在 `init.recovery.qcom.rc`：启动 qseecomd，等它注册完监听器后，再启动其他服务。RPMB 节点权限由 `vendor/etc/ueventd.rc` 在启动早期设为 `0660 system system`，init 里不再重复设置。
 
-Android 的锁屏凭据分图案、PIN 和文本密码三类；纯数字的密码在系统里就是 PIN，recovery 日志会显示 `password type: PIN`。三类都走 synthetic password + Gatekeeper 验证，目前实测了图案和 4 位 PIN。
+Android 的锁屏凭据分图案、PIN 和文本密码三类；纯数字的密码在系统里就是 PIN，recovery 日志会显示 `password type: PIN`。三类都走 synthetic password + Gatekeeper 验证，目前图案、4 位 PIN 和文本密码都已实测。
 
 recovery 没有 SPU，高通 Gatekeeper 默认会先尝试 SPU，`verify_legacy` 返回 `-45`，图案、PIN 和文本密码都会验证失败。没有锁屏密码时不受影响，因为默认密码不经过 Gatekeeper。`init.recovery.qcom.rc` 在启动时设置 `vendor.gatekeeper.disable_spu true`，让 Gatekeeper 走普通 TEE；不要删除这一行。
 
@@ -57,7 +57,7 @@ CPU 温度读取 `/sys/class/thermal/thermal_zone27/temp`（cpuss-2）。
 
 ADB 和 MTP 在 recovery 启动后自动可用。MTP 把 `/data/media/0` 导出为 Internal Storage。
 
-USB Storage 通过 configfs 的 `mass_storage.0` 实现，在“挂载”页启用。退出 USB Storage 后，MTP 会自动重新启用。
+USB Storage 通过 configfs 的 `mass_storage.0` 实现，在“挂载”页启用。它需要一个可移动存储（USB OTG 盘或 SD 卡）；内部 `/data/media` 不会被导出。没有可移动存储时，点启用会提示“无法定位存储设备”。退出 USB Storage 后，MTP 会自动重新启用。
 
 `vendorsetup.sh` 里的 `OF_ENABLE_USB_STORAGE=1` 由 OrangeFox 的 `orangefox.mk` 读取，不为 1 时会关闭 USB Storage 功能。
 

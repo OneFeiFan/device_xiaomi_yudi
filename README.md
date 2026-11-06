@@ -14,13 +14,13 @@
 | 中文主题和字体 | 已验证 | |
 | 设置重启后保留 | 已验证 | 需要打 [补丁](patches/README.md) |
 | 异常重启后写入不丢失 | 已验证 | 用 SysRq 强制重启测试 |
-| 解密 data | 部分验证 | 无锁屏、图案、4 位 PIN 已验证；文本密码和多用户未验证 |
+| 解密 data | 部分验证 | 无锁屏、图案、4 位 PIN、文本密码已验证；多用户未验证 |
 | 刷入 zip | 部分验证 | 只用测试 zip 验证过脚本会执行；刷入完整 ROM 未验证 |
 | 备份和恢复 | 部分验证 | 只验证过 boot 分区；data、super 未验证 |
 | ADB sideload | 部分验证 | 只用测试 zip 验证过 |
-| fastbootd | 部分验证 | `getvar` 和 `reboot` 正常；通过它刷写分区未验证 |
+| fastbootd | 部分验证 | `getvar`、`reboot` 正常；已通过 fastbootd 刷写 `recovery_a`，逻辑分区刷写未验证 |
 | 读取和切换槽位 | 部分验证 | 切换生效；目标槽没有系统时会停在 fastboot，见[已知问题](docs/known-issues.md#另一槽没有系统时切槽会停在-fastboot) |
-| USB Storage | 部分验证 | 设备端能启用；电脑端读写未验证 |
+| USB Storage | 未验证 | 需要外接 OTG/SD 存储；没有可移动存储时提示“无法定位存储设备” |
 | USB OTG | 未验证 | |
 | 格式化 data、分区修复和调整 | 未验证 | 属于破坏性操作 |
 | 禁用 vbmeta AVB2.0 | 未验证 | 菜单存在，未实际执行 |

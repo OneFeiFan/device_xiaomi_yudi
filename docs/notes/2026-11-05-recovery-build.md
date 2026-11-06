@@ -82,13 +82,15 @@ ADSP 固件原本 26 个文件放在 ramdisk 的 `/lib/firmware`。后来改成�
 
 在 recovery 里执行 `setprop vendor.gatekeeper.disable_spu true` 并重启 `gatekeeper-1-0` 后，图案解密通过。随后把这一行写进 `init.recovery.qcom.rc` 的 `on fs` 段，做成永久修复。最终镜像里 `getprop vendor.gatekeeper.disable_spu` 为 `true`。
 
-用户随后把锁屏改成 4 位数字密码。recovery 日志显示 `password type: PIN`，`GateKeeper status ok`，`User 0 Decrypted Successfully!`。纯数字密码在 Android 里就是 PIN，和文本密码、图案走同一条 synthetic password + Gatekeeper 路径。
+用户随后把锁屏改成 4 位数字密码。recovery 日志显示 `password type: PIN`，`GateKeeper status ok`，`User 0 Decrypted Successfully!`。纯数字密码在 Android 里就是 PIN，和文本密码、图案走同一条 synthetic password + Gatekeeper 路径。之后用户又实测了文本密码，也能正常解密。
 
 用 `twrp decrypt` 命令行测了一次，从执行到 `Data successfully decrypted` 约 2.8 秒。当前 PIN 凭据的 scrypt 参数是 N=2048、r=8、p=2；scrypt 和 Gatekeeper 验证是正常开销。默认密码跳过这两步，所以几乎是立即解密。
 
 另外发现 recovery 的 `ro.build.version.release` 实际是 12，`release_or_codename` 是 16；系统侧两个值都是 16。当前这组值可以正常解密，文档已按实际 `getprop` 结果改写，不再声称 `release` 必须等于系统。
 
 RPMB 节点 `/dev/0:0:0:49476` 原来在 `ueventd.rc` 设为 `0600 system system`，init 里又 `chown/chmod 0660`。ueventd 在 early-init 冷启动时就加载 `/vendor/etc/ueventd.rc`，早于 `on fs`，所以把规则改成 `0660 system system`，删掉 init 里的 `wait/chown/chmod` 三行。实机验证节点权限是 `crw-rw---- system system`。
+
+之后用 fastbootd 把同一个 recovery 镜像刷入 `recovery_a`，重启回 recovery 正常，说明 fastbootd 的刷写路径可用。USB Storage 在没有外接存储时点击启用会提示“无法定位存储设备”；TWRP 的实现只导出可移动存储，不导出内部 `/data/media`，所以这项需要 OTG 盘或 SD 卡才能测。
 
 ## 测试结论
 

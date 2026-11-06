@@ -64,6 +64,8 @@ adb shell "ls /sdcard"
 - 文本密码；
 - 多用户。
 
+前三类已经实测通过，多用户还没测。
+
 输入图案、PIN 或文本密码后需要约 2–3 秒完成 scrypt 和 Gatekeeper 验证，这段时间界面看起来像卡住，是正常开销。默认密码不经过这两步，几乎立即解密。
 
 ### 设置保存
@@ -99,9 +101,11 @@ adb shell "cat /sdcard/durability-test; grep ' /data ' /proc/mounts"
 
 ### USB Storage
 
-在“挂载”页启用 USB Storage，在电脑上读写这个磁盘，然后退出。
+先接一个 USB OTG 盘或 SD 卡，再在“挂载”页启用 USB Storage。
 
-通过标准：电脑能读写；退出后 MTP 的 Internal Storage 重新出现。
+通过标准：电脑能读写这个磁盘；退出后 MTP 的 Internal Storage 重新出现。
+
+没有可移动存储时，设备会提示“无法定位存储设备”，这是预期结果；内部 `/data/media` 不会被导出。
 
 ### 刷入 zip 和 ADB sideload
 
