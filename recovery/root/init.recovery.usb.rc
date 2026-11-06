@@ -1,0 +1,8 @@
+# yudi 只使用 configfs（sys.usb.configfs=1）。
+#
+# 通用 recovery 的 init.recovery.usb.rc 全是 legacy /sys/class/android_usb
+# 规则；本机内核在该模式下没有 enable/functions/idVendor 等节点，这些规则
+# 只会产生无效写入。configfs 的 adb/fastboot 规则在 /init.rc，
+# MTP 规则在 init.recovery.qcom.rc。
+#
+# 保留这个空文件覆盖通用版本，避免导入无用规则。
