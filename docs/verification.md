@@ -73,6 +73,12 @@ adb shell "fox internal get tw_hidden_files"
 
 通过标准：重启后勾选还在，读回的值是 1。
 
+### 全新设置下的默认值
+
+先备份 `/sdcard/Fox/.foxs` 和 `/persist/.foxs`，把它们删除后重启 recovery，查看设置页的勾选状态，最后把备份放回。
+
+通过标准：各复选框的默认勾选状态与未修改的 OrangeFox 一致。主题里声明的持久化变量不应改变这些默认值。
+
 ### 异常重启后的写入
 
 ```sh
@@ -220,8 +226,10 @@ fastboot reboot recovery
 
 通过标准：刷写成功，并能重新进入 recovery。
 
-### 刷入完整 ROM 和切换槽位
+### 刷入官方完整包和切换槽位
 
-在 recovery 里刷入官方完整包。A/B 设备会把系统装到另一个槽位，并把那个槽位的 recovery 换成原厂 recovery，所以刷完后要在另一个槽位的 recovery 分区重新刷入 OrangeFox。
+在 recovery 里刷入小米官方完整包（`payload.bin` 格式）。第三方通用包由包内脚本直接写分区，不经过 update_engine，不能代替这项测试。
 
-通过标准：刷入过程没有报错；切换到另一个槽位后能进入系统，也能进入 OrangeFox。
+官方包会把系统装到另一个槽位，并把那个槽位的 recovery 换成原厂 recovery。刷完后、重启前，把 OrangeFox 镜像刷进另一个槽位的 recovery 分区；也可以事后用 fastboot 刷入。
+
+通过标准：刷入过程没有报错；重启后从另一个槽位进入系统；在这个槽位上也能进入 OrangeFox。

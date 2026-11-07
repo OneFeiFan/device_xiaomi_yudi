@@ -36,9 +36,11 @@ MTP 默认开启，日志里也能看到 `[MTP] Starting MTP`，但 Windows 有�
 
 ## 双清或 Format Data 后其他用户的解密失效
 
-双清或 Format Data 后，机主 user 0 的凭据按设计处理，但其他用户（独立密码用户、XSpace/平行空间等 clone profile）的凭据和相关元数据会丢失，recovery 里无法再解密这些用户。实测双清后会出现。
+双清或 Format Data 之后，除机主 user 0 以外的用户，包括系统分身、独立密码的用户和 XSpace 等 clone profile，在 recovery 里无法再解密。
 
-如果之后再恢复双清前的 data 备份，其他用户的状态预计也不正常：TWRP 的 data 备份/恢复不会完整还原这些用户的凭据和 profile key。这个问题目前不修。需要其他用户的数据时，恢复后在系统里重新登录或重新创建该用户；不要依赖恢复备份来还原他们的解密状态。
+双清后再进入系统时，系统会删除这些用户的加密密钥，而 TWRP 的 data 备份不包含密钥。所以实测中，即使恢复双清前的 data 备份，recovery 也认不出这些用户，系统里同样无法访问它们的数据，只能把这些用户删除。原因的细节见[功能说明](features.md#恢复后锁屏凭据的状态)。
+
+处理办法：双清或 Format Data 之前，先在系统里把其他用户和分身空间里需要的文件拷出来，不要指望用 data 备份恢复这些用户。
 
 ## qseecomd 启动时报 libsecureui.so 找不到
 

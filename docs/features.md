@@ -93,7 +93,17 @@ metadata 分区存着 data 的加密密钥。只擦 metadata 而不格式化 dat
 | --- | --- |
 | 普通双清后恢复 | user 0 的凭据文件没有被删除，仍是当前的状态 |
 | 备份和恢复之间做过 Format Data，或者换了设备 | user 0 的凭据和密钥已经不在了，备份里也没有，需要在系统里重新设置锁屏；依赖 keystore 的应用可能需要重新登录 |
-| 非 0 用户（独立密码的用户、clone profile） | 普通双清会删掉它们的凭据，恢复时写回备份里的版本；如果备份之后改过密码，恢复后会对不上，需要重新设置 |
+| 非 0 用户（系统分身、独立密码的用户、XSpace 等 clone profile） | 无法恢复，只能在系统里删除这些用户，原因见下文 |
+
+非 0 用户无法恢复，原因有三层：
+
+1. 普通双清会删除这些用户的用户记录和 spblob。TWRP 只保护 user 0 的 spblob。
+2. 双清后进入系统时，系统发现这些用户已经不在用户列表里，会清理它们的存储和加密密钥，也就是 `/data/misc/vold/user_keys` 下对应的目录。
+3. TWRP 的 data 备份按设计不包含 `/data/misc/vold/user_keys`。恢复备份只能写回这些用户的文件，写不回密钥。
+
+实测结果是：双清并进入系统后，即使恢复双清前的 data 备份，recovery 也认不出这些用户，系统里同样无法访问它们的数据，只能把它们删除。其中第 2 步是根据 Android 的用户清理机制推断的。
+
+所以双清或 Format Data 之前，要先在系统里把其他用户和分身空间里需要的文件拷出来，不能指望 data 备份。
 
 另外，普通双清不会删除 user 0 的凭据文件，所以它不能当作“清除锁屏”的手段，这和原厂的恢复出厂设置不同。要清掉锁屏，用 Format Data。
 
@@ -103,7 +113,12 @@ recovery 通过 `BoardConfig.mk` 的 `TW_SKIP_ADDITIONAL_FSTAB := true` 只使�
 
 ## 刷入 zip 和 ADB sideload
 
-“安装”页可以刷入 zip。ADB sideload 在 OrangeFox 的菜单里进入，或者在终端执行 `fox sideload start`，然后在电脑上运行 `adb sideload <zip>`。等待期间界面显示“正在启动侧载”，这是在等电脑开始发送，不是卡住。退出 sideload 后 ADB 会自动恢复，MTP 不会，见[已知问题](known-issues.md#sideload-后-mtp-不会自动恢复)。
+“安装”页可以刷入 zip。卡刷包分两类，走的流程完全不同：
+
+- **第三方通用包**：包内的脚本直接把镜像写进分区，写哪个槽位由脚本决定。
+- **官方完整包和 OTA**：`payload.bin` 交给 update_engine，借助虚拟 A/B 的快照机制写到另一个槽位。刷完后，那个槽位的 recovery 会被换成原厂 recovery，需要重新刷入 OrangeFox。
+
+ADB sideload 在 OrangeFox 的菜单里进入，或者在终端执行 `fox sideload start`，然后在电脑上运行 `adb sideload <zip>`。等待期间界面显示“正在启动侧载”，这是在等电脑开始发送，不是卡住。退出 sideload 后 ADB 会自动恢复，MTP 不会，见[已知问题](known-issues.md#sideload-后-mtp-不会自动恢复)。
 
 ## fastbootd
 

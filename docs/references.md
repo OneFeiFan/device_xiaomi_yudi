@@ -34,7 +34,7 @@ LineageOS 没有公开的 liuqin 设备树（`LineageOS/android_device_xiaomi_li
 ## 设备与固件
 
 - 小米官方完整包 `yudi-ota_full-OS3.0.6.0.VMHCNXM-user-15.0-7b73783799.zip`：分区布局、动态分区、初始配置。
-- 第三方重打包的 `yudi-ota_full-OS3.0.306.3.WMHCNXM-user-16.0-b255c0d484-2in1-Root.zip`：boot HAL、`libdrm.so`、vndk-v32 库。这个包不是官方包，校验值无法与官方 306.3 核对。
+- 第三方重打包的 `yudi-ota_full-OS3.0.306.3.WMHCNXM-user-16.0-b255c0d484-2in1-Root.zip`：boot HAL、`libdrm.so`、VNDK v32 的 9 个库（现在位于 `vendor/lib64`）。这个包不是官方包，校验值无法与官方 306.3 核对。
 - 原厂 `recovery.img`：`charger_fstab.qti`、ramdisk 布局、ADSP 固件文件名。
 
 ## OrangeFox 和 TWRP 代码

@@ -34,6 +34,6 @@
 
 已知限制：
 
-- 双清或 Format Data 后，其他用户的 recovery 解密会失效；恢复 data 备份也不能完整还原这些用户的凭据和状态。详见[已知问题](docs/known-issues.md#双清或-format-data-后其他用户的解密失效)。
+- 双清或 Format Data 后，除 user 0 以外的用户（系统分身、独立密码的用户、clone profile）无法恢复，data 备份也不能还原它们。详见[已知问题](docs/known-issues.md#双清或-format-data-后其他用户的解密失效)。
 
 验证范围见 [README 的功能状态表](README.md#功能状态)。

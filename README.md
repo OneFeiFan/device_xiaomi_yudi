@@ -15,7 +15,7 @@
 | 设置重启后保留 | 已验证 | 设备树主题声明，无需源码补丁 |
 | 异常重启后写入不丢失 | 已验证 | |
 | 解密 data | 已验证 | 无锁屏、图案、PIN、文本密码、多用户、统一锁屏 profile |
-| 刷入 zip、ADB sideload | 已验证 | 测试 zip、sideload 和完整 ROM 包都已实测 |
+| 刷入 zip、ADB sideload | 部分验证 | 测试 zip 和第三方通用包（包内脚本直接写分区）已验证；官方完整包和 OTA 未验证 |
 | 备份和恢复 | 部分验证 | boot、data 已验证；super 只验证了备份 |
 | 双清、Format Data | 已验证 | 包括含 metadata 的整分区格式化；其他用户的解密限制见[已知问题](docs/known-issues.md#双清或-format-data-后其他用户的解密失效) |
 | fastbootd | 已验证 | 刷写 recovery 和逻辑分区（vendor_dlkm 原样回刷） |
@@ -25,7 +25,7 @@
 | 分区修复和调整 | 未验证 | |
 | 禁用 vbmeta AVB2.0 | 未验证 | |
 
-数据清除、备份恢复和锁屏凭据之间的关系，见[功能说明](docs/features.md#数据清除备份和恢复)。双清或 Format Data 后其他用户的 recovery 解密会失效，恢复备份也未必能恢复他们的状态，见[已知问题](docs/known-issues.md#双清或-format-data-后其他用户的解密失效)。
+数据清除、备份恢复和锁屏凭据之间的关系，见[功能说明](docs/features.md#数据清除备份和恢复)。双清或 Format Data 后，除 user 0 以外的用户无法恢复，data 备份也救不回来，见[已知问题](docs/known-issues.md#双清或-format-data-后其他用户的解密失效)。
 
 每个功能的工作方式见 [功能说明](docs/features.md)，测试方法和通过标准见 [验证清单](docs/verification.md)。
 

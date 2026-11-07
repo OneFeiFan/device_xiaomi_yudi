@@ -2,7 +2,8 @@
 # 路径相对 recovery/root；sha256 为完整值。
 # 未修改文件按来源分区列出；已修改文件见文末“已修改文件”一节。
 # 设备树自有文件（init.recovery.qcom.rc、脚本、fstab、twrp.flags、主题覆盖、字体、
-# system/etc/task_profiles.json、system/etc/vintf/manifest.xml）不在本清单。
+# system/etc/task_profiles.json、system/etc/vintf/manifest.xml，以及来自高通开源仓库
+# vendor/qcom/opensource/vibrator 的 vendor/etc/init/vendor.qti.hardware.vibrator.service.rc）不在本清单。
 #
 # 路径	来源	sha256
 lib/firmware/novatek_nt36532_m80_fw_csot.bin	vendor 分区：/firmware/novatek_nt36532_m80_fw_csot.bin	3a1e294219570984698211b9c0d3e7cda736848ff2aef5d8d4d5d9619381634d
@@ -223,12 +224,12 @@ vendor/lib64/libxml2.so	system_ext 分区（306.3）：/lib64/vndk-32/libxml2.so
 ## 已修改文件
 # 路径	原始来源	原厂 sha256	当前 sha256	修改内容
 vendor/etc/charger_fstab.qti	recovery 分区 ramdisk：/vendor/etc/charger_fstab.qti	（待补）	a61037cfc258d6cead0b87551c0e8b16e26aa51a510a7ff1a44f568824d7f1d6	modem 行去掉 context=u:object_r:firmware_file:s0（recovery 策略无此类型）
-vendor/etc/init/android.hardware.boot@1.2-service.rc	vendor 分区：/etc/init/android.hardware.boot@1.2-service.rc	5ea90531b8c88cb2599b846897959866cbf80d277ed5aa9f4964e979ea661fab	d13bc39ca5eebedc939299898241000347b2460c5aa29112ced96af5301e245a	加 disabled + seclabel u:r:recovery:s0；按服务需要调整 setenv/LD_LIBRARY_PATH
-vendor/etc/init/android.hardware.gatekeeper@1.0-service-qti.rc	vendor 分区：/etc/init/android.hardware.gatekeeper@1.0-service-qti.rc	7ce6d8a9f91c4493c39087950535164917b66755ed70c94446ab9533bbad1783	acc1dd2422e7b82edd8f5aaecf561a3d2b2667c75fcb76c9bb98e85e260fcba6	加 disabled + seclabel u:r:recovery:s0；按服务需要调整 setenv/LD_LIBRARY_PATH
+vendor/etc/init/android.hardware.boot@1.2-service.rc	vendor 分区：/etc/init/android.hardware.boot@1.2-service.rc	5ea90531b8c88cb2599b846897959866cbf80d277ed5aa9f4964e979ea661fab	27a2753f8e812d0e8191afc5e014e2a18d0728561d13ce1b785f585b82557fe1	加 disabled + seclabel u:r:recovery:s0
+vendor/etc/init/android.hardware.gatekeeper@1.0-service-qti.rc	vendor 分区：/etc/init/android.hardware.gatekeeper@1.0-service-qti.rc	7ce6d8a9f91c4493c39087950535164917b66755ed70c94446ab9533bbad1783	8751dedc50e10f43569c3e7e5d0f638d3ad3c2cbf1f23549482aaee02db0f679	加 disabled + seclabel u:r:recovery:s0
 vendor/etc/init/android.hardware.health@2.1-service.rc	vendor 分区：/etc/init/android.hardware.health@2.1-service.rc	aa3631c26bbb5468694bc52928f0be2667ab0958629a7914bed9e8ec28dc0b3c	47930d401406e72edb45d90816cfb3544df40bda888e34129bdc4adf62e79b83	加 disabled + seclabel u:r:recovery:s0 + setenv LD_LIBRARY_PATH，由 init.recovery.qcom.rc 启动（fastbootd 需要 health）
-vendor/etc/init/android.hardware.keymaster@4.1-service-qti.rc	vendor 分区：/etc/init/android.hardware.keymaster@4.1-service-qti.rc	3da2bc55b1929b6bcfa6daeb0f472dcae34c5804ed259c5746c25a2daf9c46f1	cbc453945f178309142256892b9674af80e578354fb167563e681548dc9b2491	加 disabled + seclabel u:r:recovery:s0；按服务需要调整 setenv/LD_LIBRARY_PATH
-vendor/etc/init/android.hardware.security.keymint-service-qti.rc	vendor 分区：/etc/init/android.hardware.security.keymint-service-qti.rc	b9e599d625b4fe6573c02939dbebb1b4114762e56e898254632884d9f303b48f	ebfe2abfb933cdd7e80cefb5b0c9277e5407da5d5bcb4a6505717c01ce784555	加 disabled + seclabel u:r:recovery:s0；按服务需要调整 setenv/LD_LIBRARY_PATH
-vendor/etc/init/qseecomd.rc	vendor 分区：/etc/init/qseecomd.rc	09a1eaa5077f1ab8833676d2fc352cd9730b763da9823caba8c882a3a1d05baa	3577bd0af87ca0aad21992eb76479ceee69ec891203d3156837ace42118aa312	加 disabled + seclabel u:r:recovery:s0；按服务需要调整 setenv/LD_LIBRARY_PATH
-vendor/etc/init/vendor.qti.hardware.qseecom@1.0-service.rc	vendor 分区：/etc/init/vendor.qti.hardware.qseecom@1.0-service.rc	fe3a6b4c1fbd70e60f8688be4f580f08ab3bb7949189aabea0750db5d001db79	237da8bb928bb878f9e67015f6fe888a65b1bbff5f06d0978f54fe24f03b9d1d	加 disabled + seclabel u:r:recovery:s0；按服务需要调整 setenv/LD_LIBRARY_PATH
+vendor/etc/init/android.hardware.keymaster@4.1-service-qti.rc	vendor 分区：/etc/init/android.hardware.keymaster@4.1-service-qti.rc	3da2bc55b1929b6bcfa6daeb0f472dcae34c5804ed259c5746c25a2daf9c46f1	7d768b6b75e82c0f6a32acb1ab2badcb16137b94025110fd4fe762ddacc6400d	加 disabled + seclabel u:r:recovery:s0
+vendor/etc/init/android.hardware.security.keymint-service-qti.rc	vendor 分区：/etc/init/android.hardware.security.keymint-service-qti.rc	b9e599d625b4fe6573c02939dbebb1b4114762e56e898254632884d9f303b48f	3314054efb77a7fdf23edc8c23bb9a9671d34f9d0ec1206b08d53ac3da0247e0	加 disabled + seclabel u:r:recovery:s0
+vendor/etc/init/qseecomd.rc	vendor 分区：/etc/init/qseecomd.rc	09a1eaa5077f1ab8833676d2fc352cd9730b763da9823caba8c882a3a1d05baa	35b40658227682c3f3a29a86a3d53fcd68d96b3a3f0608d844a49505a83edc26	加 disabled + seclabel u:r:recovery:s0
+vendor/etc/init/vendor.qti.hardware.qseecom@1.0-service.rc	vendor 分区：/etc/init/vendor.qti.hardware.qseecom@1.0-service.rc	fe3a6b4c1fbd70e60f8688be4f580f08ab3bb7949189aabea0750db5d001db79	e15216e2ab902dbde4770795c1ccbecc7d1fc3dbeb72d793486cee77165961da	加 disabled + seclabel u:r:recovery:s0
 vendor/etc/ueventd.rc	vendor 分区：/etc/ueventd.rc	62476865da5b81f9c252fdc14441811c71e95d69b8acfbcaca5d13d866ea2c83	8b9bf45a971229572cb05ac6ba2da1cbf6a0dd341210e228f807a92113a100ae	新增 RPMB /dev/0:0:0:49476（0660 system system）、dma_heap/qseecom/ion 等 recovery 需要的权限规则
 vendor/etc/vintf/manifest.xml	vendor 分区：/etc/vintf/manifest_cape.xml + HAL 片段（合并）	e0c247fc5cc5758bcf00661c7ab4793bfd1a05459ba1690b9eaf351fbcf06a1b	445873fcdecc03c5417cdaf58d422b6743e19a33d502db4c6c3721a69540aad0	由 manifest_cape.xml 与 boot/keymint 等 HAL 片段合并
