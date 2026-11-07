@@ -55,6 +55,13 @@ if [ "$1" = "$FDEVICE" -o "$FOX_BUILD_DEVICE" = "$FDEVICE" ]; then
 	# 只增加开关；默认不会在启动时自动改 vbmeta，刷 ROM 后的自动处理也默认关闭。
 	export OF_SUPPORT_VBMETA_AVB2_PATCHING=1
 
+	# 只隐藏刷机确认页的“安装 Recovery Ramdisk”入口，保留 repack 工具和自动刷回逻辑。
+	export OF_NO_INSTALL_RECOVERY_RAMDISK=1
+
+	# vendor fstab 的 /data 带 checkpoint=fs，vold 会把它挂成 checkpoint=disable；
+	# recovery 里的写入重启后会回滚。解密前从 additional fstab 去掉这个标志。
+	export OF_RECOVERY_DISABLE_CHECKPOINT=1
+
 	# 设备只有一个 USB-C 口，无法同时接 OTG 存储和电脑；关闭 USB Storage。
 	# 文件传输用 MTP；关闭后 Mount 菜单不再显示该入口。
 	export OF_ENABLE_USB_STORAGE=0
