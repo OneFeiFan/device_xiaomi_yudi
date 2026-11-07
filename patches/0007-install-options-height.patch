@@ -1,0 +1,41 @@
+diff --git a/gui/theme/portrait_hdpi/pages/install.xml b/gui/theme/portrait_hdpi/pages/install.xml
+index cbd4c81..f5e3941 100644
+--- a/gui/theme/portrait_hdpi/pages/install.xml
++++ b/gui/theme/portrait_hdpi/pages/install.xml
+@@ -40,12 +40,12 @@
+ 			</text>
+ 
+ 			<text style="caption">
+-				<placement x="%gl_text_x%" y="%row4_1a_y%"/>
++				<placement x="%gl_text_x%" y="830+%cutout_w%"/>
+ 				<text>{@options_hdr}</text>
+ 			</text>
+ 
+ 			<listbox style="settingslist">
+-				<placement x="0" y="%row4_2a_y%" w="%screen_w%" h="%options_list_num%"/>
++				<placement x="0" y="890+%cutout_w%" w="%screen_w%" h="450"/>
+ 				<listitem name="{@install_reboot_chk}">
+ 					<condition var1="tw_reboot_system" var2="1"/>
+ 					<data variable="tw_install_reboot"/>
+@@ -61,6 +61,10 @@
+ 					<condition var1="fox_disable_reflash_current" op="!=" var2="1"/>
+ 					<data variable="tw_auto_reflashtwrp"/>
+ 				</listitem>
++				<listitem name="{@auto_disable_avb2=Disable vbmeta AVB2.0}">
++					<condition var1="fox_auto_disable_vbmeta_avb2" var2="1"/>
++					<data variable="tw_auto_disable_avb2"/>
++				</listitem>
+ 				<listitem name="{@unmount_sys_install}">
+ 					<data variable="tw_unmount_system"/>
+ 				</listitem>
+@@ -68,10 +72,6 @@
+ 					<condition var1="fox_branch" op="&gt;=" var2="10"/>
+ 					<data variable="tw_unmount_vendor"/>
+ 				</listitem>
+-				<listitem name="{@auto_disable_avb2=Disable vbmeta AVB2.0}">
+-					<condition var1="fox_auto_disable_vbmeta_avb2" var2="1"/>
+-					<data variable="tw_auto_disable_avb2"/>
+-				</listitem>
+ 				<listitem name="{@inject_twrp_chk}">
+ 					<condition var1="tw_has_injecttwrp" var2="1"/>
+ 					<data variable="tw_inject_after_zip"/>

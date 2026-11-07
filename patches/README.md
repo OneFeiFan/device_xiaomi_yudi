@@ -4,11 +4,12 @@
 
 ## 应用顺序
 
-先按编号应用 0001–0005 到 `bootable/recovery`，再应用 0006 到 `system/vold`：
+先按编号应用 0001–0005、0007 到 `bootable/recovery`，再应用 0006 到 `system/vold`：
 
 ```sh
 cd bootable/recovery
-for p in ../../device/xiaomi/yudi/patches/000[1-5]-*.patch; do
+for p in ../../device/xiaomi/yudi/patches/000[1-5]-*.patch \
+         ../../device/xiaomi/yudi/patches/0007-*.patch; do
     git apply "$p"
 done
 
@@ -63,6 +64,12 @@ git apply ../../device/xiaomi/yudi/patches/0006-*.patch
 作用：支持统一锁屏的 clone/managed profile（例如 XSpace、平行空间）。这类用户没有自己的锁屏凭据，只有 `gatekeeper.profile.key`；父用户认证通过后，用 keystore2 解出 profile key 派生的随机密码，再走普通 synthetic password 解密流程。
 
 修改文件：`system/vold/Decrypt.cpp`。普通用户、独立密码用户和默认密码用户的处理不受影响。
+
+## 0007-install-options-height.patch
+
+作用：刷机确认页的选项列表从 360px 加高到 450px，整体上移 40px，并把“刷入 ROM 后禁用 vbmeta AVB2.0”从第 6 项移到第 4 项，避免在只显示 4 行的窗口里必须滚动才能看到。
+
+修改文件：`bootable/recovery/gui/theme/portrait_hdpi/pages/install.xml`。
 
 ## 上游状态
 
