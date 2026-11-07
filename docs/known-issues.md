@@ -34,6 +34,16 @@ MTP 默认开启，日志里也能看到 `[MTP] Starting MTP`，但 Windows 有�
 
 处理办法：执行 `fox mtp enable`，或者重新进入 recovery。
 
+## qseecomd 启动时报 libsecureui.so 找不到
+
+recovery 启动时 logcat 里有一条：
+
+```
+QSEECOMD: : Init dlopen(libsecureui.so, RLTD_NOW) is failed.... dlopen failed: library "libsecureui.so" not found
+```
+
+当前 ROM 的 vendor、system、system_ext、product、odm 分区里都没有这个库。qseecomd 把它当可选功能，加载失败后继续运行；解密、Keymaster、Gatekeeper 和 fastbootd 都不受影响。不要为了消掉这条日志塞入空库或修改厂商二进制。
+
 ## 直接写 Fox FIFO 启用 MTP 会卡住界面
 
 直接向 Fox 的 FIFO 写入 `mtp enable`，又没有同时读取 `foxout` 时，界面的动作线程会被阻塞，看起来像卡死。
