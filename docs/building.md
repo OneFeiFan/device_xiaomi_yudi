@@ -78,4 +78,6 @@ prebuilts/build-tools/linux-x86/bin/ninja -f out/combined-twrp_yudi.ninja -j14 a
 
 `out/target/product/yudi/recovery/root` 偶尔会残留旧的 `libminuitwrp.so`。改了触摸相关代码却看不到效果时，先删掉这个目录和 `ramdisk-recovery.img` 再编。
 
+删除设备树 `recovery/root` 下的文件后也要先删这个暂存目录，否则旧文件会继续留在镜像里。源码构建的 vendor 模块（例如震动 HAL）由 `BOARD_RECOVERY_IMAGE_PREPARE` 拷进 ramdisk，清理暂存目录后会重新拷贝。
+
 改了 ramdisk 或主题文件后如果 ninja 认为无事可做，先删 `out/target/product/yudi/recovery.img`。必要时再删 `out/target/product/yudi/recovery/root`。

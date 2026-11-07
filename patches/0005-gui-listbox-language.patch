@@ -1,16 +1,15 @@
 From 5a32417a6b30be46ca14831ea66146aaa38f16e4 Mon Sep 17 00:00:00 2001
 From: OneFeiFan <3022504358@qq.com>
 Date: Sat, 7 Nov 2026 04:02:14 +0800
-Subject: [PATCH 5/5] gui: keep listbox labels translated across page focus
+Subject: [PATCH 5/5] gui: reload language after wipe and fall back to default
 
-Pages can be focused before the active language file is loaded, so listbox items cached their base English names forever. Keep the original name and re-parse it on every page focus; reload the current language after a wipe/format as well.
+Reload the current language after a wipe/format, and fall back to the default language when LoadLanguage is called with an empty filename. The listbox refocus workaround is no longer needed now that recovery starts on the file list.
 
 Co-Authored-By: Claude Code <noreply@anthropic.com>
 ---
  gui/action.cpp  | 10 ++++++++++
- gui/listbox.cpp | 25 +++++++++++++++----------
  gui/pages.cpp   |  2 ++
- 3 files changed, 27 insertions(+), 10 deletions(-)
+ 2 files changed, 12 insertions(+)
 
 diff --git a/gui/action.cpp b/gui/action.cpp
 index bd5da25..35303aa 100644
@@ -38,51 +37,6 @@ index bd5da25..35303aa 100644
    return 0;
  }
  
-diff --git a/gui/listbox.cpp b/gui/listbox.cpp
-index 066c41b..3490454 100644
---- a/gui/listbox.cpp
-+++ b/gui/listbox.cpp
-@@ -187,11 +187,10 @@ GUIListBox::GUIListBox(xml_node<>* node) : GUIScrollList(node)
- 		if (!attr)
- 			continue;
- 
--		// We will parse display names when we get page focus to ensure that translating takes place
-+		// Keep the original name so page focus can re-parse it after the
-+		// language resources have been loaded or changed.
- 		item.displayName = attr->value();
--
--		if (requireReload)
--			item.unparsedName = attr->value();
-+		item.unparsedName = attr->value();
- 
- 		item.variableValue = gui_parse_text(child->value());
- 		item.selected = (child->value() == currentValue);
-@@ -471,13 +470,19 @@ void GUIListBox::SetPageFocus(int inFocus)
- 	GUIScrollList::SetPageFocus(inFocus);
- 
- 	if (inFocus) {
--		if (!isTextParsed) {
--			isTextParsed = true;
--
--			for (size_t i = 0; i < mListItems.size(); i++) {
--				ListItem& item = mListItems[i];
-+		/*
-+		 * Pages can be focused during package loading, before the active
-+		 * language file is loaded. Re-parse from the original (untranslated)
-+		 * names every time the page gains focus so listbox items do not stay
-+		 * in the base English language while the surrounding text is Chinese.
-+		 */
-+		isTextParsed = true;
-+		for (size_t i = 0; i < mListItems.size(); i++) {
-+			ListItem& item = mListItems[i];
-+			if (!item.unparsedName.empty())
-+				item.displayName = gui_parse_text(item.unparsedName);
-+			else
- 				item.displayName = gui_parse_text(item.displayName);
--			}
- 		}
- 
- 		DataManager::GetValue(mVariable, currentValue);
 diff --git a/gui/pages.cpp b/gui/pages.cpp
 index 1b0444b..18c30f6 100755
 --- a/gui/pages.cpp

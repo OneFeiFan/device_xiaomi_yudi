@@ -1,0 +1,9 @@
+# 高通开源 vibrator HAL。recovery 的 init 需要显式 seclabel，否则拒绝启动；
+# 用和其余厂商服务一致的 recovery 域。服务由 init.recovery.qcom.rc 显式启动。
+service vendor.qti.vibrator /vendor/bin/hw/vendor.qti.hardware.vibrator.service
+    class hal
+    user system
+    group system input
+    seclabel u:r:recovery:s0
+    disabled
+    oneshot

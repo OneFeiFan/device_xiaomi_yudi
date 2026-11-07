@@ -157,6 +157,27 @@ TW_CUSTOM_CPU_TEMP_PATH := "/sys/class/thermal/thermal_zone27/temp"
 # 震动：使用高通开源的 AIDL vibrator HAL（vendor/qcom/opensource/vibrator），
 # 它通过 /dev/input/event1（qcom-hv-haptics）的 FF 接口驱动马达。
 TW_SUPPORT_INPUT_AIDL_HAPTICS := true
+# 这个 HAL 是源码模块，但 recovery 镜像只打包 ramdisk，不会自动带上 vendor
+# 模块的输出，所以在这里把它和依赖拷进 recovery root。必须先让模块参与构建。
+TARGET_RECOVERY_DEVICE_MODULES += vendor.qti.hardware.vibrator.service
+BOARD_RECOVERY_IMAGE_PREPARE += \
+    mkdir -p $(TARGET_RECOVERY_ROOT_OUT)/vendor/bin/hw \
+             $(TARGET_RECOVERY_ROOT_OUT)/vendor/lib64 \
+             $(TARGET_RECOVERY_ROOT_OUT)/vendor/etc/init \
+             $(TARGET_RECOVERY_ROOT_OUT)/vendor/etc/vintf/manifest && \
+    cp -f $(PRODUCT_OUT)/vendor/bin/hw/vendor.qti.hardware.vibrator.service $(TARGET_RECOVERY_ROOT_OUT)/vendor/bin/hw/ && \
+    cp -f $(PRODUCT_OUT)/vendor/lib64/vendor.qti.hardware.vibrator.impl.so $(TARGET_RECOVERY_ROOT_OUT)/vendor/lib64/ && \
+    cp -f $(PRODUCT_OUT)/vendor/lib64/vendor.qti.hardware.vibratorOL.impl.so $(TARGET_RECOVERY_ROOT_OUT)/vendor/lib64/ && \
+    cp -f $(PRODUCT_OUT)/vendor/lib64/vendor.qti.hardware.vibratorSel.impl.so $(TARGET_RECOVERY_ROOT_OUT)/vendor/lib64/ && \
+    cp -f $(PRODUCT_OUT)/vendor/lib64/libqtivibratoreffect.so $(TARGET_RECOVERY_ROOT_OUT)/vendor/lib64/ && \
+    cp -f $(PRODUCT_OUT)/vendor/lib64/libqtivibratoreffectoffload.so $(TARGET_RECOVERY_ROOT_OUT)/vendor/lib64/ && \
+    cp -f $(PRODUCT_OUT)/vendor/lib64/libexpat.so $(TARGET_RECOVERY_ROOT_OUT)/vendor/lib64/ && \
+    cp -f $(PRODUCT_OUT)/vendor/etc/vintf/manifest/vendor.qti.hardware.vibrator.service.xml $(TARGET_RECOVERY_ROOT_OUT)/vendor/etc/vintf/manifest/ && \
+    cp -f vendor/qcom/opensource/vibrator/aidl/HapticsPolicy.xml $(TARGET_RECOVERY_ROOT_OUT)/vendor/etc/ && \
+    cp -f vendor/qcom/opensource/vibrator/excluded-input-devices.xml $(TARGET_RECOVERY_ROOT_OUT)/vendor/etc/ && \
+    cd $(TARGET_RECOVERY_ROOT_OUT) && find . | sed 's|^\./||' > ramdisk-files.txt && \
+    find -type f | grep -vxF './ramdisk-files.sha256sum' | grep -vxF './prop.default' | \
+        xargs sha256sum > ramdisk-files.sha256sum
 
 # TWRP：背光（REC 的 init 写的就是这个节点；DTBO 的背光范围 0–4095）
 TW_BRIGHTNESS_PATH := "/sys/class/backlight/panel0-backlight/brightness"
@@ -169,10 +190,10 @@ TW_EXTRA_LANGUAGES := true
 
 # TWRP：内核模块
 # 显示、电池、振动、USB、加密相关的驱动在 VBOOT 的 modules.load.recovery 里，
-# 第一阶段 init 会自动加载。触控驱动不在其中，统一由 beforemodules.sh 从 ramdisk
-# 的 /lib/modules 加载（DTBO 里触控控制器为 novatek,NVT-ts-spi，对应
-# nt36532_touch.ko，另需 xiaomi_touch.ko）。ramdisk 里的模块和当前 ROM 的
-# vendor_dlkm 一致，不再按槽位内容走两条路径。
+# 第一阶段 init 会自动加载。触控驱动不在其中，需要 recovery 从 vendor_dlkm 加载：
+# DTBO 里触控控制器为 novatek,NVT-ts-spi，对应 nt36532_touch.ko，另需 xiaomi_touch.ko。
+TW_LOAD_VENDOR_MODULES := "xiaomi_touch.ko nt36532_touch.ko"
+TW_LOAD_VENDOR_MODULES_EXCLUDE_GKI := true
 
 # TWRP：功能
 TW_INCLUDE_FASTBOOTD := true

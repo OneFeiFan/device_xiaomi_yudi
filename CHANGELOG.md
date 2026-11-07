@@ -23,6 +23,7 @@
 - 只擦 metadata 会留下无法解密的 userdata，系统无法开机。
 - 格式化 data 时因 MTP 占用而失败。
 - 挂载 OTG 时 USB 被切回 device 模式，导致挂载失败。
+- 拔掉 OTG 后恢复 data，分区详情刷新会尝试挂载已移除的 U 盘并报错。
 
 调整：
 

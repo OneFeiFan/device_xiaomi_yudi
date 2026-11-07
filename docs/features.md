@@ -12,7 +12,7 @@ recovery 镜像不带内核，由引导程序用 boot 分区的内核启动，�
 
 面板原生是 2880×1800 的横屏。OrangeFox 只有竖屏界面，所以旋转 270 度显示为 1800×2880，和系统的自然方向一致。触摸芯片报告的坐标本来就是竖屏方向，不需要设置交换或翻转参数。
 
-触摸驱动是 `nt36532_touch.ko` 和 `xiaomi_touch.ko`，它们不在 vendor_boot 的 recovery 模块列表里。recovery 统一由 `/system/bin/beforemodules.sh` 从 ramdisk 的 `/lib/modules` 加载，不依赖当前槽位的 vendor_dlkm 是否完整。触摸固件放在 ramdisk 的 `/lib/firmware`。
+触摸驱动是 `nt36532_touch.ko` 和 `xiaomi_touch.ko`，它们不在 vendor_boot 的 recovery 模块列表里，需要 recovery 自己加载：当前槽位的 vendor_dlkm 里有这两个模块时，由 TWRP 从 vendor_dlkm 加载；vendor_dlkm 为空时，由 `/system/bin/beforemodules.sh` 从 ramdisk 的 `/lib/modules` 加载。触摸固件放在 ramdisk 的 `/lib/firmware`。
 
 ## 解密
 
@@ -61,7 +61,7 @@ USB Storage 已关闭（`vendorsetup.sh` 的 `OF_ENABLE_USB_STORAGE=0`）。这�
 
 OTG 存储挂载在 `/usb_otg`，设备节点是 `/dev/block/sdg1`，备用 `/dev/block/sdg`：UFS 占用了 sda 到 sdf，OTG 设备通常是下一个。NTFS 分区由 `mount.ntfs`（ntfs-3g）挂载。如果扩展坞枚举成其他节点名，自动挂载不会触发，需要同时修改 `twrp.flags` 和 `partitionmanager.cpp` 里的检查路径。
 
-插入 OTG 后 USB 要切到 host 模式，拔出后再切回 device 模式。`init.recovery.qcom.rc` 用 `sys.usb.mode_ready` 避免 MTP 的开关打断 host 模式。补丁 0003 已移除，正在实测拔出 OTG 后 ADB 的恢复时间；如果等待明显变长，再恢复补丁和 `otg_active` 规则。
+插入 OTG 后 USB 要切到 host 模式，拔出后再切回 device 模式。`init.recovery.qcom.rc` 用 `sys.usb.mode_ready` 避免 MTP 的开关打断 host 模式；补丁 0003 已移除，实测拔掉 OTG 后再插电脑线，ADB 会自动回来。OTG 拔出后，`Update_Size()` 不会再尝试挂载已经不存在的设备节点（补丁 0007），恢复 data 后的分区详情刷新不会报无法挂载 `/usb_otg`。
 
 ## 数据：清除、备份和恢复
 

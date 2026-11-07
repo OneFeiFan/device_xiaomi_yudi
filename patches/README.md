@@ -4,11 +4,15 @@
 
 ## 应用顺序
 
-先按编号应用 0001–0005 到 `bootable/recovery`，再应用 0006 到 `system/vold`：
+先按编号应用 0001、0002、0004、0005、0007 到 `bootable/recovery`，再应用 0006 到 `system/vold`。0003 已删除：实测移除后拔掉 OTG 再插电脑线，ADB 会自动恢复。
 
 ```sh
 cd bootable/recovery
-for p in ../../device/xiaomi/yudi/patches/000[1-5]-*.patch; do
+for p in ../../device/xiaomi/yudi/patches/0001-*.patch \
+         ../../device/xiaomi/yudi/patches/0002-*.patch \
+         ../../device/xiaomi/yudi/patches/0004-*.patch \
+         ../../device/xiaomi/yudi/patches/0005-*.patch \
+         ../../device/xiaomi/yudi/patches/0007-*.patch; do
     git apply "$p"
 done
 
@@ -36,12 +40,6 @@ git apply ../../device/xiaomi/yudi/patches/0006-*.patch
 
 修改文件：`bootable/recovery/partition.cpp`。
 
-## 0003-usb-otg-host-mode.patch
-
-作用：`Check_UsbOtg_Status()` 在挂载 OTG 前置位 `sys.usb.otg_active`，卸载时清零；设备树的 init 规则据此避免在 MTP 开关时把已切到 host 的 USB 模式重写成 peripheral，并在 OTG 退出后立即恢复 device/ADB。
-
-修改文件：`bootable/recovery/partitionmanager.cpp`。设备树侧对应的 `init.recovery.qcom.rc` 修改已经在设备树仓库里。
-
 ## 0004-wipe-stop-mtp-before-format.patch
 
 作用：`Wipe_Encryption()` 在 `dmctl delete userdata` 和 `make_f2fs` 前先停 MTP，结束后恢复。MTP 会一直打开 `/data/media`，不停掉时 dm-userdata 处于 busy，`make_f2fs` 报 `In use by the system!` 并返回 255。
@@ -52,17 +50,24 @@ git apply ../../device/xiaomi/yudi/patches/0006-*.patch
 
 作用：
 
-- 列表项保存原始（未翻译）名称，每次页面获得焦点都重新 `gui_parse_text()`，避免页面在语言资源加载前被聚焦后一直显示英文；
 - wipe/format 结束后重新加载当前语言并重绘；
 - `LoadLanguage()` 在文件名为空时回落到默认语言。
 
-修改文件：`bootable/recovery/gui/listbox.cpp`、`gui/action.cpp`、`gui/pages.cpp`。
+启动页改回文件列表后，“高级”页不再在语言资源加载前被聚焦，原来的列表项重新翻译逻辑（`gui/listbox.cpp`）已经不需要，实测中文正常。
+
+修改文件：`bootable/recovery/gui/action.cpp`、`gui/pages.cpp`。
 
 ## 0006-vold-clone-profile-decrypt.patch
 
 作用：支持统一锁屏的 clone/managed profile（例如 XSpace、平行空间）。这类用户没有自己的锁屏凭据，只有 `gatekeeper.profile.key`；父用户认证通过后，用 keystore2 解出 profile key 派生的随机密码，再走普通 synthetic password 解密流程。
 
 修改文件：`system/vold/Decrypt.cpp`。普通用户、独立密码用户和默认密码用户的处理不受影响。
+
+## 0007-skip-absent-removable-partitions.patch
+
+作用：可移动分区（例如 OTG 的 `/usb_otg`）拔出后，`Find_Actual_Block_Device()` 会保留上一次的 `Actual_Block_Device`，`Update_Size()` 仍去挂载已经不存在的设备节点，日志和界面会报挂载失败。补丁在分区不存在时跳过挂载并把大小清零，恢复 data 完成后的分区详情刷新不会再报这个错。
+
+修改文件：`bootable/recovery/partition.cpp`。
 
 ## 设备树主题覆盖
 

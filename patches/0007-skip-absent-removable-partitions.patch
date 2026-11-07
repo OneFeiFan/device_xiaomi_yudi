@@ -1,0 +1,34 @@
+From 753467b2900f9be00d1577c2a64aacc6a6324cd2 Mon Sep 17 00:00:00 2001
+From: OneFeiFan <3022504358@qq.com>
+Date: Sat, 7 Nov 2026 18:51:38 +0800
+Subject: [PATCH] fix: skip size update for absent removable partitions
+
+When a removable partition such as USB OTG is unplugged, Find_Actual_Block_Device leaves the previous Actual_Block_Device cached and Update_Size tries to mount the now-missing node. Skip the mount and zero the sizes when the partition is not present.
+
+Co-Authored-By: Claude Code <noreply@anthropic.com>
+---
+ partition.cpp | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/partition.cpp b/partition.cpp
+index d022c73..5a4b7c7 100644
+--- a/partition.cpp
++++ b/partition.cpp
+@@ -3371,6 +3371,14 @@ bool TWPartition::Update_Size(bool Display_Error) {
+ 	if (Actual_Block_Device.empty())
+ 		return false;
+ 
++	// A removable partition (e.g. USB OTG) that has been unplugged keeps the
++	// last Actual_Block_Device cached. Skip the mount attempt instead of
++	// trying to mount a device node that no longer exists.
++	if (Removable && !Is_Present) {
++		Size = Used = Backup_Size = Free = 0;
++		goto success;
++	}
++
+ 	ro = Mount_Read_Only;
+ 	Mount_Read_Only = true;
+ 
+-- 
+2.34.1
+
