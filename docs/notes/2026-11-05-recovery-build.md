@@ -48,7 +48,7 @@ boot 头部仍然用 `BOARD_MKBOOTIMG_ARGS` 写成 12.0.0 / 2025-09，与原厂 
 
 ## VNDK 和震动
 
-qseecomd、Keymaster、KeyMint 等 HIDL 服务使用 `/vendor/lib64/vndk-v32` 下的 Android 12 VNDK 库。系统里同时存在 v31 和 v32，两套重复。确认所有服务都能在 v32 找到依赖后，删除了 9 个 v31 库。
+qseecomd、Keymaster、KeyMint 等 HIDL 服务最初把 `/vendor/lib64/vndk-v32` 放在库搜索路径最前面，整套使用 Android 12 VNDK。2026-11-07 做了精简：只保留系统里没有的 9 个库（KeyMint 3 个、HIDL memory 2 个、libdmabufheap、libhidlmemory、libion、libxml2），移到 `/vendor/lib64`；9 个和系统重复的核心库删除，服务 rc 里的 `setenv LD_LIBRARY_PATH` 也去掉，默认搜索路径就能找到。需要实机回归解密、槽位、fastbootd 和震动。
 
 震动 HAL 最初用 Android 12 的小米厂商二进制。它在 Android 16 的 libutils 下会因为 `incStrongRequireStrong` 崩溃；当时的修复方式是把 v32 libutils 的 SONAME 改成 `libu32.so`，把厂商服务的 NEEDED 改成 `libu32.so`，两份 libutils 共存。
 

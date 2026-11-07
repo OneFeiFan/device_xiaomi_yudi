@@ -207,24 +207,15 @@ vendor/lib64/libtime_genoff.so	vendor 分区：/lib64/libtime_genoff.so	150cf6f5
 vendor/lib64/libvmmem.so	vendor 分区：/lib64/libvmmem.so	0d95b87347448850731260da6c0c3279ff58ea4a95cff100813d48edce4f6dac
 vendor/lib64/vendor.display.config@2.0.so	vendor 分区：/lib64/vendor.display.config@2.0.so	f6742f1bb0d880e00e3331a85344baffef1f0579a4aa1d1cd9150eb35dad60eb
 vendor/lib64/vendor.qti.hardware.qseecom@1.0.so	vendor 分区：/lib64/vendor.qti.hardware.qseecom@1.0.so	1b0139ffc61325b99b0395864108a068d65d76d347eff6e55d9501a7317d2dbf
-vendor/lib64/vndk-v32/android.hardware.security.keymint-V1-ndk_platform.so	system_ext 分区（306.3）：/lib64/vndk-32/android.hardware.security.keymint-V1-ndk_platform.so	0c8ad04e8927615094cb3e81020cda7248cde6115ae802aa9ffe59e121efc62a
-vendor/lib64/vndk-v32/android.hardware.security.secureclock-V1-ndk_platform.so	system_ext 分区（306.3）：/lib64/vndk-32/android.hardware.security.secureclock-V1-ndk_platform.so	a0dabe0f4dc4a0de4e9a0d572414c36d313ec79fe07a2165152868fbcd77d97d
-vendor/lib64/vndk-v32/android.hardware.security.sharedsecret-V1-ndk_platform.so	system_ext 分区（306.3）：/lib64/vndk-32/android.hardware.security.sharedsecret-V1-ndk_platform.so	f573d6c969ff1133108118df1c56dddfb75c43ea37876768602785553c80baac
-vendor/lib64/vndk-v32/android.hidl.memory.token@1.0.so	system_ext 分区（306.3）：/lib64/vndk-32/android.hidl.memory.token@1.0.so	5da4ddef239881b78026f0745b99b449bfb3c00c743601d1e809bce6fe19862f
-vendor/lib64/vndk-v32/android.hidl.memory@1.0.so	system_ext 分区（306.3）：/lib64/vndk-32/android.hidl.memory@1.0.so	ae410ec6912f9f9d662dd6f5dfde4f5572494ce3dde0b831581522ec1e1d78d0
-vendor/lib64/vndk-v32/libbase.so	system_ext 分区（306.3）：/lib64/vndk-32/libbase.so	6580d0165d851ad56c9ca2f59d1011700602bb7c4c1eb42a679d6b885d83a94e
-vendor/lib64/vndk-v32/libcgrouprc.so	system_ext 分区（306.3）：/lib64/vndk-32/libcgrouprc.so	925afb9db7302c2b573ca199362c5ab0c358e384a041874ed39f0c70f5c17d10
-vendor/lib64/vndk-v32/libcrypto.so	system_ext 分区（306.3）：/lib64/vndk-32/libcrypto.so	cec01c394c486cc3bcaa533b145bcb31fca968555b2af0d078b9b61460bf76cf
-vendor/lib64/vndk-v32/libcutils.so	system_ext 分区（306.3）：/lib64/vndk-32/libcutils.so	9f0d9b689afab0c331053a7c5826959e964145a6376399d01a289ea51f3ae0e8
-vendor/lib64/vndk-v32/libdmabufheap.so	system_ext 分区（306.3）：/lib64/vndk-32/libdmabufheap.so	8d71d27028cb96cadd2f2c889778977f41fcc0a03fb13aa2f958d8a784eba61a
-vendor/lib64/vndk-v32/libhardware.so	system_ext 分区（306.3）：/lib64/vndk-32/libhardware.so	c3c4b84de7b81ad9d63bf9dde8549700d4004eee284773932042633010a0ac9d
-vendor/lib64/vndk-v32/libhidlbase.so	system_ext 分区（306.3）：/lib64/vndk-32/libhidlbase.so	601b68f30df5668d3ed5f93f5d60dd2c03ec1e1b1b99a68cd0ea5e5f4df9dd5f
-vendor/lib64/vndk-v32/libhidlmemory.so	system_ext 分区（306.3）：/lib64/vndk-32/libhidlmemory.so	bad06610fe8136d6d96c9084e5f951ae2fc7d9fed75762be8629f61f3e8b1bc9
-vendor/lib64/vndk-v32/libion.so	system_ext 分区（306.3）：/lib64/vndk-32/libion.so	3ddddde9674fc23858bfdc989467ac7e4ad581e401bab542be23d1355aae8fc4
-vendor/lib64/vndk-v32/libjsoncpp.so	system_ext 分区（306.3）：/lib64/vndk-32/libjsoncpp.so	9ca2539db249d5c01bd57bf3862c7571e68b4e74a4bd98f1ba6fc954d4d8cb04
-vendor/lib64/vndk-v32/libprocessgroup.so	system_ext 分区（306.3）：/lib64/vndk-32/libprocessgroup.so	255c4ceaf678d3f08320311abefb25819f14f78aa604c8850fce13ae4c0666ad
-vendor/lib64/vndk-v32/libxml2.so	system_ext 分区（306.3）：/lib64/vndk-32/libxml2.so	644a4c18aea639e604e094a70d300fe208db32c8dee013a5afb6929741bb9718
-vendor/lib64/vndk-v32/libz.so	system_ext 分区（306.3）：/lib64/vndk-32/libz.so	dcebf99a62897a36aa5a6e2e4c2c74140b687efc45043bb39feaf9aa966655cf
+vendor/lib64/android.hardware.security.keymint-V1-ndk_platform.so	system_ext 分区（306.3）：/lib64/vndk-32/android.hardware.security.keymint-V1-ndk_platform.so	0c8ad04e8927615094cb3e81020cda7248cde6115ae802aa9ffe59e121efc62a
+vendor/lib64/android.hardware.security.secureclock-V1-ndk_platform.so	system_ext 分区（306.3）：/lib64/vndk-32/android.hardware.security.secureclock-V1-ndk_platform.so	a0dabe0f4dc4a0de4e9a0d572414c36d313ec79fe07a2165152868fbcd77d97d
+vendor/lib64/android.hardware.security.sharedsecret-V1-ndk_platform.so	system_ext 分区（306.3）：/lib64/vndk-32/android.hardware.security.sharedsecret-V1-ndk_platform.so	f573d6c969ff1133108118df1c56dddfb75c43ea37876768602785553c80baac
+vendor/lib64/android.hidl.memory.token@1.0.so	system_ext 分区（306.3）：/lib64/vndk-32/android.hidl.memory.token@1.0.so	5da4ddef239881b78026f0745b99b449bfb3c00c743601d1e809bce6fe19862f
+vendor/lib64/android.hidl.memory@1.0.so	system_ext 分区（306.3）：/lib64/vndk-32/android.hidl.memory@1.0.so	ae410ec6912f9f9d662dd6f5dfde4f5572494ce3dde0b831581522ec1e1d78d0
+vendor/lib64/libdmabufheap.so	system_ext 分区（306.3）：/lib64/vndk-32/libdmabufheap.so	8d71d27028cb96cadd2f2c889778977f41fcc0a03fb13aa2f958d8a784eba61a
+vendor/lib64/libhidlmemory.so	system_ext 分区（306.3）：/lib64/vndk-32/libhidlmemory.so	bad06610fe8136d6d96c9084e5f951ae2fc7d9fed75762be8629f61f3e8b1bc9
+vendor/lib64/libion.so	system_ext 分区（306.3）：/lib64/vndk-32/libion.so	3ddddde9674fc23858bfdc989467ac7e4ad581e401bab542be23d1355aae8fc4
+vendor/lib64/libxml2.so	system_ext 分区（306.3）：/lib64/vndk-32/libxml2.so	644a4c18aea639e604e094a70d300fe208db32c8dee013a5afb6929741bb9718
 
 ## 符号链接
 # 路径	原始来源	目标

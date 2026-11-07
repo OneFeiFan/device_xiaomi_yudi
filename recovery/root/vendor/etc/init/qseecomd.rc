@@ -4,7 +4,6 @@
 
 
 service vendor.qseecomd /vendor/bin/qseecomd
-    setenv LD_LIBRARY_PATH /vendor/lib64/vndk-v32:/vendor/lib64:/vendor/lib64/hw:/system/lib64
     socket notify-topology stream 660 system drmrpc
     class core
     user root

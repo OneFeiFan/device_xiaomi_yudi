@@ -158,7 +158,11 @@ TW_CUSTOM_CPU_TEMP_PATH := "/sys/class/thermal/thermal_zone27/temp"
 # 它通过名为 qcom-hv-haptics 的 FF 输入设备驱动马达，不写死 event 编号。
 TW_SUPPORT_INPUT_AIDL_HAPTICS := true
 # 这个 HAL 是源码模块，但 recovery 镜像只打包 ramdisk，不会自动带上 vendor
-# 模块的输出，所以在这里把它和依赖拷进 recovery root。必须先让模块参与构建。
+# 模块的输出。TWRP 树里的通用做法是用 BOARD_RECOVERY_IMAGE_PREPARE（本树的
+# mondrian 也用它）把文件和 rc 拷进去；AOSP 的 recovery: true 变体需要给 HAL
+# 和 5 个依赖库重新定义整套模块，而 QTI 仓库的模块都是 vendor: true，不值得。
+# 复制后必须重建 ramdisk 文件清单，否则“安装 Recovery Ramdisk”重打包会丢掉
+# 这些文件。任一 cp 失败都会让构建中止。
 TARGET_RECOVERY_DEVICE_MODULES += vendor.qti.hardware.vibrator.service
 BOARD_RECOVERY_IMAGE_PREPARE += \
     mkdir -p $(TARGET_RECOVERY_ROOT_OUT)/vendor/bin/hw \
