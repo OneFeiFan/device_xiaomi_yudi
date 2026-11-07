@@ -101,7 +101,7 @@ metadata 分区存着 data 的加密密钥。只擦 metadata 而不格式化 dat
 
 ### /data 的挂载参数
 
-`/data` 的挂载参数实际来自 vendor 分区的 fstab：TWRP 把它作为 `additional.fstab` 读入，覆盖主 `recovery.fstab` 里的 `/data` 行。目前挂载后带 `checkpoint_merge` 和 `fsync_mode=nobarrier`，没有 `checkpoint=disable`。如果某次挂载后出现 `checkpoint=disable`（系统刚装完更新、还没确认启动成功时可能如此），写入要到卸载时才落盘，异常重启会丢失。
+recovery 通过 `BoardConfig.mk` 的 `TW_SKIP_ADDITIONAL_FSTAB := true` 只使用设备树自己的 `recovery.fstab`，不读 vendor 的 additional fstab。`/data` 挂载后是 `checkpoint_merge`、`fsync_mode=posix`，没有 `checkpoint=disable`；写入不会因为 vendor fstab 的 `checkpoint=fs` 被回滚。`/vendor/firmware_mnt` 仍由 init 的 `charger_fstab.qti` 挂载，ADSP 不受影响。
 
 ## 刷入 zip 和 ADB sideload
 

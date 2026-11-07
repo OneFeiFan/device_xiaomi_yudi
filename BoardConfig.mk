@@ -177,6 +177,9 @@ TW_LOAD_VENDOR_MODULES_EXCLUDE_GKI := true
 # TWRP：功能
 TW_INCLUDE_FASTBOOTD := true
 TW_INCLUDE_REPACKTOOLS := true
+# 只用设备树 recovery.fstab。vendor fstab 的 /data 带 checkpoint=fs，vold 会把它
+# 挂成 checkpoint=disable，recovery 里的写入重启后会回滚。
+TW_SKIP_ADDITIONAL_FSTAB := true
 TW_INCLUDE_RESETPROP := true
 TW_INCLUDE_LIBRESETPROP := true
 TW_INCLUDE_LPTOOLS := true

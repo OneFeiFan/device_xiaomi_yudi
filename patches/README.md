@@ -72,14 +72,13 @@ git apply ../../device/xiaomi/yudi/patches/0006-*.patch
 
 修改文件：`bootable/recovery/gui/theme/portrait_hdpi/pages/install.xml`。
 
-## 0008-recovery-checkpoint-and-ui.patch
+## 0008-hide-install-ramdisk-ui.patch
 
-作用：
+作用：用 `OF_NO_INSTALL_RECOVERY_RAMDISK=1` 隐藏刷机确认页的“安装 Recovery Ramdisk”列表项和“安装Ramdisk”按钮，保留 repack 工具、自动刷回和内核重打包逻辑。
 
-- vendor fstab 的 `/data` 带 `checkpoint=fs`，vold/fs_mgr 会把数据分区挂成 `checkpoint=disable`，recovery 里的写入在重启时会被回滚。补丁在解密前从 additional fstab 去掉这个标志，让 `/data` 正常挂载；设备树通过 `OF_RECOVERY_DISABLE_CHECKPOINT=1` 启用。
-- 用 `OF_NO_INSTALL_RECOVERY_RAMDISK=1` 隐藏刷机确认页的“安装 Recovery Ramdisk”列表项和“安装Ramdisk”按钮，保留 repack 工具、自动刷回和内核重打包逻辑。
+修改文件：`bootable/recovery/data.cpp`、`orangefox.mk`、`gui/theme/portrait_hdpi/pages/install.xml`。设备树侧的开关在 `vendorsetup.sh`。
 
-修改文件：`bootable/recovery/partitionmanager.cpp`、`data.cpp`、`orangefox.mk`、`gui/theme/portrait_hdpi/pages/install.xml`。设备树侧的开关在 `vendorsetup.sh`。
+`/data` 的 `checkpoint=fs` 问题由设备树的 `BoardConfig.mk` 里 `TW_SKIP_ADDITIONAL_FSTAB := true` 解决，不需要这个补丁。
 
 ## 上游状态
 
