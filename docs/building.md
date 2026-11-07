@@ -26,18 +26,23 @@ git clone https://github.com/OneFeiFan/device_xiaomi_yudi device/xiaomi/yudi
 
 ## 打补丁
 
-设备树依赖 6 个 OrangeFox 源码补丁：5 个打在 `bootable/recovery`，1 个打在 `system/vold`。每个补丁的作用见[补丁说明](../patches/README.md)。
+设备树依赖 5 个 OrangeFox 源码补丁：4 个打在 `bootable/recovery`，1 个打在 `system/vold`。每个补丁的作用见[补丁说明](../patches/README.md)。
 
 ```sh
+set -e
 cd bootable/recovery
-for p in ../../device/xiaomi/yudi/patches/000[1-5]-*.patch; do
-    git apply "$p"
+for p in 0002 0004 0005 0007; do
+    git apply --check ../../device/xiaomi/yudi/patches/$p-*.patch
+    git apply ../../device/xiaomi/yudi/patches/$p-*.patch
 done
 
 cd ../../system/vold
+git apply --check ../../device/xiaomi/yudi/patches/0006-*.patch
 git apply ../../device/xiaomi/yudi/patches/0006-*.patch
 cd ../..
 ```
+
+基线是 OrangeFox `fox_16.0` 的 `0f7831d`。`0001` 和 `0003` 已删除：复选框持久化改由设备树主题声明，OTG 的 `otg_active` 规则也不再需要。任何一个补丁打不上，`set -e` 会立即停止，避免产出一个缺少修复的镜像。
 
 每次 `repo sync` 覆盖 `bootable/recovery` 或 `system/vold` 后都要重新打一次。应用前确认工作区干净；如果上游已经合入某个修改，跳过对应补丁。
 

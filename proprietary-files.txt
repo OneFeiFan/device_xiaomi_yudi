@@ -1,7 +1,8 @@
 # 专有文件清单
 # 路径相对 recovery/root；sha256 为完整值。
 # 未修改文件按来源分区列出；已修改文件见文末“已修改文件”一节。
-# 设备树自有文件（init.recovery.qcom.rc、脚本、fstab、twrp.flags、主题覆盖、字体）不在本清单。
+# 设备树自有文件（init.recovery.qcom.rc、脚本、fstab、twrp.flags、主题覆盖、字体、
+# system/etc/task_profiles.json、system/etc/vintf/manifest.xml）不在本清单。
 #
 # 路径	来源	sha256
 lib/firmware/novatek_nt36532_m80_fw_csot.bin	vendor 分区：/firmware/novatek_nt36532_m80_fw_csot.bin	3a1e294219570984698211b9c0d3e7cda736848ff2aef5d8d4d5d9619381634d

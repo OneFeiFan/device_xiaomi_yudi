@@ -27,7 +27,7 @@
 - OrangeFox enuma 设备树：<https://github.com/Tlrenhb/OFRP-device_xiaomi_enuma/blob/fox_12.1-a14/system.prop>
 - TWRP merlin 设备树：<https://github.com/akashpalani7/twrp_device_xiaomi_merlin/commit/e541ba82951707d29550c52ca002336d04614681>
 
-liuqin 的两棵树是同一平台的 TWRP/OrangeFox 配置，用来核对模块加载、服务启动和密钥相关设置。LineageOS 的三棵树用来核对高通设备树里 bootctrl 的 Soong namespace 写法。mondrian 的 OrangeFox 更新记录把 `keymaster_ver` 默认值设为 4.1，是本设备树 Keymaster 4.1 配置的参考。enuma 的 `system.prop` 和 merlin 的提交里都有 `vendor.gatekeeper.disable_spu=true`，用来确认这个属性的写法和用途。
+liuqin 的两棵树是同一平台的 TWRP/OrangeFox 配置，用来核对模块加载、服务启动和密钥相关设置。LineageOS 的 sm8450/sm8550 设备树作为高通平台通用配置的参考；这棵树最终没有使用 bootctrl，仍用原厂 vendor 的 HIDL 1.2 boot HAL。mondrian 的 OrangeFox 更新记录把 `keymaster_ver` 默认值设为 4.1，是本设备树 Keymaster 4.1 配置的参考。enuma 的 `system.prop` 和 merlin 的提交里都有 `vendor.gatekeeper.disable_spu=true`，用来确认这个属性的写法和用途。
 
 LineageOS 没有公开的 liuqin 设备树（`LineageOS/android_device_xiaomi_liuqin` 返回 404），liuqin 的参考以上面两棵 TWRP 树为准。
 

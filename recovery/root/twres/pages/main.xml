@@ -1,5 +1,69 @@
 <?xml version="1.0"?>
 <recovery>
+<variables>
+		<variable name="adb_startup" value="%adb_startup%" persist="1"/>
+		<variable name="auto_show_btns" value="%auto_show_btns%" persist="1"/>
+		<variable name="enable_battery" value="%enable_battery%" persist="1"/>
+		<variable name="floating_panel" value="%floating_panel%" persist="1"/>
+		<variable name="fm_auto_open" value="%fm_auto_open%" persist="1"/>
+		<variable name="fox_adv_backup" value="%fox_adv_backup%" persist="1"/>
+		<variable name="fox_boot_balance_check" value="%fox_boot_balance_check%" persist="1"/>
+		<variable name="fox_boot_fastcharge_check" value="%fox_boot_fastcharge_check%" persist="1"/>
+		<variable name="fox_boot_performance_check" value="%fox_boot_performance_check%" persist="1"/>
+		<variable name="fox_boot_powersave_check" value="%fox_boot_powersave_check%" persist="1"/>
+		<variable name="fox_disable_ota_auto_reboot_check" value="%fox_disable_ota_auto_reboot_check%" persist="1"/>
+		<variable name="fox_include_system_survival" value="%fox_include_system_survival%" persist="1"/>
+		<variable name="fox_led_color" value="%fox_led_color%" persist="1"/>
+		<variable name="fox_reboot_advanced_stock_recovery_check" value="%fox_reboot_advanced_stock_recovery_check%" persist="1"/>
+		<variable name="fox_reboot_dm_verity_check" value="%fox_reboot_dm_verity_check%" persist="1"/>
+		<variable name="fox_reboot_forced_encryption_check" value="%fox_reboot_forced_encryption_check%" persist="1"/>
+		<variable name="fox_support_miui_ota" value="%fox_support_miui_ota%" persist="1"/>
+		<variable name="fox_verify_incremental_ota_signature" value="%fox_verify_incremental_ota_signature%" persist="1"/>
+		<variable name="gst_back_left" value="%gst_back_left%" persist="1"/>
+		<variable name="gst_back_right" value="%gst_back_right%" persist="1"/>
+		<variable name="gst_console" value="%gst_console%" persist="1"/>
+		<variable name="hide_notch" value="%hide_notch%" persist="1"/>
+		<variable name="instant_apply" value="%instant_apply%" persist="1"/>
+		<variable name="key_allow_swipe" value="%key_allow_swipe%" persist="1"/>
+		<variable name="key_numbar" value="%key_numbar%" persist="1"/>
+		<variable name="list_font" value="%list_font%" persist="1"/>
+		<variable name="lock_action" value="%lock_action%" persist="1"/>
+		<variable name="lock_btn" value="%lock_btn%" persist="1"/>
+		<variable name="lock_info" value="%lock_info%" persist="1"/>
+		<variable name="navbar_sams" value="%navbar_sams%" persist="1"/>
+		<variable name="of_keep_storage_data" value="%of_keep_storage_data%" persist="1"/>
+		<variable name="ota_new_screen" value="%ota_new_screen%" persist="1"/>
+		<variable name="show_cpu_temp" value="%show_cpu_temp%" persist="1"/>
+		<variable name="show_slideout" value="%show_slideout%" persist="1"/>
+		<variable name="spl_ofr" value="%spl_ofr%" persist="1"/>
+		<variable name="tw_auto_disable_avb2" value="%tw_auto_disable_avb2%" persist="1"/>
+		<variable name="tw_auto_reflashtwrp" value="%tw_auto_reflashtwrp%" persist="1"/>
+		<variable name="tw_disable_free_space" value="%tw_disable_free_space%" persist="1"/>
+		<variable name="tw_flash_both_slots" value="%tw_flash_both_slots%" persist="1"/>
+		<variable name="tw_hidden_files" value="%tw_hidden_files%" persist="1"/>
+		<variable name="tw_include_kernel_log" value="%tw_include_kernel_log%" persist="1"/>
+		<variable name="tw_include_logcat" value="%tw_include_logcat%" persist="1"/>
+		<variable name="tw_inject_after_zip" value="%tw_inject_after_zip%" persist="1"/>
+		<variable name="tw_install_reboot" value="%tw_install_reboot%" persist="1"/>
+		<variable name="tw_military_time" value="%tw_military_time%" persist="1"/>
+		<variable name="tw_never_show_system_ro_page" value="%tw_never_show_system_ro_page%" persist="1"/>
+		<variable name="tw_repack_backup_first" value="%tw_repack_backup_first%" persist="1"/>
+		<variable name="tw_rm_rf" value="%tw_rm_rf%" persist="1"/>
+		<variable name="tw_signed_zip_verify" value="%tw_signed_zip_verify%" persist="1"/>
+		<variable name="tw_simulate_actions" value="%tw_simulate_actions%" persist="1"/>
+		<variable name="tw_simulate_fail" value="%tw_simulate_fail%" persist="1"/>
+		<variable name="tw_skip_digest_check" value="%tw_skip_digest_check%" persist="1"/>
+		<variable name="tw_skip_digest_generate" value="%tw_skip_digest_generate%" persist="1"/>
+		<variable name="tw_time_zone_guidst" value="%tw_time_zone_guidst%" persist="1"/>
+		<variable name="tw_unmount_system" value="%tw_unmount_system%" persist="1"/>
+		<variable name="tw_unmount_vendor" value="%tw_unmount_vendor%" persist="1"/>
+		<variable name="tw_use_compression" value="%tw_use_compression%" persist="1"/>
+		<variable name="tw_use_sha2" value="%tw_use_sha2%" persist="1"/>
+		<variable name="tw_wipe_cache" value="%tw_wipe_cache%" persist="1"/>
+		<variable name="tw_wipe_dalvik" value="%tw_wipe_dalvik%" persist="1"/>
+		<variable name="use_fixed_font" value="%use_fixed_font%" persist="1"/>
+	</variables>
+
 	<pages>
 		<page name="main">
 			<!-- Reboot if failed last time  -->

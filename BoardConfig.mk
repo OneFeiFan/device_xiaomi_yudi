@@ -155,7 +155,7 @@ OF_USE_LEGACY_BATTERY_SERVICES := 1
 # TWRP 默认读 thermal_zone0，这个平台上 zone0 是 pa，读不到值
 TW_CUSTOM_CPU_TEMP_PATH := "/sys/class/thermal/thermal_zone27/temp"
 # 震动：使用高通开源的 AIDL vibrator HAL（vendor/qcom/opensource/vibrator），
-# 它通过 /dev/input/event1（qcom-hv-haptics）的 FF 接口驱动马达。
+# 它通过名为 qcom-hv-haptics 的 FF 输入设备驱动马达，不写死 event 编号。
 TW_SUPPORT_INPUT_AIDL_HAPTICS := true
 # 这个 HAL 是源码模块，但 recovery 镜像只打包 ramdisk，不会自动带上 vendor
 # 模块的输出，所以在这里把它和依赖拷进 recovery root。必须先让模块参与构建。

@@ -1,15 +1,14 @@
 # 补丁
 
-这些补丁把 OrangeFox 的 `bootable/recovery` 和 `system/vold` 改成本设备树需要的状态。补丁按当前 OrangeFox `fox_16.0` 分支生成，`repo sync` 覆盖源码后需要重新应用。
+这些补丁把 OrangeFox 的 `bootable/recovery` 和 `system/vold` 改成本设备树需要的状态。基线是 OrangeFox `fox_16.0` 的 `0f7831d`（2026-10-01，“Activate 'TW_NO_FASTBOOT_BOOT' when enabled in the device tree”）；`repo sync` 覆盖源码后需要重新应用，基线变化时先核对上下文。
 
 ## 应用顺序
 
-先按编号应用 0001、0002、0004、0005、0007 到 `bootable/recovery`，再应用 0006 到 `system/vold`。0003 已删除：实测移除后拔掉 OTG 再插电脑线，ADB 会自动恢复。
+先按编号应用 0002、0004、0005、0007 到 `bootable/recovery`，再应用 0006 到 `system/vold`。0001 已删除：复选框持久化改由设备树主题的 `<variables persist="1">` 声明实现。0003 已删除：实测移除后拔掉 OTG 再插电脑线，ADB 会自动恢复。
 
 ```sh
 cd bootable/recovery
-for p in ../../device/xiaomi/yudi/patches/0001-*.patch \
-         ../../device/xiaomi/yudi/patches/0002-*.patch \
+for p in ../../device/xiaomi/yudi/patches/0002-*.patch \
          ../../device/xiaomi/yudi/patches/0004-*.patch \
          ../../device/xiaomi/yudi/patches/0005-*.patch \
          ../../device/xiaomi/yudi/patches/0007-*.patch; do
@@ -21,12 +20,6 @@ git apply ../../device/xiaomi/yudi/patches/0006-*.patch
 ```
 
 补丁都用 `git apply` 应用，不依赖提交历史。应用前先确认工作区干净；如果上游已经合入其中某个修改，跳过对应补丁。
-
-## 0001-fox-settings-persistence.patch
-
-作用：主题页的勾选写值加上 `persist=1`，让不在 `vars.xml` 和默认持久化表里的变量也能写入 `/sdcard/Fox/.foxs`。没有这个补丁时，`fox_boot_*` 等设置重启后会丢失。
-
-修改文件：`bootable/recovery/gui/listbox.cpp`。
 
 ## 0002-fix-data-wipe-immutable-metadata.patch
 
@@ -72,6 +65,8 @@ git apply ../../device/xiaomi/yudi/patches/0006-*.patch
 ## 设备树主题覆盖
 
 刷机确认页的选项列表高度、AVB2 项顺序和“安装Ramdisk”按钮由设备树的 `recovery/root/twres/pages/install.xml` 覆盖，不修改 `bootable/recovery`。分区列表里的“安装恢复 Ramdisk”项仍由 OrangeFox 动态生成，保留不隐藏。
+
+复选框持久化由 `recovery/root/twres/pages/main.xml` 根部的 `<variables>` 声明实现：每个勾选变量带 `persist="1"`，值用 `%变量名%` 取主题加载时的当前值。OrangeFox 先加载主题、后读取保存的设置文件，所以这些默认值不会覆盖上次保存的值。这样不再需要源码补丁 0001。
 
 `/data` 的 `checkpoint=fs` 问题由设备树的 `BoardConfig.mk` 里 `TW_SKIP_ADDITIONAL_FSTAB := true` 解决。
 

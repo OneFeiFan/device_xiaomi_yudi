@@ -51,7 +51,7 @@ CPU 温度读取 `/sys/class/thermal/thermal_zone27/temp`（cpuss-2）。
 
 ## 震动
 
-使用高通开源的 AIDL vibrator HAL（`vendor/qcom/opensource/vibrator`，模块 `vendor.qti.hardware.vibrator.service`）。马达在 recovery 里表现为 `/dev/input/event1`（`qcom-hv-haptics`）的 FF 输入设备，HAL 通过 `EV_FF` 驱动它，不依赖小米的效果文件和 misight 服务。recovery 只调用标准的 `on()`/`off()`，实例名使用默认的 `IVibrator/default`。
+使用高通开源的 AIDL vibrator HAL（`vendor/qcom/opensource/vibrator`，模块 `vendor.qti.hardware.vibrator.service`）。马达在 recovery 里表现为名为 `qcom-hv-haptics` 的 FF 输入设备（event 编号不固定），HAL 通过 `EV_FF` 驱动它，不依赖小米的效果文件和 misight 服务。recovery 只调用标准的 `on()`/`off()`，实例名使用默认的 `IVibrator/default`。
 
 ## USB：ADB、MTP 和 OTG
 
@@ -61,7 +61,7 @@ USB Storage 已关闭（`vendorsetup.sh` 的 `OF_ENABLE_USB_STORAGE=0`）。这�
 
 OTG 存储挂载在 `/usb_otg`，设备节点是 `/dev/block/sdg1`，备用 `/dev/block/sdg`：UFS 占用了 sda 到 sdf，OTG 设备通常是下一个。NTFS 分区由 `mount.ntfs`（ntfs-3g）挂载。如果扩展坞枚举成其他节点名，自动挂载不会触发，需要同时修改 `twrp.flags` 和 `partitionmanager.cpp` 里的检查路径。
 
-插入 OTG 后 USB 要切到 host 模式，拔出后再切回 device 模式。`init.recovery.qcom.rc` 用 `sys.usb.mode_ready` 避免 MTP 的开关打断 host 模式；补丁 0003 已移除，实测拔掉 OTG 后再插电脑线，ADB 会自动回来。OTG 拔出后，`Update_Size()` 不会再尝试挂载已经不存在的设备节点（补丁 0007），恢复 data 后的分区详情刷新不会报无法挂载 `/usb_otg`。
+插入 OTG 后 USB 要切到 host 模式，拔出后再切回 device 模式。`init.recovery.qcom.rc` 用 `sys.usb.mode_ready` 避免 MTP 的开关打断 host 模式；拔掉 OTG 后再插电脑线，ADB 会自动回来。OTG 拔出后，`Update_Size()` 不会再尝试挂载已经不存在的设备节点（补丁 0007），恢复 data 后的分区详情刷新不会报无法挂载 `/usb_otg`。
 
 ## 数据：清除、备份和恢复
 
@@ -115,11 +115,11 @@ Windows 需要为这个设备安装 Google USB 驱动（`android_winusb.inf`）�
 
 OrangeFox 的中文语言包会把终端和键盘字体换成比例字体，导致等宽错乱。设备树在 `recovery/root/twres/` 下覆盖了语言包，把终端字体和键盘长按标签的字体指向 Sarasa Mono SC。字体是 GBK 子集，约 2.2 万个字符，12.8 MB，超出 GBK 的生僻字会显示成方块。
 
-主题覆盖文件在构建时直接写入 `/twres`。启动后默认显示“高级”页。列表项每次获得焦点时都会重新翻译（源码补丁 0005），双清或格式化之后按钮不会停留在英文。
+主题覆盖文件在构建时直接写入 `/twres`。启动后默认显示文件列表。双清或格式化之后会重新加载当前语言（源码补丁 0005），按钮不会停留在英文。
 
 ## 设置持久化
 
-设置保存在 `/sdcard/Fox/.foxs`，并在 `/persist/.foxs` 留一份备份。部分设置项不在 OrangeFox 的默认持久化列表里，需要源码补丁 0001 才能在重启后保留。
+设置保存在 `/sdcard/Fox/.foxs`，并在 `/persist/.foxs` 留一份备份。设备树的 `twres/pages/main.xml` 把所有勾选变量声明为 `persist="1"`，不在 OrangeFox 默认持久化列表里的设置也能在重启后保留，不需要源码补丁。
 
 ## 禁用 vbmeta AVB2.0
 
