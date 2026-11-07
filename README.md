@@ -15,17 +15,17 @@
 | 设置重启后保留 | 已验证 | 设备树主题声明，无需源码补丁 |
 | 异常重启后写入不丢失 | 已验证 | |
 | 解密 data | 已验证 | 无锁屏、图案、PIN、文本密码、多用户、统一锁屏 profile |
-| 刷入 zip、ADB sideload | 部分验证 | 只用测试 zip 验证过；完整 ROM 未验证 |
+| 刷入 zip、ADB sideload | 已验证 | 测试 zip、sideload 和完整 ROM 包都已实测 |
 | 备份和恢复 | 部分验证 | boot、data 已验证；super 只验证了备份 |
-| 双清、Format Data | 已验证 | 包括含 metadata 的整分区格式化 |
-| fastbootd | 部分验证 | 刷写 recovery 已验证；逻辑分区未验证 |
-| 读取和切换槽位 | 部分验证 | 切换后启动另一个槽的系统未验证 |
+| 双清、Format Data | 已验证 | 包括含 metadata 的整分区格式化；其他用户的解密限制见[已知问题](docs/known-issues.md#双清或-format-data-后其他用户的解密失效) |
+| fastbootd | 已验证 | 刷写 recovery 和逻辑分区（vendor_dlkm 原样回刷） |
+| 读取和切换槽位 | 部分验证 | recovery 在两个槽位都能启动；切换后启动另一个槽的系统未验证 |
 | USB OTG | 已验证 | 挂载和读取；写入未单独验证 |
 | USB Storage | 已关闭 | 只有一个 USB-C 口，见[功能说明](docs/features.md#usbadbmtp-和-otg) |
 | 分区修复和调整 | 未验证 | |
 | 禁用 vbmeta AVB2.0 | 未验证 | |
 
-数据清除、备份恢复和锁屏凭据之间的关系，见[功能说明](docs/features.md#数据清除备份和恢复)。
+数据清除、备份恢复和锁屏凭据之间的关系，见[功能说明](docs/features.md#数据清除备份和恢复)。双清或 Format Data 后其他用户的 recovery 解密会失效，恢复备份也未必能恢复他们的状态，见[已知问题](docs/known-issues.md#双清或-format-data-后其他用户的解密失效)。
 
 每个功能的工作方式见 [功能说明](docs/features.md)，测试方法和通过标准见 [验证清单](docs/verification.md)。
 

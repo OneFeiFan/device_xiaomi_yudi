@@ -34,6 +34,12 @@ MTP 默认开启，日志里也能看到 `[MTP] Starting MTP`，但 Windows 有�
 
 处理办法：执行 `fox mtp enable`，或者重新进入 recovery。
 
+## 双清或 Format Data 后其他用户的解密失效
+
+双清或 Format Data 后，机主 user 0 的凭据按设计处理，但其他用户（独立密码用户、XSpace/平行空间等 clone profile）的凭据和相关元数据会丢失，recovery 里无法再解密这些用户。实测双清后会出现。
+
+如果之后再恢复双清前的 data 备份，其他用户的状态预计也不正常：TWRP 的 data 备份/恢复不会完整还原这些用户的凭据和 profile key。这个问题目前不修。需要其他用户的数据时，恢复后在系统里重新登录或重新创建该用户；不要依赖恢复备份来还原他们的解密状态。
+
 ## qseecomd 启动时报 libsecureui.so 找不到
 
 recovery 启动时 logcat 里有一条：

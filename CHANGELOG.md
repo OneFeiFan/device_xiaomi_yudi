@@ -32,4 +32,8 @@
 - VNDK：只保留系统缺少的 9 个库并放到 `/vendor/lib64`，删除 9 个和系统重复的核心库以及各服务的单独库路径。
 - 精简 ramdisk：去掉 45 MB 的预编译内核（`prebuilt/kernel` 改为 0 字节占位文件）；ADSP 固件改为从 modem 分区链接；字体改为 GBK 子集。recovery 根目录从约 93 MB 降到约 49 MB。
 
+已知限制：
+
+- 双清或 Format Data 后，其他用户的 recovery 解密会失效；恢复 data 备份也不能完整还原这些用户的凭据和状态。详见[已知问题](docs/known-issues.md#双清或-format-data-后其他用户的解密失效)。
+
 验证范围见 [README 的功能状态表](README.md#功能状态)。
