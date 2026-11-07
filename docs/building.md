@@ -26,7 +26,7 @@ git clone https://github.com/OneFeiFan/device_xiaomi_yudi device/xiaomi/yudi
 
 ## 打补丁
 
-设备树依赖一组 OrangeFox 源码修改：设置持久化、wipe/metadata 保护、OTG host 模式、data 格式化前停 MTP、GUI 语言刷新，以及 `system/vold` 的 clone profile 解密。补丁在 `patches/`，每一项的作用见 [补丁说明](../patches/README.md)。
+设备树依赖 6 个 OrangeFox 源码补丁：5 个打在 `bootable/recovery`，1 个打在 `system/vold`。每个补丁的作用见[补丁说明](../patches/README.md)。
 
 ```sh
 cd bootable/recovery

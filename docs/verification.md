@@ -57,17 +57,9 @@ adb shell "ls /sdcard"
 
 通过标准：`vendor.gatekeeper.disable_spu` 是 `true`；RPMB 节点是 `crw-rw---- system system`；日志里有 `password type: PIN`、`pattern` 或 `password`、`GateKeeper status ok`、`User 0 Decrypted Successfully!`；`/sdcard` 下的文件名正常，不是乱码。
 
-要分别测这几种情况：
-- 系统没有设置锁屏密码（默认密码）；
-- 图案；
-- 4 位数字 PIN；
-- 文本密码；
-- 多用户（同密码用户会自动解密，独立密码用户需要输入自己的密码）；
-- 统一锁屏的 clone/managed profile（例如 XSpace、平行空间）。
+要分别测这几种情况：没有锁屏密码、图案、PIN、文本密码、多用户，以及统一锁屏的 profile（例如 XSpace、平行空间）。多用户时，同密码的用户应自动解密，独立密码的用户要输入自己的密码；统一锁屏的 profile 应在父用户解密后自动解密。
 
-以上情况都已实测通过。统一锁屏 profile 的通过标准是：父用户解密成功后，日志里能看到该 profile 用户也被解密；父用户没有解密时不会尝试。
-
-输入图案、PIN 或文本密码后需要约 2–3 秒完成 scrypt 和 Gatekeeper 验证，这段时间界面看起来像卡住，是正常开销。默认密码不经过这两步，几乎立即解密。
+输入密码后要等 2 到 3 秒，原因见[功能说明](features.md#凭据和用户)。
 
 ### 设置保存
 
@@ -100,10 +92,6 @@ adb shell "cat /sdcard/durability-test; grep ' /data ' /proc/mounts"
 
 通过标准：两个方向都能复制，文件名和内容都正确。
 
-### USB Storage
-
-不适用：已在设备树关闭。设备只有一个 USB-C 口，无法同时接 OTG 存储和电脑；文件传输用 MTP。
-
 ### USB OTG
 
 准备一个 USB-C 扩展坞或 OTG 盘，分区可以是 FAT32、exFAT 或 NTFS。
@@ -115,7 +103,7 @@ adb shell "cat /sdcard/durability-test; grep ' /data ' /proc/mounts"
 
 通过标准：`/usb_otg` 能挂载并读到文件，NTFS 分区由 `mount.ntfs` 正常处理；拔掉扩展坞后 `adb devices` 和 MTP 能恢复，不需要重启恢复。
 
-如果实际设备节点不是 `sdg`/`sdg1`，看 `/tmp/recovery.log` 确认节点名，并同时修改 `twrp.flags` 和 `Check_UsbOtg_Status()` 的检查路径。
+如果没有自动挂载，看 `/tmp/recovery.log` 确认实际的设备节点名，处理办法见[功能说明](features.md#usbadbmtp-和-otg)。
 
 ### 刷入 zip 和 ADB sideload
 
@@ -134,7 +122,7 @@ adb shell "cat /sdcard/Fox/zip-test.txt"
 
 通过标准：两种方式下测试文件都被写出；sideload 退出后 `adb devices` 能重新看到设备。
 
-界面上的“正在启动侧载”是在等电脑执行 `adb sideload`，不是卡死；电脑开始发送后页面会继续显示进度。退出 sideload 后 MTP 不会自动恢复，见[已知问题](known-issues.md#sideload-后-mtp-不会自动恢复)。
+退出 sideload 后 MTP 不会自动恢复，见[已知问题](known-issues.md#sideload-后-mtp-不会自动恢复)。
 
 ### fastbootd
 
@@ -171,7 +159,7 @@ adb shell "fox backup data --name data-test --storage internal"
 
 通过标准：备份目录里有 `data.f2fs.win000` 等分片、`.sha2` 和 `data.info`；任选一个分片，`sha256sum` 与 `.sha2` 内容一致。
 
-应用数据不在 `/data/data`（橙狐的 `OF_WORKAROUND_BACKUP_BUG` 会排除它），而是在 `/data/user/0/<包名>/` 路径下。用下面的命令确认备份里确实有应用数据，而不是只看 `/data/data`：
+再确认备份里有应用数据。应用数据经由 `/data/user/0/<包名>/` 进入备份（原因见[功能说明](features.md#备份的范围)），所以要查这条路径，不要只看 `/data/data`：
 
 ```sh
 for f in /sdcard/Fox/BACKUPS/<serialno>/<备份名>/data.f2fs.win[0-9]*; do
@@ -189,17 +177,13 @@ adb shell "fox backup super --name super-test --storage internal"
 
 ### data 的恢复
 
-这是破坏性测试。先备份 data，再在 `/data` 根目录新建一个测试文件（不要放 `/sdcard`，因为 `/data/media` 不会被清除），然后恢复刚才的备份。data 备份不包含 `/data/media`，要保留照片/下载需要另外备份 Internal Storage。
+这是破坏性测试。先备份 data，再在 `/data` 根目录新建一个测试文件（不要放在 `/sdcard`，因为 `/data/media` 不会被清除），然后恢复刚才的备份。
 
 为了确认应用数据确实在备份里，再在一个已安装应用的数据目录放一个标记文件，例如 `/data/user/0/<包名>/fox-restore-marker.txt`，用上面的 `tar -tf` 命令确认它出现在备份分卷里；然后做一次普通双清（`fox wipe cache data`）再恢复，检查这个标记文件是否回来。
 
 通过标准：恢复后 `/data/...` 测试文件消失（如果它不在备份里），应用数据标记文件恢复；重启进入系统后应用数据可以正常读取。
 
-凭据是否保留取决于恢复前做过什么：
-
-- 只做普通双清再恢复：TWRP 不会主动删除 user 0 的凭据文件，旧锁屏是否仍然生效取决于系统重建 user 0 的情况；普通双清不能当作“清除锁屏”的手段。想确保清掉锁屏，用 Format Data；
-- 备份和恢复之间做过 Format Data 或换机：user 0 的凭据和密钥已经没了，备份里也不包含，需要重设锁屏；依赖 keystore 的应用可能需要重新登录；
-- 非 0 用户（独立密码、clone profile）：普通双清会删掉它们的凭据，恢复时写回备份里的版本；如果备份之后改过密码，恢复后会对不上，需要重设。
+恢复后锁屏凭据的状态取决于恢复前做过什么，对照[功能说明](features.md#恢复后锁屏凭据的状态)检查。
 
 ### 双清和 Format Data
 
@@ -215,7 +199,7 @@ adb shell "ls -l /data/media/0/wipe-keep-test.txt /data/wipe-delete-test.txt"
 
 通过标准：`/data/media/0/wipe-keep-test.txt` 还在，`/data/wipe-delete-test.txt` 不存在；重启能进入系统。
 
-如果普通双清报 `Unable to wipe /data` 或在某个文件处停止，说明该文件在清除 immutable/append 后仍删不掉，`/data` 可能只清了一部分。这种情况改用 Format Data，不要继续重复普通双清。
+如果普通双清中止并报 `Unable to wipe /data`，处理办法见[已知问题](known-issues.md#普通双清遇到删不掉的文件会中止)。
 
 含 metadata 的整分区清除：
 

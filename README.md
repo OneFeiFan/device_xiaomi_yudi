@@ -10,21 +10,22 @@
 | --- | --- | --- |
 | 启动、触摸、震动 | 已验证 | 两个 recovery 分区刷入同一镜像都能启动 |
 | 电池、充电状态、CPU 温度 | 已验证 | |
-| ADB、MTP | 已验证 | MTP 在 Windows 上双向复制过文件 |
+| ADB、MTP | 已验证 | |
 | 中文主题和字体 | 已验证 | |
-| 设置重启后保留 | 已验证 | 需要打 [补丁](patches/README.md) |
-| 异常重启后写入不丢失 | 已验证 | 用 SysRq 强制重启测试 |
-| 解密 data | 已验证 | 无锁屏、图案、4 位 PIN、文本密码和多用户都已验证 |
-| 刷入 zip | 部分验证 | 只用测试 zip 验证过脚本会执行；刷入完整 ROM 未验证 |
-| 备份和恢复 | 部分验证 | boot、data 恢复通过；super 备份和 digest 校验通过，super 恢复未验证。data 备份不含内部存储；TWRP 普通双清不会主动删除 user 0 凭据，想清锁屏用 Format Data；非 0 用户凭据随备份恢复 |
-| ADB sideload | 部分验证 | 测试 zip 通过；退出后 ADB 恢复 |
-| fastbootd | 部分验证 | `getvar`、`reboot` 正常；已通过 fastbootd 刷写 `recovery_a`，逻辑分区刷写未验证 |
-| 读取和切换槽位 | 部分验证 | 切换生效；目标槽没有系统时会停在 fastboot，见[已知问题](docs/known-issues.md#另一槽没有系统时切槽会停在-fastboot) |
-| USB Storage | 已关闭 | 设备只有一个 USB-C 口，无法同时接 OTG 和电脑；文件传输用 MTP |
-| USB OTG | 已验证 | VIA 扩展坞/NTFS 挂载和读取通过；拔掉硬盘后 ADB/MTP 恢复；写入未单独验证 |
-| 格式化 data / 双清 | 已验证 | 普通双清保留 `/data/media`，TWRP 也不主动删除 user 0 凭据文件；要清锁屏和内部存储用 Format Data。含 metadata 的整分区格式化后系统能重新加密并开机 |
-| 分区修复和调整 | 未验证 | 属于破坏性操作 |
-| 禁用 vbmeta AVB2.0 | 未验证 | 菜单存在，未实际执行 |
+| 设置重启后保留 | 已验证 | 需要[源码补丁](patches/README.md) |
+| 异常重启后写入不丢失 | 已验证 | |
+| 解密 data | 已验证 | 无锁屏、图案、PIN、文本密码、多用户、统一锁屏 profile |
+| 刷入 zip、ADB sideload | 部分验证 | 只用测试 zip 验证过；完整 ROM 未验证 |
+| 备份和恢复 | 部分验证 | boot、data 已验证；super 只验证了备份 |
+| 双清、Format Data | 已验证 | 包括含 metadata 的整分区格式化 |
+| fastbootd | 部分验证 | 刷写 recovery 已验证；逻辑分区未验证 |
+| 读取和切换槽位 | 部分验证 | 切换后启动另一个槽的系统未验证 |
+| USB OTG | 已验证 | 挂载和读取；写入未单独验证 |
+| USB Storage | 已关闭 | 只有一个 USB-C 口，见[功能说明](docs/features.md#usbadbmtp-和-otg) |
+| 分区修复和调整 | 未验证 | |
+| 禁用 vbmeta AVB2.0 | 未验证 | |
+
+数据清除、备份恢复和锁屏凭据之间的关系，见[功能说明](docs/features.md#数据清除备份和恢复)。
 
 每个功能的工作方式见 [功能说明](docs/features.md)，测试方法和通过标准见 [验证清单](docs/verification.md)。
 
@@ -61,17 +62,6 @@ fastboot reboot recovery
 | [补丁说明](patches/README.md) | 对 OrangeFox 源码的修改 |
 | [参考资料](docs/references.md) | 源码、固件和对照用的设备树 |
 | [开发记录](docs/notes/2026-11-05-recovery-build.md) | 调研和实验的过程 |
-
-## 参考
-
-本设备树基于 OrangeFox、TWRP 和 AOSP Android 16 的源码，并对照了 liuqin、mondrian 等设备树：
-
-- [OrangeFox fox_16.0 manifest](https://gitlab.com/OrangeFox/Manifest/-/tree/fox_16.0)
-- [OrangeFox recovery](https://gitlab.com/OrangeFox/bootable/recovery)
-- [TWRP recovery](https://github.com/TeamWin/android_bootable_recovery)
-- [AOSP Android 16 build](https://android.googlesource.com/platform/build/+/refs/tags/android-16.0.0_r1)
-- [其他设备树（liuqin、mondrian 等）](docs/references.md#其他设备树)
-- [完整参考资料](docs/references.md)
 
 ## 许可证
 
