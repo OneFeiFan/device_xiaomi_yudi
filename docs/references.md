@@ -34,12 +34,13 @@ LineageOS 没有公开的 liuqin 设备树（`LineageOS/android_device_xiaomi_li
 ## 设备与固件
 
 - 小米官方完整包 `yudi-ota_full-OS3.0.6.0.VMHCNXM-user-15.0-7b73783799.zip`：分区布局、动态分区、初始配置。
-- 第三方重打包的 `yudi-ota_full-OS3.0.306.3.WMHCNXM-user-16.0-b255c0d484-2in1-Root.zip`：boot HAL、`libdrm.so`、vndk-v32 库、`libu32.so` 对应的原始 libutils。这个包不是官方包，校验值无法与官方 306.3 核对。
+- 第三方重打包的 `yudi-ota_full-OS3.0.306.3.WMHCNXM-user-16.0-b255c0d484-2in1-Root.zip`：boot HAL、`libdrm.so`、vndk-v32 库。这个包不是官方包，校验值无法与官方 306.3 核对。
 - 原厂 `recovery.img`：`charger_fstab.qti`、ramdisk 布局、ADSP 固件文件名。
 
 ## OrangeFox 和 TWRP 代码
 
 - OrangeFox `bootable/recovery`：`gui/listbox.cpp`、`fox_fifo`、`etc/init.rc`、`fastboot`、`partitionmanager.cpp`。
+- 高通开源 vibrator HAL（LineageOS 镜像，`lineage-23.0`）：<https://github.com/LineageOS/android_vendor_qcom_opensource_vibrator>。
 - OrangeFox `vendor/twrp`：板级配置、主题资源和打包脚本。
 - TWRP 的设备树约定、模块加载、FunctionFS 和 `additional.fstab` 处理。
 - LineageOS `android_hardware_qcom_bootctrl`：<https://github.com/LineageOS/android_hardware_qcom_bootctrl>。最初尝试使用它的 boot 控制 HAL，因需要内核 UAPI 头而放弃，最终改用原厂 vendor 的 HIDL 1.2 boot HAL。

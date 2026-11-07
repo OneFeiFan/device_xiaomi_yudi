@@ -103,12 +103,10 @@ on fs
     start vendor.qseecomd
     start qseecom-service
 
-    # 震动：ROM 自带的 AIDL vibrator HAL（实例名 IVibrator/vibratorfeature）
+    # 震动：高通开源的 AIDL vibrator HAL，通过 /dev/input 的 FF 接口驱动马达
     chmod 0666 /sys/class/qcom-haptics/lra_calibration
     chmod 0666 /sys/class/qcom-haptics/lra_impedance
-    # 震动 HAL 链接的 libmisight 需要厂商的 misight 服务
-    start vendor.mi_misight
-    start vibratorfeature-hal-service
+    start vendor.qti.vibrator
 
 # qseecomd 注册完监听器后，启动依赖它的密钥服务
 on property:vendor.sys.listeners.registered=true

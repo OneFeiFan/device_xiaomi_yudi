@@ -8,7 +8,7 @@
 
 - 解密：支持 FBE v2 和 metadata 加密，使用原厂的 qseecomd、Keymaster 4.1、KeyMint 和 Gatekeeper；支持无锁屏、图案、PIN、文本密码、多用户和统一锁屏的 clone profile（例如 XSpace、平行空间）。
 - 槽位：使用原厂的 HIDL 1.2 boot HAL。
-- 震动：使用 ROM 自带的小米震动 HAL。
+- 震动：使用高通开源的 AIDL vibrator HAL，通过 `qcom-hv-haptics` 的 FF 输入设备驱动马达。
 - 界面：中文主题，终端和键盘使用 Sarasa Mono SC 字体。
 - USB OTG：支持扩展坞和 NTFS 硬盘，拔出后 ADB 和 MTP 立即恢复。
 

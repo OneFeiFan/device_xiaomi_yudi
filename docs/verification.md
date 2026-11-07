@@ -17,7 +17,7 @@ adb shell "getprop ro.boot.slot_suffix; getprop ro.build.date"
 ### 服务
 
 ```sh
-adb shell "for s in recovery vendor.boot-hal-1-2 vendor.qseecomd vendor.keymaster-4-1 vendor.keymint-qti gatekeeper-1-0 health-hal-2-1 vibratorfeature-hal-service vendor.mi_misight; do echo \$s=\$(getprop init.svc.\$s); done"
+adb shell "for s in recovery vendor.boot-hal-1-2 vendor.qseecomd vendor.keymaster-4-1 vendor.keymint-qti gatekeeper-1-0 health-hal-2-1 vendor.qti.vibrator; do echo \$s=\$(getprop init.svc.\$s); done"
 ```
 
 通过标准：每一项都是 `running`。

@@ -61,6 +61,4 @@ if [ "$1" = "$FDEVICE" -o "$FOX_BUILD_DEVICE" = "$FDEVICE" ]; then
 
 	# 快速备份默认勾选的分区
 	export OF_QUICK_BACKUP_LIST="/boot;/vendor_boot;/dtbo;/data;"
-
-	export OF_MAINTAINER="OneFeiFan"
 fi

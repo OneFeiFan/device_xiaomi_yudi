@@ -70,7 +70,7 @@
 				<condition var1="first_start" op="!=" var2="1"/>
 				<condition var1="fox_use_pass" op="!=" var2="1"/>
 				<action function="overlay"/>
-				<action function="set">tw_clear_destination=advanced</action>
+				<action function="set">tw_clear_destination=navbar</action>
 				<action function="page">clear_vars</action>
 			</action>
 
@@ -79,7 +79,7 @@
 				<condition var1="fox_use_pass" var2="1"/>
 				<condition var1="pass_open" var2="1"/>
 				<action function="overlay"/>
-				<action function="set">tw_clear_destination=advanced</action>
+				<action function="set">tw_clear_destination=navbar</action>
 				<action function="page">clear_vars</action>
 			</action>
 		</page>

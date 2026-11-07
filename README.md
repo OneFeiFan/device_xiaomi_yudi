@@ -67,6 +67,6 @@ fastboot reboot recovery
 
 设备树配置、ramdisk 覆盖文件、主题覆盖文件和补丁采用 GNU GPL v3.0，见 [LICENSE](LICENSE)。OrangeFox 和 TWRP 本身同样是 GPL-3.0，本仓库不主张它们的版权。
 
-`recovery/root` 下的小米二进制、库和固件版权归小米，不在 GPL 许可范围内。它们大部分取自小米官方完整包；boot HAL、VNDK v32 库、`libdrm.so` 和 `libu32.so` 对应的原始 libutils 取自一个第三方重打包的 306.3 包，没能与官方校验值核对，详见 [参考资料](docs/references.md#设备与固件)。这些文件只用于在对应设备上运行 recovery。
+`recovery/root` 下的小米二进制、库和固件版权归小米，不在 GPL 许可范围内。它们大部分取自小米官方完整包；boot HAL、VNDK v32 库和 `libdrm.so` 取自一个第三方重打包的 306.3 包，没能与官方校验值核对，详见 [参考资料](docs/references.md#设备与固件)。这些文件只用于在对应设备上运行 recovery。震动 HAL 改为从 LineageOS 镜像的高通开源仓库构建，不属于小米专有文件。
 
 Sarasa Mono SC 字体采用 SIL Open Font License 1.1，见 [licenses/SarasaGothic-OFL.txt](licenses/SarasaGothic-OFL.txt)。

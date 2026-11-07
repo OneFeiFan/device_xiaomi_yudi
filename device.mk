@@ -23,8 +23,5 @@ PRODUCT_PACKAGES += \
     android.hardware.fastboot@1.1-impl-mock \
     fastbootd
 
-# 解密使用 Keymaster 4.1：vendor 的 manifest_cape.xml 声明了 keymaster@4.1。
-# 这里的属性只是构建期默认，启动时 twrp.cpp 会用 OF_DEFAULT_KEYMASTER_VERSION
-# 覆盖它；保留同值作兜底，三处设置的关系见 README“设计说明”。
-PRODUCT_PROPERTY_OVERRIDES += \
-    keymaster_ver=4.1
+# 震动 HAL 从源码构建，替代 ROM 自带的小米 AIDL 服务。
+$(call inherit-product-if-exists, vendor/qcom/opensource/vibrator/vibrator-vendor-product.mk)

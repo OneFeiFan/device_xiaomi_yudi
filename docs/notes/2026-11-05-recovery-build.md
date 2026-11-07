@@ -50,7 +50,9 @@ boot 头部仍然用 `BOARD_MKBOOTIMG_ARGS` 写成 12.0.0 / 2025-09，与原厂 
 
 qseecomd、Keymaster、KeyMint 等 HIDL 服务使用 `/vendor/lib64/vndk-v32` 下的 Android 12 VNDK 库。系统里同时存在 v31 和 v32，两套重复。确认所有服务都能在 v32 找到依赖后，删除了 9 个 v31 库。
 
-震动 HAL 是 Android 12 厂商二进制。它在 Android 16 的 libutils 下会因为 `incStrongRequireStrong` 崩溃。修复方式是把 v32 libutils 的 SONAME 改成 `libu32.so`，把厂商服务的 NEEDED 改成 `libu32.so`，两份 libutils 共存。后续实机点按按钮确认马达实际震动正常。
+震动 HAL 最初用 Android 12 的小米厂商二进制。它在 Android 16 的 libutils 下会因为 `incStrongRequireStrong` 崩溃；当时的修复方式是把 v32 libutils 的 SONAME 改成 `libu32.so`，把厂商服务的 NEEDED 改成 `libu32.so`，两份 libutils 共存。
+
+2026-11-07 已改为从源码构建高通开源的 AIDL vibrator HAL，通过 `qcom-hv-haptics` 的 FF 输入设备驱动马达。小米服务、misight、`libu32.so`、`libtinyalsa.so` 和 49 个 `*_RTP.bin` 效果文件都已删除，这处厂商二进制修改也一并去掉。
 
 ## 主题和字体
 

@@ -130,8 +130,8 @@ TW_USE_FSCRYPT_POLICY := 2
 # 格式化 data 前用 dmctl 解除 metadata 加密映射，否则 make_f2fs 报
 # “In use by the system!”（物理 userdata 仍被 dm-7 占用）。
 OF_USE_DMCTL := 1
-# 强制只用 keymaster_ver 属性（由 OF_DEFAULT_KEYMASTER_VERSION 启动时写入），
-# 不从 vendor manifest 探测版本；三处设置的关系见 README“设计说明”。
+# 强制只用 keymaster_ver 属性（由 vendorsetup.sh 的 OF_DEFAULT_KEYMASTER_VERSION
+# 在启动时写入），不从 vendor manifest 探测版本。
 TW_FORCE_KEYMASTER_VER := true
 
 # TWRP：界面
@@ -154,9 +154,9 @@ OF_USE_LEGACY_BATTERY_SERVICES := 1
 # CPU 温度：taro 的 CPU 传感器是 cpuss-2（thermal_zone27）；
 # TWRP 默认读 thermal_zone0，这个平台上 zone0 是 pa，读不到值
 TW_CUSTOM_CPU_TEMP_PATH := "/sys/class/thermal/thermal_zone27/temp"
-# 震动：使用 ROM 自带的 AIDL vibrator HAL，实例名是 IVibrator/vibratorfeature
+# 震动：使用高通开源的 AIDL vibrator HAL（vendor/qcom/opensource/vibrator），
+# 它通过 /dev/input/event1（qcom-hv-haptics）的 FF 接口驱动马达。
 TW_SUPPORT_INPUT_AIDL_HAPTICS := true
-TW_SUPPORT_INPUT_AIDL_HAPTICS_FQNAME := IVibrator/vibratorfeature
 
 # TWRP：背光（REC 的 init 写的就是这个节点；DTBO 的背光范围 0–4095）
 TW_BRIGHTNESS_PATH := "/sys/class/backlight/panel0-backlight/brightness"
@@ -169,10 +169,10 @@ TW_EXTRA_LANGUAGES := true
 
 # TWRP：内核模块
 # 显示、电池、振动、USB、加密相关的驱动在 VBOOT 的 modules.load.recovery 里，
-# 第一阶段 init 会自动加载。触控驱动不在其中，需要 recovery 从 vendor_dlkm 加载：
-# DTBO 里触控控制器为 novatek,NVT-ts-spi，对应 nt36532_touch.ko，另需 xiaomi_touch.ko。
-TW_LOAD_VENDOR_MODULES := "xiaomi_touch.ko nt36532_touch.ko"
-TW_LOAD_VENDOR_MODULES_EXCLUDE_GKI := true
+# 第一阶段 init 会自动加载。触控驱动不在其中，统一由 beforemodules.sh 从 ramdisk
+# 的 /lib/modules 加载（DTBO 里触控控制器为 novatek,NVT-ts-spi，对应
+# nt36532_touch.ko，另需 xiaomi_touch.ko）。ramdisk 里的模块和当前 ROM 的
+# vendor_dlkm 一致，不再按槽位内容走两条路径。
 
 # TWRP：功能
 TW_INCLUDE_FASTBOOTD := true
