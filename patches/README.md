@@ -4,13 +4,11 @@
 
 ## 应用顺序
 
-先按编号应用 0001–0005、0007、0008 到 `bootable/recovery`，再应用 0006 到 `system/vold`：
+先按编号应用 0001–0005 到 `bootable/recovery`，再应用 0006 到 `system/vold`：
 
 ```sh
 cd bootable/recovery
-for p in ../../device/xiaomi/yudi/patches/000[1-5]-*.patch \
-         ../../device/xiaomi/yudi/patches/0007-*.patch \
-         ../../device/xiaomi/yudi/patches/0008-*.patch; do
+for p in ../../device/xiaomi/yudi/patches/000[1-5]-*.patch; do
     git apply "$p"
 done
 
@@ -66,19 +64,11 @@ git apply ../../device/xiaomi/yudi/patches/0006-*.patch
 
 修改文件：`system/vold/Decrypt.cpp`。普通用户、独立密码用户和默认密码用户的处理不受影响。
 
-## 0007-install-options-height.patch
+## 设备树主题覆盖
 
-作用：刷机确认页的选项列表从 360px 加高到 450px，整体上移 40px，并把“刷入 ROM 后禁用 vbmeta AVB2.0”从第 6 项移到第 4 项，避免在只显示 4 行的窗口里必须滚动才能看到。
+刷机确认页的选项列表高度、AVB2 项顺序和“安装Ramdisk”按钮由设备树的 `recovery/root/twres/pages/install.xml` 覆盖，不修改 `bootable/recovery`。分区列表里的“安装恢复 Ramdisk”项仍由 OrangeFox 动态生成，保留不隐藏。
 
-修改文件：`bootable/recovery/gui/theme/portrait_hdpi/pages/install.xml`。
-
-## 0008-hide-install-ramdisk-ui.patch
-
-作用：用 `OF_NO_INSTALL_RECOVERY_RAMDISK=1` 隐藏刷机确认页的“安装 Recovery Ramdisk”列表项和“安装Ramdisk”按钮，保留 repack 工具、自动刷回和内核重打包逻辑。
-
-修改文件：`bootable/recovery/data.cpp`、`orangefox.mk`、`gui/theme/portrait_hdpi/pages/install.xml`。设备树侧的开关在 `vendorsetup.sh`。
-
-`/data` 的 `checkpoint=fs` 问题由设备树的 `BoardConfig.mk` 里 `TW_SKIP_ADDITIONAL_FSTAB := true` 解决，不需要这个补丁。
+`/data` 的 `checkpoint=fs` 问题由设备树的 `BoardConfig.mk` 里 `TW_SKIP_ADDITIONAL_FSTAB := true` 解决。
 
 ## 上游状态
 
